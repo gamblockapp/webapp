@@ -67,11 +67,21 @@ export type Dict = {
     /** Small orienting line above the headline — says what this thing is. */
     tagline: string;
     /**
-     * The H1. Forward-looking on purpose: `hook` is the better sentence but it
-     * describes the problem, and a visitor who has not installed anything yet
-     * needs to know what the app does before being told what gambling is.
+     * The H1, in two tiers: `hook` at display size, `line1` under it as the
+     * qualifier.
+     *
+     * There used to be a separate `catchline` above these, on the reasoning that a
+     * first-time visitor needs to know what the app does before being told what
+     * gambling is. It is gone, and the hook leads.
+     *
+     * What made that safe is that the hook is aimed at gambling and not at the
+     * reader — it is a statement about the house edge, which is why `line1`
+     * ("Not over a year. Not over ten.") is welded to it: the pair reads as an
+     * argument about an industry. A hook that accuses the person reading it would
+     * break the "no lectures" promise made a few lines further down, so any rewrite
+     * has to keep the subject as gambling rather than the reader. `lead` below is
+     * what now says what the app does.
      */
-    catchline: string;
     hook: string;
     line1: string;
     lead: (app: string) => string;

@@ -44,11 +44,17 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     <div class="page hero__grid">
       <div class="hero__copy">
         <p class="eyebrow hero__tagline">{c.tagline}</p>
-        <h1 class="display hero__catchline">{c.catchline}</h1>
 
-        <p class="hero__hook">
-          <strong>{c.hook}</strong> <span class="muted">{c.line1}</span>
-        </p>
+        <!--
+          Both halves of the claim are inside the H1: "Nobody's up" on its own is a
+          bare assertion, and "not over a year, not over ten" is the part that makes
+          it a statement about the house edge rather than about the reader. The
+          heading a screen reader announces should be the whole argument.
+        -->
+        <h1 class="hero__headline">
+          <span class="display hero__headline-main">{c.hook}</span>
+          <span class="hero__headline-sub">{c.line1}</span>
+        </h1>
 
         <p class="hero__lead">{c.lead(APP_NAME)}</p>
 
@@ -299,28 +305,26 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     color: var(--c-accent);
   }
 
-  /*
-   * The headline, with the last line picked out in the accent.
-   *
-   * A gradient across the whole thing turned the serif thin and muddy where it
-   * met the background; running it only through the tail keeps the contrast
-   * honest and puts the emphasis where the sentence lands anyway.
-   *
-   * Diagonal, and that is now the robust choice rather than the pretty one.
-   *
-   * It has been all three ways. Horizontal put the accent on whichever word
-   * happened to sit top-right, which with the old three-line headline was
-   * "which". Vertical fixed that by always taking the last line — but the
-   * headline is three words now in English and one in French, so it renders on
-   * one line as often as two, and a vertical ramp across a single line fades
-   * every glyph top-to-bottom instead of picking out a word.
-   *
-   * A diagonal ending bottom-right lands on the closing word in every case: on
-   * "coming." when it wraps, on "coming." when it doesn't, and on the whole of
-   * "Anticipe." in French.
-   */
-  .hero__catchline {
+  .hero__headline {
     margin-top: var(--space-md);
+    /* The two tiers set their own sizes; the H1 is only a container. */
+    font-size: inherit;
+    font-weight: 400;
+  }
+
+  /*
+   * The gradient sits on this span rather than on the H1, because `background-clip:
+   * text` fills every descendant — with it on the heading, the qualifier
+   * underneath came out in the same ramp and the two tiers stopped reading as two
+   * tiers.
+   *
+   * Diagonal, which has survived three different headlines now: a horizontal ramp
+   * accents whichever word happens to sit top-right, and a vertical one fades each
+   * glyph top-to-bottom whenever the line doesn't wrap. Ending bottom-right lands
+   * on the closing word at any width — on "up." here, and on "gagnant." in French.
+   */
+  .hero__headline-main {
+    display: block;
     text-wrap: balance;
     background: linear-gradient(
       125deg,
@@ -335,20 +339,26 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     padding-bottom: 0.08em;
   }
 
-  .hero__hook {
-    margin-top: var(--space-xl);
+  /*
+   * The qualifier. Deliberately large — around a third of the line above it — because
+   * it is doing load-bearing work rather than decorating: it is the difference
+   * between a claim about gambling and a remark about the reader. Small print would
+   * be the wrong place for it.
+   */
+  .hero__headline-sub {
+    display: block;
+    margin-top: var(--space-md);
     font-family: var(--font-serif);
-    font-size: 1.375rem;
-    line-height: 1.4;
-    max-width: var(--measure);
-  }
-
-  .hero__hook strong {
-    font-weight: 400;
+    font-size: clamp(1.25rem, 2.6vw, 1.75rem);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+    color: var(--c-text-muted);
+    text-wrap: balance;
+    max-width: 26rem;
   }
 
   .hero__lead {
-    margin-top: var(--space-lg);
+    margin-top: var(--space-2xl);
     max-width: var(--measure);
     color: var(--c-text-muted);
   }

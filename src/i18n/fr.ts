@@ -65,17 +65,18 @@ export const fr = {
   landing: {
     tagline: 'Une app pour arrêter de parier',
     /**
-     * Voir la note dans en.ts : le titre dit ce que l'app fait, pas ce que le
-     * lecteur est. `hook` reste sur la page, une ligne plus bas, là où il fait
-     * son travail d'argument plutôt que de verdict.
+     * Le titre. Voir la note détaillée dans en.ts : le `catchline` qui se trouvait
+     * au-dessus a été supprimé, et c'est le hook qui porte maintenant la page.
      *
-     * Un seul mot, et pas la traduction de l'anglais — « Vois-le venir » ne se dit
-     * pas. « Anticipe » porte la même idée en français courant, à l'impératif et au
-     * tutoiement comme le reste de la page. Ne promet aucun résultat : rien sur le
-     * fait d'arrêter, seulement sur le fait de voir venir. Règle 1.
+     * mobile/i18n/fr/onboarding.ts → opening.hook / line1.
+     *
+     * Ce qu'il faut préserver : **le sujet est le jeu, pas le lecteur.** C'est un
+     * constat sur l'avantage de la maison, et `line1` est ce qui le rend explicite —
+     * « ni sur un an, ni sur dix », c'est l'échelle de temps sur laquelle les maths
+     * gagnent. Formulé comme un verdict sur la personne qui lit, ça casserait la
+     * promesse « pas de leçon » faite trois lignes plus bas. Règle 1 : aucune
+     * affirmation sur un résultat, seulement sur ce qu'est le jeu.
      */
-    catchline: 'Anticipe.',
-    // mobile/i18n/fr/onboarding.ts → opening.hook / line1 / line2.
     hook: 'Personne n’est gagnant.',
     line1: 'Ni sur un an. Ni sur dix.',
     lead: (app) =>

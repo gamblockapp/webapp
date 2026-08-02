@@ -65,25 +65,30 @@ export const en = {
   landing: {
     tagline: 'A companion for stopping gambling',
     /**
-     * The headline is the benefit, not the diagnosis. `hook` below is the
-     * stronger sentence and it stays on the page — but it lands as the argument
-     * for *why*, one line down, where a reader who now knows what the app does
-     * can take it. Leading with it made the page read as a verdict on the person
-     * reading it, which is the one thing this product doesn't do.
+     * The headline, and the strongest sentence on the site.
      *
-     * Three words on purpose. This was "Know which nights are coming", which
-     * repeated `lead` below almost exactly and also the `meta.home` title — so the
-     * largest text on the page was the only text that said nothing new. The short
-     * version leaves the explaining to the paragraph that was already doing it.
+     * mobile/i18n/en/onboarding.ts → opening.hook / line1.
      *
-     * It is deliberately about seeing, not about stopping: it describes what the
-     * app shows you and promises nothing about the outcome. Rule 1.
+     * This is the third arrangement of the hero and worth recording, because the
+     * first two both failed for reasons that are easy to walk back into:
+     *
+     *   1. "Know which nights are coming" — repeated `lead` below almost verbatim,
+     *      and the `meta.home` title too, so the biggest text on the page was the
+     *      only text saying nothing new.
+     *   2. "See it coming." — solved that, but said so little that the eyebrow and
+     *      the lead were doing all the work of explaining the product.
+     *
+     * Both sat above this hook, which was always the better line and was being
+     * kept in a smaller tier below them. It leads now.
+     *
+     * The one thing to preserve: **the subject is gambling, not the reader.** This
+     * is a claim about the house edge, and `line1` is what makes that unmistakable
+     * — "not over a year, not over ten" is the timescale over which the maths wins.
+     * Written as a verdict on the person reading it, it would break the "no
+     * lectures" promise three lines further down, before they have agreed to
+     * anything. Rule 1 still holds too: it says nothing about outcomes, only about
+     * what gambling is.
      */
-    catchline: 'See it coming.',
-    // mobile/i18n/en/onboarding.ts → opening.hook / line1 / line2.
-    // Aimed at gambling, not at the reader: the page promises no lectures a few
-    // lines further down, and a hook that accuses the person reading it breaks
-    // that promise before they have agreed to anything.
     hook: 'Nobody’s up.',
     line1: 'Not over a year. Not over ten.',
     lead: (app) =>
