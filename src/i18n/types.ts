@@ -177,6 +177,11 @@ export type Dict = {
     privacy: (ctx: LegalContext) => LegalDoc;
     terms: (ctx: LegalContext) => LegalDoc;
     updated: (date: string) => string;
+    /**
+     * Heading on the section list beside both documents, and the accessible name
+     * of the `<nav>` it sits in. One string for both: they say the same thing.
+     */
+    contents: string;
   };
 
   footer: {

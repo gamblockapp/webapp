@@ -26,7 +26,7 @@ const copy = t(locale);
 ---
 
 <Base locale={locale} route={route} title={title} description={description}>
-  <article class="page legal">
+  <div class="page legal">
     <header class="legal__header stack">
       <h1 class="display-sm">{doc.title}</h1>
       <p class="small faint">
@@ -35,18 +35,50 @@ const copy = t(locale);
       <p class="legal__intro">{doc.intro}</p>
     </header>
 
-    {
-      doc.sections.map((section, i) => (
-        <section class="legal__section">
-          <h2 class="heading legal__heading">
-            <span class="legal__num faint">{i + 1}</span>
-            {section.heading}
-          </h2>
-          <Prose blocks={section.blocks} />
-        </section>
-      ))
-    }
-  </article>
+    <div class="legal__body">
+      <!--
+        The section list, and it is the answer to a layout problem rather than a
+        feature for its own sake.
+
+        These pages were a 34rem column on a 68rem page, so on a monitor they used
+        about a fifth of the screen. Widening the prose was the wrong fix — 34rem
+        is roughly the measure legal text wants to be read at, and a 68rem line
+        length is worse, not better. So the spare column gets navigation instead,
+        which is also the thing a numbered document actually needs: the numbered
+        headings exist so "section 7" is something someone can point at in an
+        email, and now there is somewhere to see all of them at once.
+      -->
+      <nav class="legal__toc" aria-label={copy.legal.contents}>
+        <p class="eyebrow">{copy.legal.contents}</p>
+        <ol class="legal__toc-list">
+          {
+            doc.sections.map((section, i) => (
+              <li>
+                <a href={`#section-${i + 1}`}>
+                  <span class="legal__toc-num">{i + 1}</span>
+                  <span>{section.heading}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+
+      <article class="legal__doc">
+        {
+          doc.sections.map((section, i) => (
+            <section class="legal__section" id={`section-${i + 1}`}>
+              <h2 class="heading legal__heading">
+                <span class="legal__num faint">{i + 1}</span>
+                {section.heading}
+              </h2>
+              <Prose blocks={section.blocks} />
+            </section>
+          ))
+        }
+      </article>
+    </div>
+  </div>
 </Base>
 
 <style>
@@ -62,6 +94,81 @@ const copy = t(locale);
 
   .legal__intro {
     color: var(--c-text-muted);
+  }
+
+  .legal__body {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  /*
+   * Nudges the measure up from 34rem for the document body only.
+   *
+   * `Prose.astro`'s styles are scoped, so they can't be reached from here — but
+   * they resolve `max-width: var(--measure)`, and a custom property set on an
+   * ancestor cascades straight through the scoping. 40rem is around 88 characters,
+   * a little past the ideal for prose but right for a numbered reference document
+   * that gets scanned more often than read start to finish, and it stops the
+   * document column from having 200px of dead space down its right-hand side.
+   */
+  .legal__doc {
+    --measure: 40rem;
+  }
+
+  @media (min-width: 64rem) {
+    .legal__body {
+      /* Fixed sidebar, flexible document — the list should not get wider just
+         because the window did. */
+      grid-template-columns: 16rem minmax(0, 1fr);
+      gap: var(--space-4xl);
+      align-items: start;
+    }
+
+    .legal__toc {
+      position: sticky;
+      /* Clears the sticky site header. */
+      top: 6rem;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+    }
+  }
+
+  .legal__toc-list {
+    margin-top: var(--space-md);
+    display: grid;
+    gap: var(--space-sm);
+    font-size: var(--type-small);
+    counter-reset: none;
+  }
+
+  .legal__toc-list a {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr;
+    gap: var(--space-sm);
+    padding-block: var(--space-xs);
+    color: var(--c-text-muted);
+    text-decoration: none;
+    transition: color var(--motion-fast) ease-out;
+  }
+
+  .legal__toc-list a:hover {
+    color: var(--c-text);
+  }
+
+  .legal__toc-num {
+    font-family: var(--font-serif);
+    font-variant-numeric: tabular-nums;
+    color: var(--c-text-subtle);
+    text-align: right;
+  }
+
+  /*
+   * Highlights whichever section was jumped to. `:target` rather than a scroll
+   * spy — that would need JavaScript, and this site has none. It marks where you
+   * arrived, which is the part worth marking.
+   */
+  .legal__section:target .legal__heading {
+    color: var(--c-accent);
   }
 
   .legal__section {

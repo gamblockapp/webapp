@@ -44,13 +44,23 @@ the light palette and Georgia, so it needs nothing installed.
 
 ## Before submitting to the App Store
 
-- [ ] Settle the real app name and domain, and update `src/config.ts`.
+- [ ] **Give the data controller a real identity.** `LEGAL_NAME` is `'Sonar'`,
+      because the developer does not want to be named on the site — but that is a
+      product, not a person or a company, and GDPR Art. 13(1)(a) wants the
+      controller to be identifiable. Either register a company and use its legal
+      name, or name the individual. Note that an individual Apple Developer
+      account publishes the holder's legal name as the App Store seller anyway.
+- [x] Settle the app name — `Sonar`, matching `../mobile/theme/tokens.ts`.
+- [ ] **Confirm the domain.** `SITE_URL` and `CONTACT_EMAIL` use
+      `trysonarapp.com`, inferred from the mobile bundle id (`com.trysonarapp.ios`)
+      and the feed host — not confirmed. Every canonical URL, the sitemap and both
+      legal documents point at it. Check `hello@trysonarapp.com` resolves.
 - [ ] Have the two legal documents reviewed by a solicitor — they are drafted from
       the app's actual behaviour, which is the part a template gets wrong, but the
       liability and governing-law clauses want a professional eye.
 - [ ] Confirm the governing-law assumption in `JURISDICTION` (currently France).
-- [ ] Decide whether a postal address is needed alongside the controller's name in
-      the privacy policy.
+- [ ] Decide whether a postal address is needed alongside the controller's identity
+      in the privacy policy.
 - [ ] Deploy, then paste into App Store Connect: **Privacy Policy URL**
       (`/privacy`), **Support URL** (`/support`), **Marketing URL** (`/`), and the
       terms text into **License Agreement**.

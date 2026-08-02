@@ -31,11 +31,24 @@ export const SITE_URL = 'https://trysonarapp.com';
 export const CONTACT_EMAIL = 'hello@trysonarapp.com';
 
 /**
- * The data controller under GDPR, and the other party to the terms. A trading
- * name or company would replace this; until then it is a named individual,
- * which is what the law requires it to be.
+ * The data controller under GDPR, and the other party to the terms.
+ *
+ * A trading name, deliberately, because the developer does not want to be named
+ * on the site. **This is not finished, and it is a legal gap rather than a
+ * cosmetic one:** GDPR Art. 13(1)(a) requires the controller to be identifiable,
+ * and "Sonar" identifies a product rather than a person or a company. Until there
+ * is a registered entity of this name, the actual controller is still the
+ * individual behind it, and the policy does not say who that is.
+ *
+ * Two ways to close it before submission — one of them has to happen:
+ *   - register a company and put its legal name here, or
+ *   - name the individual, which is what this field held before.
+ *
+ * Worth knowing either way: an individual Apple Developer account publishes the
+ * holder's legal name as the seller on the App Store listing, so the name is
+ * likely to be public at launch regardless of what this file says.
  */
-export const LEGAL_NAME = 'Vincent Vielle';
+export const LEGAL_NAME = 'Sonar';
 
 /**
  * Governing law for the terms, and the jurisdiction whose consumer rules apply.

@@ -418,7 +418,9 @@ button:focus-visible {
   .skip-link,
   .footer-nav,
   .progress,
-  .sonar {
+  .sonar,
+  /* On paper there is nothing to jump to. */
+  .legal__toc {
     display: none;
   }
 

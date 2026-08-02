@@ -310,6 +310,7 @@ export const en = {
 
   legal: {
     updated: (date) => `Last updated ${date}`,
+    contents: 'Contents',
 
     privacy: (ctx) => ({
       title: 'Privacy policy',
@@ -428,7 +429,7 @@ export const en = {
           heading: 'Who is responsible',
           blocks: [
             {
-              p: `The data controller is ${ctx.legalName}, an individual developer. Contact: ${ctx.email}.`,
+              p: `The data controller is ${ctx.legalName}. Contact: ${ctx.email}.`,
             },
           ],
         },
@@ -443,7 +444,7 @@ export const en = {
           heading: 'Who this is between',
           blocks: [
             {
-              p: `This agreement is between you and ${ctx.legalName}, an individual developer, referred to below as "I" or "me". By installing or using ${ctx.app} you accept it. If you do not, don’t use the app.`,
+              p: `This agreement is between you and ${ctx.legalName}, referred to below as "I" or "me". By installing or using ${ctx.app} you accept it. If you do not, don’t use the app.`,
             },
           ],
         },

@@ -299,6 +299,7 @@ export const fr = {
 
   legal: {
     updated: (date) => `Dernière mise à jour : ${date}`,
+    contents: 'Sommaire',
 
     // Vouvoiement à partir d'ici — voir la note en tête de fichier.
     privacy: (ctx) => ({
@@ -418,7 +419,7 @@ export const fr = {
           heading: 'Qui est responsable',
           blocks: [
             {
-              p: `Le responsable du traitement est ${ctx.legalName}, développeur indépendant. Contact : ${ctx.email}.`,
+              p: `Le responsable du traitement est ${ctx.legalName}. Contact : ${ctx.email}.`,
             },
           ],
         },
@@ -433,7 +434,7 @@ export const fr = {
           heading: 'Entre qui et qui',
           blocks: [
             {
-              p: `Ce contrat est conclu entre vous et ${ctx.legalName}, développeur indépendant, désigné ci-dessous par « je » ou « moi ». En installant ou en utilisant ${ctx.app}, vous l’acceptez. Si vous ne l’acceptez pas, n’utilisez pas l’app.`,
+              p: `Ce contrat est conclu entre vous et ${ctx.legalName}, désigné ci-dessous par « je » ou « moi ». En installant ou en utilisant ${ctx.app}, vous l’acceptez. Si vous ne l’acceptez pas, n’utilisez pas l’app.`,
             },
           ],
         },
