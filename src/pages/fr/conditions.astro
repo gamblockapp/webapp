@@ -1,0 +1,17 @@
+---
+import { APP_NAME } from '../../config';
+import { t } from '../../i18n';
+import Legal from '../../layouts/Legal.astro';
+import { legalContext } from '../../legal-context';
+
+const copy = t('fr');
+const meta = copy.meta.terms(APP_NAME);
+---
+
+<Legal
+  locale="fr"
+  route="terms"
+  doc={copy.legal.terms(legalContext('fr'))}
+  title={meta.title}
+  description={meta.description}
+/>

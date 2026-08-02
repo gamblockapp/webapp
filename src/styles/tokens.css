@@ -1,0 +1,170 @@
+/*
+ * Ported verbatim from the mobile app's theme, not re-picked for the web.
+ *
+ *   mobile/theme/colors.ts  → the two palettes below
+ *   mobile/theme/tokens.ts  → spacing, radii, type scale, motion
+ *
+ * If a value here disagrees with the app, the app wins and this file is the bug.
+ * The point of copying rather than reinventing is that someone who lands on this
+ * site and then opens the app should not experience two products.
+ *
+ * Two rules carried over from `mobile/AGENTS.md`, and they bind here too:
+ *
+ * 1. No raw hex outside this file.
+ * 2. `--c-danger` is a muted clay, never an alarm red.
+ *
+ * The third — "nothing rewards", no motion of any kind — was relaxed for the
+ * website by the product owner on 2 August 2026. The website is a store listing
+ * competing for attention, which is not the job the app's home screen has, and it
+ * was reading as a legal document. `AGENTS.md` records what replaced it and what
+ * is still off the table. The app's own rule is untouched.
+ */
+
+:root {
+  /* Georgia ships on every Apple device, so display figures cost nothing to
+     load and read warmer than system sans. Same reasoning as the app. */
+  --font-serif: Georgia, 'Times New Roman', serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+  --space-4xl: 72px;
+  --space-5xl: 104px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-pill: 999px;
+
+  /*
+   * The app's scale, opened up for the web.
+   *
+   * The display sizes are deliberately larger than the app's: a phone screen is
+   * read at arm's length and a landing page is read on a monitor, and the first
+   * version of this page was losing its headline in the middle of a lot of white.
+   * The ratios and the serif face are unchanged, so it still reads as the same
+   * product — it just stops whispering.
+   */
+  --type-display: clamp(2.75rem, 8.5vw, 5.5rem);
+  --type-display-sm: clamp(2rem, 5vw, 3rem);
+  --type-title: clamp(1.5rem, 3vw, 2rem);
+  --type-heading: 1.1875rem;
+  --type-body: 1.0625rem;
+  --type-small: 0.875rem;
+  --type-eyebrow: 0.6875rem;
+
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+  /* For the deliberate, ambient pieces — sonar sweeps, washes, reveals. */
+  --motion-slow: 520ms;
+
+  /*
+   * Elevation. The palette has no shadow tokens because the app is flat, but a
+   * page that wants to be looked at needs cards that sit above their band. Tuned
+   * warm rather than neutral-black so they don't grey out the paper tones.
+   */
+  --shadow-sm: 0 1px 2px rgb(30 28 26 / 6%), 0 2px 8px rgb(30 28 26 / 4%);
+  --shadow-md: 0 2px 4px rgb(30 28 26 / 6%), 0 12px 28px rgb(30 28 26 / 10%);
+  --shadow-lg: 0 4px 8px rgb(30 28 26 / 8%), 0 24px 56px rgb(30 28 26 / 14%);
+
+  --measure: 34rem;
+  --page-max: 68rem;
+
+  /* Light palette — mobile/theme/colors.ts, `light`. */
+  --c-bg: #fbfaf8;
+  --c-surface: #ffffff;
+  --c-surface-alt: #f4f2ee;
+  --c-border: #e3dfd8;
+  --c-border-strong: #cfc9bf;
+  --c-text: #1e1c1a;
+  --c-text-muted: #5f5a54;
+  --c-text-faint: #918a82;
+  /*
+   * Web-only third tier, and the one value on this page that is deliberately not
+   * the app's.
+   *
+   * `--c-text-faint` is the app's own faint tone and stays here for parity, but
+   * every use of it on this site is 11px eyebrows or 14px small print, where it
+   * measures 3.0–3.4:1 and fails WCAG 1.4.3. The app clears the same bar a
+   * different way — Dynamic Type means its faint text is rarely this small, and
+   * iOS has no 4.5:1 obligation to begin with. A browser does.
+   *
+   * So: `.faint` and `.eyebrow` resolve to this instead. Checked against every
+   * surface they land on (bg, surface, surface-alt, accent-soft) at 4.55:1 worst
+   * case, while staying visibly lighter than `--c-text-muted` so the hierarchy
+   * still has three steps rather than two.
+   */
+  --c-text-subtle: #726c65;
+  --c-accent: #2f5d4f;
+  --c-accent-fg: #ffffff;
+  --c-accent-soft: #eaf2ee;
+  --c-danger: #8a4033;
+  --c-danger-soft: #f7eae6;
+
+  --c-risk-low-fg: #2f5d4f;
+  --c-risk-low-bg: #eaf2ee;
+  --c-risk-low-border: #cbded5;
+  --c-risk-elevated-fg: #7a5a21;
+  --c-risk-elevated-bg: #f7f0e2;
+  --c-risk-elevated-border: #e4d5b6;
+  --c-risk-high-fg: #8a4033;
+  --c-risk-high-bg: #f7eae6;
+  --c-risk-high-border: #e5c9c1;
+
+  color-scheme: light dark;
+}
+
+/*
+ * Dark palette — mobile/theme/colors.ts, `dark`. The app opens late at night;
+ * dark is often the kinder one, as its own settings copy says.
+ *
+ * Scoped to `screen` on purpose: the legal pages are the sort of thing people
+ * save as a PDF or hand to a solicitor, and a reader on a dark-mode machine was
+ * otherwise printing near-white text onto white paper. Restricting the override
+ * rather than restating the palette under `@media print` keeps one copy of the
+ * hex, which is the whole point of this file.
+ */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: #141513;
+    --c-surface: #1d1f1d;
+    --c-surface-alt: #252825;
+    --c-border: #33362f;
+    --c-border-strong: #454a41;
+    --c-text: #f0eee9;
+    --c-text-muted: #a8a39a;
+    --c-text-faint: #77726a;
+    /* See the light value. 4.59:1 worst case here. */
+    --c-text-subtle: #948e85;
+    --c-accent: #7fb3a2;
+    --c-accent-fg: #10201b;
+    --c-accent-soft: #1b2621;
+    --c-danger: #d99686;
+    --c-danger-soft: #291d1a;
+
+    --c-risk-low-fg: #9cc9b8;
+    --c-risk-low-bg: #1b2621;
+    --c-risk-low-border: #2c3b34;
+    --c-risk-elevated-fg: #d9b778;
+    --c-risk-elevated-bg: #282218;
+    --c-risk-elevated-border: #3e3524;
+    --c-risk-high-fg: #d99686;
+    --c-risk-high-bg: #291d1a;
+    --c-risk-high-border: #402a25;
+
+    /* Shadows do almost nothing on a near-black background, so dark mode leans on
+       a lifted surface and a brighter hairline instead. Same intent, different
+       mechanism — see `.card` in base.css. */
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-md: 0 4px 16px rgb(0 0 0 / 50%);
+    --shadow-lg: 0 12px 40px rgb(0 0 0 / 60%);
+  }
+}

@@ -1,0 +1,99 @@
+---
+import Prose from '../components/Prose.astro';
+import { LEGAL_UPDATED } from '../config';
+import type { LegalDoc } from '../i18n/types';
+import { t, type Locale, type RouteKey } from '../i18n';
+import Base from './Base.astro';
+
+/**
+ * Shared shell for the privacy policy and the terms.
+ *
+ * Both documents are data (`src/i18n/{en,fr}.ts`), so this file owns nothing but
+ * their presentation: a title, the effective date, the intro, then the sections
+ * in order. Numbered headings are deliberate — it makes "section 7" a thing
+ * someone can point at in an email.
+ */
+interface Props {
+  locale: Locale;
+  route: Extract<RouteKey, 'privacy' | 'terms'>;
+  doc: LegalDoc;
+  title: string;
+  description: string;
+}
+
+const { locale, route, doc, title, description } = Astro.props;
+const copy = t(locale);
+---
+
+<Base locale={locale} route={route} title={title} description={description}>
+  <article class="page legal">
+    <header class="legal__header stack">
+      <h1 class="display-sm">{doc.title}</h1>
+      <p class="small faint">
+        <time datetime={LEGAL_UPDATED}>{copy.legal.updated(LEGAL_UPDATED)}</time>
+      </p>
+      <p class="legal__intro">{doc.intro}</p>
+    </header>
+
+    {
+      doc.sections.map((section, i) => (
+        <section class="legal__section">
+          <h2 class="heading legal__heading">
+            <span class="legal__num faint">{i + 1}</span>
+            {section.heading}
+          </h2>
+          <Prose blocks={section.blocks} />
+        </section>
+      ))
+    }
+  </article>
+</Base>
+
+<style>
+  .legal {
+    padding-block: var(--space-3xl) var(--space-2xl);
+  }
+
+  .legal__header {
+    max-width: var(--measure);
+    padding-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .legal__intro {
+    color: var(--c-text-muted);
+  }
+
+  .legal__section {
+    padding-top: var(--space-2xl);
+  }
+
+  .legal__heading {
+    display: flex;
+    gap: var(--space-md);
+    align-items: baseline;
+    margin-bottom: var(--space-lg);
+    max-width: var(--measure);
+  }
+
+  .legal__num {
+    font-family: var(--font-serif);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    /* Hangs into the left margin on wide viewports, sits inline when there
+       isn't room for it to. */
+    flex: 0 0 auto;
+  }
+
+  @media (min-width: 60rem) {
+    .legal__heading {
+      margin-left: calc(-1 * var(--space-2xl));
+    }
+
+    .legal__num {
+      width: var(--space-lg);
+      text-align: right;
+    }
+  }
+</style>

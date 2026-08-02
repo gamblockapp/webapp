@@ -1,0 +1,62 @@
+---
+import { APP_NAME, CONTACT_EMAIL, LEGAL_NAME } from '../config';
+import { path, t, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = t(locale);
+
+/**
+ * Hardcoded rather than `new Date().getFullYear()`: the site is statically built,
+ * so a runtime year would silently freeze at whatever year the last deploy
+ * happened in anyway. An explicit constant is at least honest about needing a
+ * bump.
+ */
+const YEAR = 2026;
+---
+
+<footer class="site-footer">
+  <div class="page stack">
+    <p class="small muted">{copy.footer.tagline(APP_NAME)}</p>
+
+    <nav class="footer-nav" aria-label={copy.nav.footerNavLabel}>
+      <a href={path(locale, 'home')}>{copy.nav.home}</a>
+      <a href={path(locale, 'support')}>{copy.nav.support}</a>
+      <a href={path(locale, 'help')}>{copy.nav.help}</a>
+      <a href={path(locale, 'privacy')}>{copy.nav.privacy}</a>
+      <a href={path(locale, 'terms')}>{copy.nav.terms}</a>
+      <a href={`mailto:${CONTACT_EMAIL}`}>{copy.footer.contact}</a>
+    </nav>
+
+    <p class="small faint">{copy.footer.notTreatment}</p>
+    <p class="small faint">{copy.footer.copyright(YEAR, LEGAL_NAME)}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--c-border);
+    padding-block: var(--space-2xl) var(--space-3xl);
+    margin-top: var(--space-4xl);
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md) var(--space-xl);
+    font-size: var(--type-small);
+  }
+
+  .footer-nav a {
+    color: var(--c-text-muted);
+    text-decoration: none;
+  }
+
+  .footer-nav a:hover {
+    color: var(--c-text);
+    text-decoration: underline;
+  }
+</style>

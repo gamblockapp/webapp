@@ -1,0 +1,166 @@
+---
+import { APP_NAME, CONTACT_EMAIL } from '../../config';
+import { path, t, type Locale } from '../../i18n';
+import Base from '../../layouts/Base.astro';
+import Prose from '../Prose.astro';
+
+/**
+ * The page App Store Connect's "Support URL" points at. It has to resolve and it
+ * has to offer a real way to reach a human, so the address is the first thing on
+ * it rather than the last.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = t(locale);
+const c = copy.support;
+const meta = copy.meta.support(APP_NAME);
+const faqs = c.faqs(APP_NAME);
+---
+
+<Base locale={locale} route="support" title={meta.title} description={meta.description}>
+  <div class="page support">
+    <!--
+      Two columns from 60rem up: the pitch on the left, the address in a card that
+      sticks alongside it on the right.
+
+      The single centred `--measure` column this replaced was the right call for a
+      legal document and the wrong one here — on a wide monitor it left the page
+      about a fifth full, with the one thing anybody comes to this page for
+      (the email address) below the fold of a mostly empty screen.
+    -->
+    <header class="support__top">
+      <div class="support__intro stack">
+        <h1 class="display-sm">{c.title}</h1>
+        <p class="support__lead muted">{c.intro(APP_NAME)}</p>
+        <p class="small">
+          {c.crisisLead} <a href={path(locale, 'help')}>{c.crisisLink}</a>
+        </p>
+      </div>
+
+      <div class="card card--interactive contact">
+        <p class="eyebrow">{c.emailLead}</p>
+        <p class="contact__address">
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        </p>
+        <p class="small muted">{c.responseNote}</p>
+      </div>
+    </header>
+
+    <section class="support__section reveal">
+      <h2 class="title">{c.faqTitle}</h2>
+      <!-- Two columns of answers rather than one long scroll. `masonry`-free: a
+           plain grid with `align-items: start` so short answers don't stretch. -->
+      <dl class="faq reveal-group">
+        {
+          faqs.map((faq) => (
+            <div class="faq__item">
+              <dt class="heading">{faq.q}</dt>
+              <dd>
+                <Prose blocks={faq.a} />
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <!-- Heading beside its content rather than above it, so this last short
+         section doesn't leave half the page empty the way the FAQ grid doesn't. -->
+    <section class="support__section support__section--split reveal">
+      <h2 class="title">{c.bugTitle}</h2>
+      <div class="support__blocks">
+        <Prose blocks={c.bugBlocks} />
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .support {
+    padding-block: var(--space-3xl) var(--space-2xl);
+  }
+
+  .support__top {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  @media (min-width: 60rem) {
+    .support__top {
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--space-4xl);
+    }
+
+    .contact {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+
+  .support__intro {
+    max-width: var(--measure);
+  }
+
+  .support__lead {
+    font-family: var(--font-serif);
+    font-size: clamp(1.125rem, 1.8vw, 1.375rem);
+    line-height: 1.5;
+  }
+
+  .contact__address {
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-md);
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    word-break: break-word;
+  }
+
+  .support__section {
+    margin-top: var(--space-4xl);
+    padding-top: var(--space-2xl);
+    border-top: 1px solid var(--c-border);
+  }
+
+  .faq {
+    margin-top: var(--space-xl);
+    display: grid;
+    gap: var(--space-2xl) var(--space-4xl);
+    align-items: start;
+  }
+
+  @media (min-width: 56rem) {
+    .faq {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .faq__item dt {
+    max-width: var(--measure);
+  }
+
+  .faq__item dd {
+    margin-top: var(--space-sm);
+    color: var(--c-text-muted);
+  }
+
+  .support__blocks {
+    margin-top: var(--space-lg);
+  }
+
+  @media (min-width: 60rem) {
+    .support__section--split {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: var(--space-4xl);
+      align-items: start;
+    }
+
+    .support__section--split .support__blocks {
+      margin-top: 0;
+    }
+  }
+</style>

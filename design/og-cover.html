@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      /* Light palette, lifted from src/styles/tokens.css. Georgia is a system
+         face on every platform that renders these cards, so nothing loads. */
+      :root {
+        --c-bg: #fbfaf8;
+        --c-surface-alt: #f4f2ee;
+        --c-border: #e3dfd8;
+        --c-text: #1e1c1a;
+        --c-text-muted: #5f5a54;
+        --c-accent: #2f5d4f;
+        --c-accent-soft: #eaf2ee;
+        --font-serif: Georgia, 'Times New Roman', serif;
+        --font-sans: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse 80% 65% at 12% 0%, var(--c-accent-soft), transparent 70%),
+          linear-gradient(var(--c-surface-alt), var(--c-bg));
+        font-family: var(--font-sans);
+        color: var(--c-text);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 72px 80px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .wordmark {
+        font-family: var(--font-serif);
+        font-size: 34px;
+        letter-spacing: -0.01em;
+      }
+
+      .catchline {
+        font-family: var(--font-serif);
+        font-size: 82px;
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        max-width: 15ch;
+      }
+
+      .foot {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 32px;
+        padding-top: 28px;
+        border-top: 1px solid var(--c-border);
+      }
+
+      .tagline {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--c-accent);
+      }
+
+      .note {
+        font-size: 19px;
+        color: var(--c-text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <p class="wordmark">Sonar</p>
+    <h1 class="catchline">Know which nights are coming.</h1>
+    <div class="foot">
+      <p class="tagline">A companion for stopping gambling</p>
+      <p class="note">trysonarapp.com</p>
+    </div>
+  </body>
+</html>

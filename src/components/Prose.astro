@@ -1,0 +1,88 @@
+---
+import type { Block } from '../i18n';
+
+/**
+ * Renders the three block kinds the copy modules are allowed to produce.
+ *
+ * Keeping the vocabulary this small is the point: legal and FAQ copy lives in
+ * `src/i18n/*` as data, so no page can smuggle markup or an unreviewed claim
+ * into a document by writing HTML inline. If a document needs a fourth kind of
+ * block, add it to the `Block` union first and both locales will be forced to
+ * account for it.
+ */
+interface Props {
+  blocks: Block[];
+}
+
+const { blocks } = Astro.props;
+---
+
+{
+  blocks.map((block) =>
+    'p' in block ? (
+      <p class="prose-p">{block.p}</p>
+    ) : 'ul' in block ? (
+      <ul class="prose-list">
+        {block.ul.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    ) : (
+      <p class="prose-note">{block.note}</p>
+    ),
+  )
+}
+
+<style>
+  .prose-p,
+  .prose-list,
+  .prose-note {
+    max-width: var(--measure);
+    /* Long legal paragraphs at a 34rem measure produce a lot of short last lines
+       and the occasional orphan. Ignored where unsupported. */
+    text-wrap: pretty;
+  }
+
+  .prose-p + .prose-p,
+  .prose-p + .prose-list,
+  .prose-list + .prose-p,
+  .prose-p + .prose-note,
+  .prose-list + .prose-note,
+  .prose-note + .prose-p {
+    margin-top: var(--space-lg);
+  }
+
+  .prose-list {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .prose-list li {
+    position: relative;
+    padding-left: var(--space-xl);
+  }
+
+  .prose-list li::before {
+    content: '';
+    position: absolute;
+    left: var(--space-xs);
+    top: 0.65em;
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    background: var(--c-border-strong);
+  }
+
+  /*
+   * A note is a limitation, a gap, or something the reader would rather not
+   * find out later. Set apart so it can't be skimmed past — but in the neutral
+   * surface tone, not the danger clay. It's information, not a warning.
+   */
+  .prose-note {
+    background: var(--c-surface-alt);
+    border-left: 2px solid var(--c-border-strong);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: var(--space-lg);
+    max-width: calc(var(--measure) + var(--space-xl));
+  }
+</style>

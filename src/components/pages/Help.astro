@@ -1,0 +1,246 @@
+---
+import { APP_NAME } from '../../config';
+import { EMERGENCY_NUMBERS, helplineRegionsFor } from '../../data/helplines';
+import { t, type Locale } from '../../i18n';
+import Base from '../../layouts/Base.astro';
+
+/**
+ * The public mirror of the app's crisis screen.
+ *
+ * Not an App Store requirement — it exists because the duty-of-care section of
+ * the plan says jurisdiction-appropriate crisis resources must always be
+ * reachable, and someone can land on this site without ever installing anything.
+ *
+ * Two things this page must keep doing:
+ *
+ * - **Emergency numbers first, readable in one glance.** Not below the fold, not
+ *   after the explanation.
+ * - **`tel:` links on every number, and the number written out in full.** A
+ *   browser that won't dial still shows something someone can key in by hand.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = t(locale);
+const c = copy.help;
+const meta = copy.meta.help(APP_NAME);
+const regions = helplineRegionsFor(locale);
+---
+
+<Base locale={locale} route="help" title={meta.title} description={meta.description}>
+  <div class="page help">
+    <header class="stack help__header">
+      <h1 class="display-sm">{c.title}</h1>
+      <p>{c.intro}</p>
+      <p class="small muted">{c.languageNote}</p>
+    </header>
+
+    <section class="emergency" aria-labelledby="emergency-heading">
+      <h2 class="heading" id="emergency-heading">{c.emergencyTitle}</h2>
+      <p class="small">{c.emergencyBody}</p>
+      <ul class="emergency__list">
+        {
+          EMERGENCY_NUMBERS.map((n) => (
+            <li>
+              <a
+                class="emergency__number"
+                href={`tel:${n.dial}`}
+                aria-label={c.callLabel(n.display, n.what[locale], n.where[locale])}
+              >
+                {n.display}
+              </a>
+              <span class="small emergency__what">
+                {n.what[locale]} · {n.where[locale]}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    {
+      regions.map((region) => (
+        <section class="region reveal">
+          <h2 class="title region__title">{region.title[locale]}</h2>
+          <ul class="services reveal-group">
+            {region.services.map((service) => (
+              <li class="card card--interactive service">
+                <h3 class="heading">{service.name}</h3>
+                <p class="small muted service__what">{service.what[locale]}</p>
+                <ul class="contacts">
+                  {service.contacts.map((contact) =>
+                    contact.kind === 'phone' ? (
+                      <li>
+                        <a
+                          class="contact-link contact-link--phone"
+                          href={`tel:${contact.dial}`}
+                          aria-label={c.call(contact.display)}
+                        >
+                          {contact.display}
+                        </a>
+                        {contact.note && <span class="small faint">{contact.note[locale]}</span>}
+                      </li>
+                    ) : (
+                      <li>
+                        <a
+                          class="contact-link"
+                          href={contact.url}
+                          rel="noopener noreferrer"
+                          aria-label={c.open(contact.display)}
+                        >
+                          {contact.display}
+                        </a>
+                        {contact.note && <span class="small faint">{contact.note[locale]}</span>}
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+
+    <footer class="help__notes stack">
+      <p class="small faint">{c.checked}</p>
+      <p class="small faint">{c.notTreatment}</p>
+    </footer>
+  </div>
+</Base>
+
+<style>
+  .help {
+    padding-block: var(--space-3xl) var(--space-2xl);
+  }
+
+  .help__header {
+    max-width: var(--measure);
+  }
+
+  /* Danger clay, used here for the one thing on this site that is genuinely
+     urgent. Still muted — an alarm red would read as a warning about the reader
+     rather than a route out. */
+  .emergency {
+    margin-top: var(--space-2xl);
+    padding: var(--space-xl);
+    background: var(--c-danger-soft);
+    border: 1px solid var(--c-danger);
+    border-radius: var(--radius-lg);
+    max-width: 46rem;
+  }
+
+  .emergency .heading {
+    color: var(--c-danger);
+  }
+
+  .emergency .small {
+    margin-top: var(--space-sm);
+    max-width: var(--measure);
+  }
+
+  .emergency__list {
+    margin-top: var(--space-lg);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg) var(--space-2xl);
+  }
+
+  .emergency__list li {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .emergency__number {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    line-height: 1.1;
+    color: var(--c-danger);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+    /* 48px minimum tap target — this is the link most likely to be pressed in a
+       hurry, on a phone, by someone not aiming carefully. The comment said 48
+       and the value said 40; the comment was right, and this is the one number on
+       the site where the difference is not cosmetic. */
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .emergency__number:hover {
+    text-decoration: underline;
+  }
+
+  .emergency__what {
+    color: var(--c-text-muted);
+  }
+
+  .region {
+    margin-top: var(--space-4xl);
+  }
+
+  .region__title {
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .services {
+    margin-top: var(--space-xl);
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  @media (min-width: 52rem) {
+    .services {
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    }
+  }
+
+  .service__what {
+    margin-top: var(--space-sm);
+  }
+
+  .contacts {
+    margin-top: var(--space-lg);
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .contacts li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .contact-link {
+    font-weight: 600;
+    color: var(--c-accent);
+    text-decoration: none;
+    font-variant-numeric: tabular-nums;
+    align-self: flex-start;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* A helpline number is dialled under the same conditions as an emergency one,
+     so it gets the same target. Website links keep the tighter 32px — a mistyped
+     tap on a URL costs a back button, not a call that didn't happen. */
+  .contact-link--phone {
+    font-size: 1.125rem;
+    min-height: 48px;
+  }
+
+  .contact-link:hover {
+    text-decoration: underline;
+  }
+
+  .help__notes {
+    margin-top: var(--space-4xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--c-border);
+    max-width: var(--measure);
+  }
+</style>

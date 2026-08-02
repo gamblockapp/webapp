@@ -1,0 +1,816 @@
+---
+import { APP_NAME, APP_STORE_URL } from '../../config';
+import { path, t, type Locale } from '../../i18n';
+import Base from '../../layouts/Base.astro';
+
+/**
+ * The landing page.
+ *
+ * Composition notes, because they were decisions rather than defaults:
+ *
+ * - **The product is in the hero.** A home-screen mock-up sits beside the
+ *   headline instead of three screens down. Someone deciding whether to install
+ *   this needs to see what it looks like before reading an argument about the
+ *   house edge.
+ * - **Sections alternate tinted and untinted full-bleed bands.** A page of
+ *   hairline rules over one flat background is what made the first version read
+ *   as a document rather than a site.
+ * - **The sonar sweep is the one bit of decoration that argues.** The app reads
+ *   what is ahead; rings leaving the phone say that faster than the paragraph
+ *   underneath does. It is also the app's name, so it is branding for free.
+ * - **Motion is allowed here now, with one exception.** See AGENTS.md: the "no
+ *   motion at all" rule was lifted for the website. The exception that survived
+ *   it is the money figure — it is what somebody lost, and rolling it upward like
+ *   a jackpot counter would make a joke of the one number on this page that is
+ *   supposed to land. It is styled large and left completely still.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const copy = t(locale);
+const c = copy.landing;
+const meta = copy.meta.home(APP_NAME);
+
+/** Ties each band label to its palette tone, in the app's own order. */
+const BAND_TONES = ['low', 'elevated', 'high'] as const;
+---
+
+<Base locale={locale} route="home" title={meta.title} description={meta.description}>
+  <!-- Hero. The headline says what the app does; the hook, one line down, says
+       why. Leading with the hook read as a verdict on the reader. -->
+  <section class="hero">
+    <div class="page hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow hero__tagline">{c.tagline}</p>
+        <h1 class="display hero__catchline">{c.catchline}</h1>
+
+        <p class="hero__hook">
+          <strong>{c.hook}</strong> <span class="muted">{c.line1}</span>
+        </p>
+
+        <p class="hero__lead">{c.lead(APP_NAME)}</p>
+
+        <ul class="chips" aria-label={c.tagline}>
+          {c.refusalList.map((refusal) => <li class="chip">{refusal}</li>)}
+        </ul>
+
+        <div class="hero__cta">
+          {
+            APP_STORE_URL ? (
+              <a class="button" href={APP_STORE_URL}>
+                {c.download}
+              </a>
+            ) : (
+              <p class="badge">{c.comingSoon}</p>
+            )
+          }
+          <p class="small faint">{c.comingSoonNote}</p>
+        </div>
+      </div>
+
+      <!-- Invariant 2: the band never appears without the reasons under it. -->
+      <figure class="hero__mock">
+        <!--
+          The sonar sweep, and the reason it earns its place: the app is called
+          Sonar, and what it does is read what's ahead rather than tot up what's
+          behind. Rings leaving the phone is that idea, and it is the one piece of
+          decoration here that is also an explanation. Purely presentational, so
+          it is hidden from assistive tech.
+        -->
+        <div class="sonar" aria-hidden="true">
+          <span class="sonar__sweep"></span>
+          <span class="sonar__ring"></span>
+          <span class="sonar__ring"></span>
+          <span class="sonar__ring"></span>
+        </div>
+
+        <div class="phone">
+          <div class="phone__chrome">
+            <span class="phone__name">{APP_NAME}</span>
+            <span class="phone__day">{c.mock.day}</span>
+          </div>
+          <div class="forecast">
+            <p class="eyebrow forecast__eyebrow">{c.mock.eyebrow}</p>
+            <p class="forecast__band">{c.mock.band}</p>
+            <ul class="forecast__reasons">
+              {c.mock.reasons.map((reason) => <li>{reason}</li>)}
+            </ul>
+          </div>
+        </div>
+        <figcaption class="small faint phone__caption">{c.mock.caption}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- The forecast, explained. -->
+  <section class="band band--tint reveal">
+    <div class="page feature">
+      <div class="feature__copy">
+        <p class="eyebrow accent">{c.forecast.eyebrow}</p>
+        <h2 class="title feature__title">{c.forecast.title}</h2>
+        <p>{c.forecast.body}</p>
+      </div>
+
+      <div class="feature__aside">
+        <p class="eyebrow">{c.forecast.bandsEyebrow}</p>
+        <ul class="bands reveal-group">
+          {
+            c.forecast.bands.map((label, i) => (
+              <li class={`bands__item bands__item--${BAND_TONES[i]}`}>{label}</li>
+            ))
+          }
+        </ul>
+        <p class="small muted feature__caption">{c.forecast.caption}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The slip flow. The precise claim, never the stronger one. -->
+  <section class="band reveal">
+    <div class="page feature">
+      <div class="feature__copy">
+        <p class="eyebrow accent">{c.slip.eyebrow}</p>
+        <h2 class="title feature__title">{c.slip.title}</h2>
+        <p>{c.slip.body}</p>
+      </div>
+
+      <div class="feature__aside">
+        <blockquote class="quote">
+          <p>{c.slip.precise}</p>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- Money. The example is labelled as an example, out loud. -->
+  <section class="band band--tint reveal">
+    <div class="page feature">
+      <div class="feature__copy">
+        <p class="eyebrow accent">{c.money.eyebrow}</p>
+        <h2 class="title feature__title">{c.money.title}</h2>
+        <p>{c.money.body}</p>
+      </div>
+
+      <div class="feature__aside">
+        <div class="card">
+          <p class="eyebrow">{c.money.exampleEyebrow}</p>
+          <p class="example">{c.money.example}</p>
+        </div>
+        <p class="small muted feature__caption">{c.money.caveat}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band reveal">
+    <div class="page">
+      <p class="eyebrow accent">{c.trio.eyebrow}</p>
+      <ul class="trio reveal-group">
+        {
+          c.trio.items.map((item, i) => (
+            <li class="trio__item">
+              <p class="trio__num">{String(i + 1).padStart(2, '0')}</p>
+              <h3 class="heading">{item.title}</h3>
+              <p class="small muted">{item.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="trio__free">{c.trio.free}</p>
+    </div>
+  </section>
+
+  <!-- Privacy, and the gap that comes with it. The gap is on the landing page
+       on purpose: better read here than discovered after a phone upgrade. -->
+  <section class="band band--accent reveal">
+    <div class="page feature">
+      <div class="feature__copy">
+        <p class="eyebrow">{c.privacy.eyebrow}</p>
+        <h2 class="display-sm feature__title">{c.privacy.title}</h2>
+        <p>{c.privacy.body}</p>
+        <p class="small privacy__analytics">{c.privacy.analytics}</p>
+        <p class="privacy__link">
+          <a href={path(locale, 'privacy')} class="small">{c.privacy.readPolicy} →</a>
+        </p>
+      </div>
+
+      <div class="feature__aside">
+        <div class="card gap">
+          <p class="eyebrow">{c.privacy.gapTitle}</p>
+          <p class="small">{c.privacy.gap}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- What it isn't. Load-bearing: the not-treatment and doesn't-block
+       disclaimers both live here, as plain statements rather than small print. -->
+  <section class="band reveal">
+    <div class="page close">
+      <p class="eyebrow accent">{c.close.eyebrow}</p>
+      <h2 class="title feature__title">{c.close.title}</h2>
+      <ul class="close__list reveal-group">
+        {c.close.items.map((item) => <li>{item}</li>)}
+      </ul>
+      <p class="close__help">
+        {c.close.helpLead}{' '}
+        <a href={path(locale, 'help')}>{c.close.helpLink} →</a>
+      </p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .accent {
+    color: var(--c-accent);
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(var(--c-surface-alt), var(--c-bg));
+    border-bottom: 1px solid var(--c-border);
+    padding-block: var(--space-4xl) var(--space-5xl);
+  }
+
+  /*
+   * The warm off-centre wash, now on its own layer so it can drift.
+   *
+   * This reverses the note that used to sit here — "Static: it is depth, not
+   * motion" — so it should say why. One cycle is 72 seconds and the whole travel
+   * is 3% of the viewport: slower than a reader will consciously track, and much
+   * closer to light moving across a room than to anything on a screen. It is not
+   * triggered, it does not respond to the reader, and it never arrives anywhere,
+   * which is what keeps it clear of invariant 3 — there is no moment in the cycle
+   * that reads as a result.
+   *
+   * The layer is oversized and `overflow` is clipped, so the gradient's soft edge
+   * never travels into view.
+   */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: -8% -8% auto -8%;
+    height: 130%;
+    z-index: -1;
+    background: radial-gradient(ellipse 80% 60% at 15% 0%, var(--c-accent-soft), transparent 70%);
+    animation: hero-wash 72s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-wash {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(3%, 1.5%, 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero::before {
+      animation: none;
+    }
+  }
+
+  .hero__grid {
+    display: grid;
+    gap: var(--space-4xl);
+    align-items: center;
+  }
+
+  @media (min-width: 62rem) {
+    .hero__grid {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--space-5xl);
+    }
+  }
+
+  .hero__tagline {
+    color: var(--c-accent);
+  }
+
+  /*
+   * The headline, with the last line picked out in the accent.
+   *
+   * A gradient across the whole thing turned the serif thin and muddy where it
+   * met the background; running it only through the tail keeps the contrast
+   * honest and puts the emphasis where the sentence lands anyway.
+   *
+   * Vertical, not diagonal. A horizontal ramp put the accent on whichever word
+   * happened to sit top-right — "which", as it turned out — whereas top-to-bottom
+   * always lands it on the last line, at any width and any line count. The
+   * headline re-wraps from three lines to one across the clamp range, so this
+   * needed to be a rule rather than a lucky break.
+   */
+  .hero__catchline {
+    margin-top: var(--space-md);
+    text-wrap: balance;
+    background: linear-gradient(
+      178deg,
+      var(--c-text) 0%,
+      var(--c-text) 46%,
+      var(--c-accent) 104%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    /* Descenders on Georgia clip against a tight box. */
+    padding-bottom: 0.08em;
+  }
+
+  .hero__hook {
+    margin-top: var(--space-xl);
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    line-height: 1.4;
+    max-width: var(--measure);
+  }
+
+  .hero__hook strong {
+    font-weight: 400;
+  }
+
+  .hero__lead {
+    margin-top: var(--space-lg);
+    max-width: var(--measure);
+    color: var(--c-text-muted);
+  }
+
+  /* The three refusals as chips — mirrors the app's own Chip component, and
+     reads as three confident statements rather than one flat sentence. */
+  .chips {
+    margin-top: var(--space-xl);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .chip {
+    padding: var(--space-sm) var(--space-lg);
+    border: 1px solid var(--c-border-strong);
+    border-radius: var(--radius-pill);
+    background: var(--c-surface);
+    font-size: var(--type-small);
+    font-weight: 600;
+  }
+
+  .hero__cta {
+    margin-top: var(--space-2xl);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md) var(--space-lg);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: var(--space-md) var(--space-xl);
+    border: 1px solid var(--c-accent);
+    border-radius: var(--radius-pill);
+    color: var(--c-accent);
+    font-size: var(--type-small);
+    font-weight: 600;
+  }
+
+  /* ---------- The home-screen mock-up ---------- */
+
+  .hero__mock {
+    margin: 0;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* ---------- The sonar sweep ---------- */
+
+  .sonar {
+    position: absolute;
+    /* Centred on the phone and much larger than it, so the rings read as leaving
+       the device rather than framing it. */
+    top: 50%;
+    left: 50%;
+    width: min(42rem, 175%);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    z-index: -1;
+    pointer-events: none;
+    /*
+     * Fades to nothing before it reaches its own bounding box.
+     *
+     * Without this the sweep was still at full strength where `.hero`'s
+     * `overflow: hidden` cut it off, which put a hard diagonal edge across the
+     * top-right of the page that read as a rendering bug. The clip still happens;
+     * there is just nothing left to clip by then.
+     */
+    mask: radial-gradient(circle, black 52%, transparent 88%);
+  }
+
+  .sonar__ring,
+  .sonar__sweep {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+
+  .sonar__ring {
+    border: 1px solid var(--c-accent);
+    opacity: 0;
+    animation: sonar-ping 9s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
+  }
+
+  /* Three rings on one 9s cycle, evenly offset, so a ring leaves every three
+     seconds and the sequence never bunches up. Negative delays start the cycle
+     already in progress rather than with an empty first nine seconds. */
+  .sonar__ring:nth-child(2) {
+    animation-delay: -6s;
+  }
+
+  .sonar__ring:nth-child(3) {
+    animation-delay: -3s;
+  }
+
+  @keyframes sonar-ping {
+    0% {
+      transform: scale(0.28);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.62;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  /*
+   * The rotating wedge. A conic gradient turning once every 24 seconds — slow
+   * enough to be atmosphere rather than a spinner, and masked to a soft ring so
+   * it has no hard outer edge to give the trick away.
+   */
+  .sonar__sweep {
+    /*
+     * Both ends of the wedge are transparent, which is the whole trick. Starting
+     * the gradient *at* the colour meant 0deg and 100% were different values, and
+     * a conic gradient joins those two directly — so the seam showed up as a hard
+     * radial line across the top-right corner. Fading in and back out leaves
+     * nothing at the join.
+     */
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      color-mix(in srgb, var(--c-accent) 30%, transparent) 9%,
+      transparent 27%,
+      transparent 100%
+    );
+    mask: radial-gradient(circle, transparent 26%, black 55%, transparent 78%);
+    animation: sonar-sweep 24s linear infinite;
+  }
+
+  @keyframes sonar-sweep {
+    to {
+      rotate: 1turn;
+    }
+  }
+
+  /*
+   * Reduced motion keeps the sonar, it just stops it moving. Removing it outright
+   * was the first attempt and it was the wrong trade: asking for less movement
+   * isn't asking to be shown a plainer product, and the rings are the only place
+   * the name is explained. Frozen mid-cycle at three fixed radii instead.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .sonar__ring,
+    .sonar__sweep {
+      animation: none;
+    }
+
+    .sonar__ring {
+      opacity: 0.4;
+    }
+
+    .sonar__ring:nth-child(2) {
+      scale: 0.72;
+    }
+
+    .sonar__ring:nth-child(3) {
+      scale: 0.44;
+    }
+  }
+
+  .phone {
+    position: relative;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg);
+    max-width: 24rem;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .phone__chrome {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .phone__name {
+    font-family: var(--font-serif);
+    font-size: 1.0625rem;
+  }
+
+  .phone__day {
+    font-size: var(--type-small);
+    color: var(--c-text-subtle);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .phone__caption {
+    margin-top: var(--space-md);
+    max-width: 24rem;
+    text-align: center;
+  }
+
+  .forecast {
+    position: relative;
+    background: var(--c-risk-elevated-bg);
+    border: 1px solid var(--c-risk-elevated-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+  }
+
+  /* A halo in the band's own tone, so the card the whole page is about looks lit
+     from behind rather than pasted on. Tone follows the band, so it would go clay
+     on a high-risk mock-up without any extra rules. */
+  .forecast::before {
+    content: '';
+    position: absolute;
+    inset: -18%;
+    z-index: -1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--c-risk-elevated-fg) 22%, transparent),
+      transparent 68%
+    );
+    /* Breathes once every 11 seconds, barely. Ambient, not a pulse that resolves. */
+    animation: forecast-glow 11s ease-in-out infinite alternate;
+  }
+
+  @keyframes forecast-glow {
+    from {
+      opacity: 0.55;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .forecast::before {
+      animation: none;
+    }
+  }
+
+  .forecast__eyebrow {
+    color: var(--c-risk-elevated-fg);
+    opacity: 0.8;
+  }
+
+  .forecast__band {
+    margin-top: var(--space-xs);
+    font-family: var(--font-serif);
+    font-size: 1.875rem;
+    line-height: 1.1;
+    color: var(--c-risk-elevated-fg);
+  }
+
+  .forecast__reasons {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--c-risk-elevated-border);
+    display: grid;
+    gap: var(--space-md);
+    font-size: var(--type-small);
+  }
+
+  .forecast__reasons li {
+    padding-left: var(--space-lg);
+    position: relative;
+  }
+
+  .forecast__reasons li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 7px;
+    height: 1px;
+    background: var(--c-risk-elevated-fg);
+  }
+
+  /* ---------- Section bands ---------- */
+
+  .band {
+    padding-block: var(--space-4xl);
+  }
+
+  .band--tint {
+    background: var(--c-surface-alt);
+  }
+
+  /* Used once, for the privacy section — the claim the whole architecture is
+     built around gets the one coloured band on the page. */
+  .band--accent {
+    background: var(--c-accent-soft);
+    border-block: 1px solid var(--c-risk-low-border);
+  }
+
+  .feature {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: start;
+  }
+
+  @media (min-width: 56rem) {
+    .feature {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4xl);
+    }
+  }
+
+  .feature__title {
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    text-wrap: balance;
+  }
+
+  .feature__copy p {
+    max-width: var(--measure);
+  }
+
+  .feature__caption {
+    margin-top: var(--space-lg);
+  }
+
+  /* ---------- Risk bands ---------- */
+
+  .bands {
+    margin-top: var(--space-md);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .bands__item {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-pill);
+    font-size: var(--type-small);
+    font-weight: 600;
+    border: 1px solid;
+  }
+
+  .bands__item--low {
+    color: var(--c-risk-low-fg);
+    background: var(--c-risk-low-bg);
+    border-color: var(--c-risk-low-border);
+  }
+
+  .bands__item--elevated {
+    color: var(--c-risk-elevated-fg);
+    background: var(--c-risk-elevated-bg);
+    border-color: var(--c-risk-elevated-border);
+  }
+
+  .bands__item--high {
+    color: var(--c-risk-high-fg);
+    background: var(--c-risk-high-bg);
+    border-color: var(--c-risk-high-border);
+  }
+
+  /* ---------- Quote ---------- */
+
+  .quote {
+    margin: 0;
+    padding-left: var(--space-xl);
+    border-left: 2px solid var(--c-accent);
+  }
+
+  .quote p {
+    font-family: var(--font-serif);
+    font-size: 1.1875rem;
+    line-height: 1.55;
+  }
+
+  /* Bigger, and deliberately motionless. See the note at the top of this file. */
+  .example {
+    margin-top: var(--space-sm);
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---------- Trio ---------- */
+
+  .trio {
+    margin-top: var(--space-xl);
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  @media (min-width: 48rem) {
+    .trio {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Much larger, and fading out as it descends — the numbers are wayfinding, so
+     they should be the thing the eye lands on in this band. */
+  .trio__num {
+    font-family: var(--font-serif);
+    font-size: clamp(2.75rem, 5vw, 4rem);
+    line-height: 0.9;
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--c-border);
+    background: linear-gradient(
+      165deg,
+      var(--c-accent) 20%,
+      color-mix(in srgb, var(--c-accent) 35%, transparent) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .trio__item h3 {
+    margin-bottom: var(--space-sm);
+  }
+
+  .trio__free {
+    margin-top: var(--space-2xl);
+    max-width: var(--measure);
+    font-size: var(--type-small);
+    color: var(--c-text-muted);
+  }
+
+  /* ---------- Privacy ---------- */
+
+  .privacy__analytics {
+    margin-top: var(--space-lg);
+    color: var(--c-text-muted);
+  }
+
+  .privacy__link {
+    margin-top: var(--space-lg);
+  }
+
+  .gap {
+    background: var(--c-surface);
+  }
+
+  .gap .small {
+    margin-top: var(--space-sm);
+  }
+
+  /* ---------- Close ---------- */
+
+  .close {
+    max-width: 46rem;
+  }
+
+  .close__list {
+    display: grid;
+    gap: var(--space-lg);
+    color: var(--c-text-muted);
+  }
+
+  .close__list li {
+    padding-left: var(--space-xl);
+    position: relative;
+  }
+
+  .close__list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 11px;
+    height: 1px;
+    background: var(--c-accent);
+  }
+
+  .close__help {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--c-border);
+    font-size: var(--type-small);
+  }
+</style>

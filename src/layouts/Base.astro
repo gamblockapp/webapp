@@ -1,0 +1,227 @@
+---
+import '../styles/base.css';
+
+import Footer from '../components/Footer.astro';
+import { APP_NAME, SITE_URL } from '../config';
+import { alternates, otherLocale, path, t, type Locale, type RouteKey } from '../i18n';
+
+/**
+ * The shell every page uses. Owns <head>, the header and the footer.
+ *
+ * `route` is not decoration: it drives the canonical URL, the `hreflang`
+ * alternates and the language switcher's target, all read from the one routing
+ * table. A page that passes the wrong key gets the wrong canonical, so the type
+ * is narrow on purpose.
+ */
+interface Props {
+  locale: Locale;
+  route: RouteKey;
+  title: string;
+  description: string;
+}
+
+const { locale, route, title, description } = Astro.props;
+const copy = t(locale);
+const other = otherLocale(locale);
+
+const canonical = new URL(path(locale, route), SITE_URL).href;
+
+/**
+ * Two images, because the two consumers want different shapes and one file was
+ * being asked to be both.
+ *
+ * `og-cover.png` is 1200×630, the ratio every unfurler crops to — a square was
+ * getting centre-cropped to a band across the middle of the icon. `og-icon.png`
+ * stays square because that is what `apple-touch-icon` is.
+ *
+ * The cover is generated from `design/og-cover.html`, which carries the app name
+ * in it. Renaming the app means re-rendering it; see the README.
+ */
+const ogImage = new URL('/og-cover.png', SITE_URL).href;
+---
+
+<html lang={copy.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    {
+      alternates(route).map((alt) => (
+        <link rel="alternate" hreflang={alt.locale} href={new URL(alt.href, SITE_URL).href} />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={new URL(path('en', route), SITE_URL).href} />
+
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/og-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={APP_NAME} />
+    <meta property="og:locale" content={locale === 'fr' ? 'fr_FR' : 'en_GB'} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <!-- Approved copy, not a fresh sentence: rule 1 applies to alt attributes
+         too, and this is what the card actually has printed on it. -->
+    <meta property="og:image:alt" content={`${APP_NAME} — ${copy.landing.tagline}`} />
+    <!-- `summary_large_image` now that there is a wide image to put in it. -->
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!--
+      No analytics, no fonts, no third-party anything. The privacy policy claims
+      this page sets no cookies and loads no external resources; adding a script
+      tag here would make that claim false, so don't.
+    -->
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">{copy.nav.skipToContent}</a>
+
+    <!--
+      Reading progress. Scrubbed by scroll position in CSS, so it carries no
+      state and needs no script. Presentational only — it duplicates the
+      scrollbar, which assistive tech already reports.
+    -->
+    <div class="progress" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <div class="page site-header__inner">
+        <a class="wordmark" href={path(locale, 'home')}>{APP_NAME}</a>
+
+        <nav class="site-nav" aria-label={copy.nav.primaryNavLabel}>
+          <a href={path(locale, 'help')} class="site-nav__link site-nav__link--help">
+            {copy.nav.help}
+          </a>
+          <a href={path(locale, 'support')} class="site-nav__link">{copy.nav.support}</a>
+          <a
+            href={path(other, route)}
+            class="site-nav__link"
+            lang={other}
+            hreflang={other}
+            aria-label={`${copy.nav.languageLabel}: ${t(other).localeName}`}
+          >
+            {t(other).localeName}
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <Footer locale={locale} />
+  </body>
+</html>
+
+<style>
+  /*
+   * Sticky, and that is a duty-of-care decision rather than a stylistic one.
+   * "Crisis resources stay reachable from every page" is in AGENTS.md; on a long
+   * page it was only reachable from the *top* of every page. Someone reading the
+   * money section at 1am shouldn't have to scroll back up to find the help link.
+   */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--c-border);
+    /*
+     * 93%, not the 86% this started at. The display face is large enough that a
+     * serif line passing underneath stayed readable through the blur, and two
+     * competing texts in the same band is exactly the kind of busy this site is
+     * trying not to be. Frosted, not transparent.
+     */
+    background: color-mix(in srgb, var(--c-bg) 93%, transparent);
+    backdrop-filter: blur(16px) saturate(1.4);
+    /* Held still while the document underneath crossfades — see the
+       view-transition block in base.css. */
+    view-transition-name: site-header;
+  }
+
+  /* Translucency is only safe where it can actually be blurred; without the
+     filter, hero copy would scroll through the header legibly enough to read. */
+  @supports not (backdrop-filter: blur(1px)) {
+    .site-header {
+      background: var(--c-bg);
+    }
+  }
+
+  /* Named separately from the header so the two crossfade independently: the
+     document changes, the furniture around it doesn't. */
+  main {
+    view-transition-name: page-content;
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    min-height: 64px;
+    flex-wrap: wrap;
+  }
+
+  .wordmark {
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    font-size: var(--type-small);
+  }
+
+  .site-nav__link {
+    position: relative;
+    color: var(--c-text-muted);
+    text-decoration: none;
+    padding-block: var(--space-sm);
+    transition: color var(--motion-fast) ease-out;
+  }
+
+  .site-nav__link:hover {
+    color: var(--c-text);
+  }
+
+  /*
+   * A 1px rule drawn in from the left, rather than an underline that snaps on.
+   *
+   * This is deliberately not the thing invariant 3 forbids. Nothing grows, the
+   * link doesn't scale, and there is no payoff at the end of it — it's a pointer
+   * telling you where the target is, and it retracts the moment you leave. The
+   * transform is on the rule, never on the link.
+   */
+  .site-nav__link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 2px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-base) ease-out;
+  }
+
+  .site-nav__link:hover::after,
+  .site-nav__link:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  /* Reachable from every page, in one tap, without being shouty about it. */
+  .site-nav__link--help {
+    color: var(--c-text);
+    font-weight: 600;
+  }
+</style>
