@@ -82,12 +82,24 @@ const copy = t(locale);
 </Base>
 
 <style>
+  /*
+   * Narrower than `--page-max`, and centred inside it.
+   *
+   * These two columns come to about 70rem — a 16rem list, the gap, and a document
+   * held to a readable measure. Letting them sit in the full 82rem just put the
+   * slack back on the right-hand side of the document, which is the problem the
+   * section list was added to solve. `.page` supplies the auto margins; this only
+   * has to tighten the width.
+   */
   .legal {
+    max-width: 70rem;
     padding-block: var(--space-3xl) var(--space-2xl);
   }
 
+  /* Matched to the document body below rather than to `--measure`, so the intro
+     and the sections share one left-to-right rhythm. */
   .legal__header {
-    max-width: var(--measure);
+    max-width: 42rem;
     padding-bottom: var(--space-xl);
     border-bottom: 1px solid var(--c-border);
   }
@@ -106,13 +118,13 @@ const copy = t(locale);
    *
    * `Prose.astro`'s styles are scoped, so they can't be reached from here — but
    * they resolve `max-width: var(--measure)`, and a custom property set on an
-   * ancestor cascades straight through the scoping. 40rem is around 88 characters,
+   * ancestor cascades straight through the scoping. 42rem is around 90 characters,
    * a little past the ideal for prose but right for a numbered reference document
    * that gets scanned more often than read start to finish, and it stops the
-   * document column from having 200px of dead space down its right-hand side.
+   * document column from having dead space down its right-hand side.
    */
   .legal__doc {
-    --measure: 40rem;
+    --measure: 42rem;
   }
 
   @media (min-width: 64rem) {

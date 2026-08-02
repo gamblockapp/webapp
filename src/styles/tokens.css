@@ -53,7 +53,16 @@
    * The ratios and the serif face are unchanged, so it still reads as the same
    * product — it just stops whispering.
    */
-  --type-display: clamp(2.75rem, 8.5vw, 5.5rem);
+  /*
+   * The 6.5vw middle term is the French headline's constraint, not a guess.
+   *
+   * The hero copy column is a fraction of the page, but the display size was
+   * scaling on raw viewport width — so between roughly 1000px and 1300px the type
+   * grew faster than the column holding it and "Personne n'est gagnant." broke over
+   * three lines. 6.5vw keeps it inside its column all the way down. The 2.75rem
+   * floor is reached below 677px either way, so phones are unaffected.
+   */
+  --type-display: clamp(2.75rem, 6.5vw, 5.5rem);
   --type-display-sm: clamp(2rem, 5vw, 3rem);
   --type-title: clamp(1.5rem, 3vw, 2rem);
   --type-heading: 1.1875rem;
@@ -76,7 +85,14 @@
   --shadow-lg: 0 4px 8px rgb(30 28 26 / 8%), 0 24px 56px rgb(30 28 26 / 14%);
 
   --measure: 34rem;
-  --page-max: 68rem;
+  /*
+   * Up from 68rem. At 68 the page sat in the middle of a 1440 screen with about
+   * 176px of margin each side, which read as timid — and it squeezed the hero copy
+   * column to ~515px, narrow enough that the French headline broke over three
+   * lines. `--measure` is unchanged, so paragraphs are still set to the same
+   * reading width; it is the containers that got wider, not the prose.
+   */
+  --page-max: 82rem;
 
   /* Light palette — mobile/theme/colors.ts, `light`. */
   --c-bg: #fbfaf8;

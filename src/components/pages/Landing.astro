@@ -697,11 +697,12 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
 
   /* ---------- The risk scale ---------- */
 
-  /* Held to the same width as the statement section below it. Across the full
-     68rem the three pills sat so far apart that the track between them read as
-     empty space rather than as a spectrum. */
+  /* Held to the same width as the statement section below it. Across the full page
+     width the three pills sit so far apart that the track between them reads as
+     empty space rather than as a spectrum. Scaled with `--page-max` when that went
+     from 68rem to 82rem, so the proportion is what it was. */
   .scale {
-    max-width: 52rem;
+    max-width: 62rem;
   }
 
   .scale__track {
@@ -758,7 +759,7 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
    * needs to align with its neighbours instead, `margin-inline: 0` is the change.
    */
   .statement {
-    max-width: 52rem;
+    max-width: 62rem;
   }
 
   .statement__title {
@@ -914,7 +915,7 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   /* ---------- Close ---------- */
 
   .close {
-    max-width: 58rem;
+    max-width: 68rem;
   }
 
   .close__list {
