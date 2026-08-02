@@ -39,13 +39,17 @@ const YEAR = 2026;
 <style>
   .site-footer {
     border-top: 1px solid var(--c-border);
-    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-block: var(--space-3xl);
     margin-top: var(--space-4xl);
+    /* Centred: there is no column structure down here for a left edge to line up
+       with, so ranged left it just looked like it had lost its other half. */
+    text-align: center;
   }
 
   .footer-nav {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--space-md) var(--space-xl);
     font-size: var(--type-small);
   }

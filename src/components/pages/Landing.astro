@@ -104,61 +104,67 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     </div>
   </section>
 
-  <!-- The forecast, explained. -->
+  <!--
+    The forecast, explained. Laid out as a scale rather than a column of prose:
+    the three bands are the whole idea, so they get the width and a track to sit
+    on. Still the band labels with their caption, never a score — invariant 2.
+  -->
   <section class="band band--tint reveal">
-    <div class="page feature">
+    <div class="page feature feature--stacked">
       <div class="feature__copy">
         <p class="eyebrow accent">{c.forecast.eyebrow}</p>
-        <h2 class="title feature__title">{c.forecast.title}</h2>
+        <h2 class="display-sm feature__title">{c.forecast.title}</h2>
         <p>{c.forecast.body}</p>
       </div>
 
-      <div class="feature__aside">
+      <div class="scale">
         <p class="eyebrow">{c.forecast.bandsEyebrow}</p>
-        <ul class="bands reveal-group">
-          {
-            c.forecast.bands.map((label, i) => (
-              <li class={`bands__item bands__item--${BAND_TONES[i]}`}>{label}</li>
-            ))
-          }
-        </ul>
-        <p class="small muted feature__caption">{c.forecast.caption}</p>
+        <div class="scale__track">
+          <ul class="bands reveal-group">
+            {
+              c.forecast.bands.map((label, i) => (
+                <li class={`bands__item bands__item--${BAND_TONES[i]}`}>{label}</li>
+              ))
+            }
+          </ul>
+        </div>
+        <p class="small muted scale__caption">{c.forecast.caption}</p>
       </div>
     </div>
   </section>
 
-  <!-- The slip flow. The precise claim, never the stronger one. -->
+  <!--
+    The slip flow. `precise` is the load-bearing sentence on this page — the one
+    that must not be tightened into the stronger, false claim — so it stops being
+    a pull-quote in a sidebar and becomes the section itself.
+  -->
   <section class="band reveal">
-    <div class="page feature">
-      <div class="feature__copy">
-        <p class="eyebrow accent">{c.slip.eyebrow}</p>
-        <h2 class="title feature__title">{c.slip.title}</h2>
-        <p>{c.slip.body}</p>
-      </div>
-
-      <div class="feature__aside">
-        <blockquote class="quote">
-          <p>{c.slip.precise}</p>
-        </blockquote>
-      </div>
+    <div class="page statement">
+      <p class="eyebrow accent">{c.slip.eyebrow}</p>
+      <h2 class="display-sm statement__title">{c.slip.title}</h2>
+      <blockquote class="statement__quote">
+        <p>{c.slip.precise}</p>
+      </blockquote>
+      <p class="small muted statement__body">{c.slip.body}</p>
     </div>
   </section>
 
-  <!-- Money. The example is labelled as an example, out loud. -->
+  <!-- Money. Mirrored, so the figure leads and the explanation follows it. The
+       example stays labelled as an example, out loud. -->
   <section class="band band--tint reveal">
-    <div class="page feature">
-      <div class="feature__copy">
-        <p class="eyebrow accent">{c.money.eyebrow}</p>
-        <h2 class="title feature__title">{c.money.title}</h2>
-        <p>{c.money.body}</p>
-      </div>
-
+    <div class="page feature feature--mirror">
       <div class="feature__aside">
-        <div class="card">
+        <div class="card money">
           <p class="eyebrow">{c.money.exampleEyebrow}</p>
           <p class="example">{c.money.example}</p>
         </div>
         <p class="small muted feature__caption">{c.money.caveat}</p>
+      </div>
+
+      <div class="feature__copy">
+        <p class="eyebrow accent">{c.money.eyebrow}</p>
+        <h2 class="title feature__title">{c.money.title}</h2>
+        <p>{c.money.body}</p>
       </div>
     </div>
   </section>
@@ -650,6 +656,128 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
       grid-template-columns: 1fr 1fr;
       gap: var(--space-4xl);
     }
+
+    /*
+     * Four sections in a row used to be this same two-column block with only the
+     * band tint changing, which is what made the middle of the page read as one
+     * long thing. Each now has its own shape: stacked, statement, mirrored, then
+     * the numbered trio. The variants are here rather than in `base.css` because
+     * nothing else on the site has this problem.
+     */
+    .feature--mirror {
+      /* The card is the point in this one, so it gets the wider column and comes
+         first. `order` rather than DOM order would leave the reading order wrong
+         for a screen reader, so the markup is already in this order. */
+      grid-template-columns: 1.05fr 0.95fr;
+    }
+  }
+
+  .feature--stacked {
+    grid-template-columns: 1fr;
+    gap: var(--space-3xl);
+  }
+
+  .feature--stacked .feature__copy {
+    max-width: 44rem;
+  }
+
+  .feature--stacked .feature__copy p {
+    max-width: 40rem;
+  }
+
+  /* ---------- The risk scale ---------- */
+
+  /* Held to the same width as the statement section below it. Across the full
+     68rem the three pills sat so far apart that the track between them read as
+     empty space rather than as a spectrum. */
+  .scale {
+    max-width: 52rem;
+  }
+
+  .scale__track {
+    position: relative;
+    margin-top: var(--space-lg);
+  }
+
+  /*
+   * A hairline running low → elevated → high, in the bands' own border tones, so
+   * the three pills read as points on a scale rather than three loose tags.
+   *
+   * Both the track and the spacing that justifies the pills across it are in the
+   * same query on purpose. Narrower than this the pills sit left and wrap, and a
+   * full-width rule behind them left a line dangling past "High risk" to the edge
+   * of the screen — so below 40rem there is no track at all, just three tags.
+   */
+  @media (min-width: 40rem) {
+    .scale__track::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        var(--c-risk-low-border),
+        var(--c-risk-elevated-border) 50%,
+        var(--c-risk-high-border)
+      );
+    }
+
+    .scale__track .bands {
+      margin-top: 0;
+      justify-content: space-between;
+      gap: var(--space-lg);
+    }
+  }
+
+  .scale__caption {
+    margin-top: var(--space-lg);
+    max-width: 40rem;
+  }
+
+  /* ---------- The slip statement ---------- */
+
+  /*
+   * Narrower than the other sections, and centred rather than ranged left —
+   * `.page` already supplies the `margin-inline: auto` that does it, so tightening
+   * `max-width` here is enough.
+   *
+   * It is the one section whose left edge doesn't line up with the rest, which is
+   * the intent: it's a pull-out, and the inset is what signals that. If it ever
+   * needs to align with its neighbours instead, `margin-inline: 0` is the change.
+   */
+  .statement {
+    max-width: 52rem;
+  }
+
+  .statement__title {
+    margin-top: var(--space-sm);
+    text-wrap: balance;
+  }
+
+  /*
+   * The precise sentence, at display weight. No left rule and no quote marks: it
+   * is not a testimonial, it is the claim the product is careful about, and it
+   * should look like the section rather than an aside inside it.
+   */
+  .statement__quote {
+    margin: var(--space-2xl) 0 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 2.6vw, 1.875rem);
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+
+  .statement__body {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--c-border);
+    max-width: 42rem;
+  }
+
+  .money .example {
+    max-width: 28rem;
   }
 
   .feature__title {
@@ -699,20 +827,6 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     color: var(--c-risk-high-fg);
     background: var(--c-risk-high-bg);
     border-color: var(--c-risk-high-border);
-  }
-
-  /* ---------- Quote ---------- */
-
-  .quote {
-    margin: 0;
-    padding-left: var(--space-xl);
-    border-left: 2px solid var(--c-accent);
-  }
-
-  .quote p {
-    font-family: var(--font-serif);
-    font-size: 1.1875rem;
-    line-height: 1.55;
   }
 
   /* Bigger, and deliberately motionless. See the note at the top of this file. */
@@ -790,13 +904,23 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   /* ---------- Close ---------- */
 
   .close {
-    max-width: 46rem;
+    max-width: 58rem;
   }
 
   .close__list {
     display: grid;
     gap: var(--space-lg);
     color: var(--c-text-muted);
+  }
+
+  /* Two columns, so the page doesn't end on a third narrow single-column stack.
+     These are the load-bearing disclaimers, so they stay at body size — the
+     column change is the only thing that moves. */
+  @media (min-width: 52rem) {
+    .close__list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xl) var(--space-4xl);
+    }
   }
 
   .close__list li {
