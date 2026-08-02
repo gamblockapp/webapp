@@ -55,8 +55,20 @@ const ogImage = new URL('/og-cover.png', SITE_URL).href;
     }
     <link rel="alternate" hreflang="x-default" href={new URL(path('en', route), SITE_URL).href} />
 
-    <link rel="icon" href="/favicon.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/og-icon.png" />
+    <!--
+      Three sizes of one mark, all resampled from `og-icon.png`, which is the
+      1024px master.
+
+      48px alone was the whole set before, which a 2× tab bar had to upscale — and
+      `apple-touch-icon` was pointed at the 1024px master itself, so adding a
+      bookmark to a home screen pulled 32KB to render 180px of it.
+
+      Not to be replaced with `../mobile/assets/favicon.png`: that file is still
+      Expo's template artwork, blue with the alignment guides visible in it.
+    -->
+    <link rel="icon" href="/favicon.png" sizes="48x48" type="image/png" />
+    <link rel="icon" href="/favicon-96.png" sizes="96x96" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={APP_NAME} />
