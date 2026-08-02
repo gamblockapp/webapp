@@ -45,11 +45,13 @@
         letter-spacing: -0.01em;
       }
 
+      /* Sized up from 82px: the catchline is three words now, and at the old size
+         it sat in the middle of the card looking like a caption. */
       .catchline {
         font-family: var(--font-serif);
-        font-size: 82px;
-        line-height: 1.04;
-        letter-spacing: -0.02em;
+        font-size: 132px;
+        line-height: 1.02;
+        letter-spacing: -0.03em;
         max-width: 15ch;
       }
 
@@ -78,7 +80,8 @@
   </head>
   <body>
     <p class="wordmark">Sonar</p>
-    <h1 class="catchline">Know which nights are coming.</h1>
+    <!-- Must match `landing.catchline` in src/i18n/en.ts. -->
+    <h1 class="catchline">See it coming.</h1>
     <div class="foot">
       <p class="tagline">A companion for stopping gambling</p>
       <p class="note">trysonarapp.com</p>

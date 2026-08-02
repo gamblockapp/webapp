@@ -68,8 +68,13 @@ export const fr = {
      * Voir la note dans en.ts : le titre dit ce que l'app fait, pas ce que le
      * lecteur est. `hook` reste sur la page, une ligne plus bas, là où il fait
      * son travail d'argument plutôt que de verdict.
+     *
+     * Un seul mot, et pas la traduction de l'anglais — « Vois-le venir » ne se dit
+     * pas. « Anticipe » porte la même idée en français courant, à l'impératif et au
+     * tutoiement comme le reste de la page. Ne promet aucun résultat : rien sur le
+     * fait d'arrêter, seulement sur le fait de voir venir. Règle 1.
      */
-    catchline: 'Sache quels soirs arrivent.',
+    catchline: 'Anticipe.',
     // mobile/i18n/fr/onboarding.ts → opening.hook / line1 / line2.
     hook: 'Personne n’est gagnant.',
     line1: 'Ni sur un an. Ni sur dix.',

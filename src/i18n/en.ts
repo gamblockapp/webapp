@@ -70,8 +70,16 @@ export const en = {
      * for *why*, one line down, where a reader who now knows what the app does
      * can take it. Leading with it made the page read as a verdict on the person
      * reading it, which is the one thing this product doesn't do.
+     *
+     * Three words on purpose. This was "Know which nights are coming", which
+     * repeated `lead` below almost exactly and also the `meta.home` title — so the
+     * largest text on the page was the only text that said nothing new. The short
+     * version leaves the explaining to the paragraph that was already doing it.
+     *
+     * It is deliberately about seeing, not about stopping: it describes what the
+     * app shows you and promises nothing about the outcome. Rule 1.
      */
-    catchline: 'Know which nights are coming.',
+    catchline: 'See it coming.',
     // mobile/i18n/en/onboarding.ts → opening.hook / line1 / line2.
     // Aimed at gambling, not at the reader: the page promises no lectures a few
     // lines further down, and a hook that accuses the person reading it breaks

@@ -300,20 +300,27 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
    * met the background; running it only through the tail keeps the contrast
    * honest and puts the emphasis where the sentence lands anyway.
    *
-   * Vertical, not diagonal. A horizontal ramp put the accent on whichever word
-   * happened to sit top-right — "which", as it turned out — whereas top-to-bottom
-   * always lands it on the last line, at any width and any line count. The
-   * headline re-wraps from three lines to one across the clamp range, so this
-   * needed to be a rule rather than a lucky break.
+   * Diagonal, and that is now the robust choice rather than the pretty one.
+   *
+   * It has been all three ways. Horizontal put the accent on whichever word
+   * happened to sit top-right, which with the old three-line headline was
+   * "which". Vertical fixed that by always taking the last line — but the
+   * headline is three words now in English and one in French, so it renders on
+   * one line as often as two, and a vertical ramp across a single line fades
+   * every glyph top-to-bottom instead of picking out a word.
+   *
+   * A diagonal ending bottom-right lands on the closing word in every case: on
+   * "coming." when it wraps, on "coming." when it doesn't, and on the whole of
+   * "Anticipe." in French.
    */
   .hero__catchline {
     margin-top: var(--space-md);
     text-wrap: balance;
     background: linear-gradient(
-      178deg,
+      125deg,
       var(--c-text) 0%,
-      var(--c-text) 46%,
-      var(--c-accent) 104%
+      var(--c-text) 30%,
+      var(--c-accent) 92%
     );
     background-clip: text;
     -webkit-background-clip: text;
