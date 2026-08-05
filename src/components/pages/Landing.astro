@@ -1,7 +1,8 @@
 ---
-import { APP_NAME, APP_STORE_URL } from '../../config';
+import { APP_NAME, CAMPAIGN, PRICING, appStoreLink } from '../../config';
 import { path, t, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';
+import { pricingStrings } from '../../pricing';
 
 /**
  * The landing page.
@@ -32,6 +33,14 @@ const { locale } = Astro.props;
 const copy = t(locale);
 const c = copy.landing;
 const meta = copy.meta.home(APP_NAME);
+const pricing = pricingStrings(locale);
+
+/**
+ * The App Store link, carrying the campaign token for this locale so App Store
+ * Connect can separate English from French traffic. Null until the app is on
+ * sale, which renders the "coming soon" badge instead.
+ */
+const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn);
 
 /** Ties each band label to its palette tone, in the app's own order. */
 const BAND_TONES = ['low', 'elevated', 'high'] as const;
@@ -64,8 +73,8 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
 
         <div class="hero__cta">
           {
-            APP_STORE_URL ? (
-              <a class="button" href={APP_STORE_URL}>
+            storeHref ? (
+              <a class="button" href={storeHref}>
                 {c.download}
               </a>
             ) : (
@@ -190,6 +199,32 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
         }
       </ul>
       <p class="trio__free">{c.trio.free}</p>
+
+      <!--
+        Pricing, immediately under the free-forever promise and inside the same
+        band. The adjacency is the whole design: read on its own, a price list in
+        a recovery app is a thing to be suspicious of; read directly under "the
+        urge screen and the helplines stay free whatever else happens", it reads
+        as what it is. Splitting the two across sections is the one change that
+        would make this worse than not having it.
+
+        It is also here rather than in the hero because the hero's job is the
+        argument, not the transaction — the CTA note carries the short version
+        ("free for 14 days, then a subscription") and this carries the detail.
+
+        Nothing here may acquire urgency: no countdown, no "only today", no
+        launch discount. A time-limited offer aimed at people with
+        impulse-control difficulty is indefensible, and the app's own paywall
+        copy refuses the same register on purpose.
+      -->
+      <div class="pricing">
+        <p class="eyebrow">{c.pricing.eyebrow}</p>
+        <p class="pricing__trial">{c.pricing.trial(PRICING.trialDays)}</p>
+        <ul class="pricing__plans">
+          {c.pricing.plans(pricing).map((plan) => <li>{plan}</li>)}
+        </ul>
+        <p class="small faint">{c.pricing.note}</p>
+      </div>
     </div>
   </section>
 
@@ -891,6 +926,47 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     max-width: var(--measure);
     font-size: var(--type-small);
     color: var(--c-text-muted);
+  }
+
+  /* ---------- Pricing ---------- */
+
+  /*
+   * Recessed rather than tinted. `--c-accent-soft` is the same value as the
+   * low-risk band, so an accent container here would frame the price as "you're
+   * fine" — the same mistake the app corrected when it took the accent card off
+   * the "£7,200 a year" onboarding screen. A neutral recess says "this is
+   * reference information", which is what a price is.
+   */
+  .pricing {
+    margin-top: var(--space-xl);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    background: var(--c-surface);
+    max-width: var(--measure);
+  }
+
+  .pricing__trial {
+    /* The trial leads, because it is the only line here that is free. */
+    margin-top: var(--space-xs);
+    font-weight: 650;
+  }
+
+  .pricing__plans {
+    margin: var(--space-md) 0 var(--space-md);
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: var(--space-xs);
+    font-size: var(--type-small);
+    color: var(--c-text-muted);
+  }
+
+  /*
+   * Tabular figures so the three amounts line up as a column of prices rather
+   * than as three sentences that happen to contain numbers.
+   */
+  .pricing__plans li {
+    font-variant-numeric: tabular-nums;
   }
 
   /* ---------- Privacy ---------- */

@@ -96,8 +96,22 @@ export const en = {
     // mobile/i18n/en/onboarding.ts → opening.line3, split for display.
     refusalList: ['No therapy', 'No blocking', 'No lectures'],
     comingSoon: 'Coming to the App Store',
-    comingSoonNote: 'iPhone first. Free while it’s being built.',
+    // Said "Free while it's being built" until 2026-08-05, which stopped being
+    // true the moment `mobile/purchases/` and the 14-day trial landed. The trial
+    // is the honest version of the same welcome.
+    comingSoonNote: 'iPhone first. Free for 14 days, then a subscription.',
     download: 'Download on the App Store',
+
+    pricing: {
+      eyebrow: 'What it costs',
+      trial: (days) => `Free for ${days} days. No card to start.`,
+      plans: (p) => [
+        `${p.monthly} a month`,
+        `${p.annual} a year — ${p.annualPerMonth} a month, taken once a year`,
+        `${p.lifetime} once`,
+      ],
+      note: 'Prices are in euros; the App Store shows the price in your own currency before you buy. Apple takes the payment, and you can cancel from your own Settings at any time.',
+    },
 
     mock: {
       day: 'Day 62',
@@ -211,7 +225,7 @@ export const en = {
     responseNote:
       'Usually answered within a few days. If it’s urgent in the way a helpline is urgent, please use one of those instead — they answer immediately and I might not.',
     faqTitle: 'Questions that come up',
-    faqs: (app) => [
+    faqs: (app, pricing) => [
       {
         q: `Does ${app} block gambling sites or apps?`,
         a: [
@@ -256,7 +270,16 @@ export const en = {
         q: `What does ${app} cost?`,
         a: [
           {
-            p: 'Nothing at the moment. This version has no in-app purchases and no subscription. If paid features arrive later, the urge screen and the helplines stay free — they aren’t a feature.',
+            p: `The first ${pricing.trialDays} days are free, and you don't need to enter a card to start. After that it is ${pricing.monthly} a month, ${pricing.annual} a year, or ${pricing.lifetime} once. Prices are in euros — the App Store shows yours in your own currency before you buy.`,
+          },
+          {
+            p: `The trial is actually a little longer than ${pricing.trialDays} days if you have not checked in much: it stays open until there are eight check-ins on the record, because until then the forecast has too little to read and you would be paying for the least useful version of the app.`,
+          },
+          {
+            p: 'Apple takes the payment, not me — I never see your card. A subscription renews until you cancel it, and you cancel it in your own iPhone Settings under your Apple Account rather than in the app. Cancelling stops the next renewal and leaves you the time you have already paid for.',
+          },
+          {
+            p: 'The urge screen and the helplines stay free whatever you choose, and always will. They aren’t a feature. Settings stays reachable too, so you can always restore a purchase or delete everything.',
           },
         ],
       },
@@ -329,11 +352,12 @@ export const en = {
                 'Everything you log stays on your phone. There is no account, no server holding it, and no sync.',
                 'Anonymous usage statistics are off unless you switch them on, and they never contain anything you wrote.',
                 'Nothing is sold, shared for advertising, or used to build a profile of you.',
+                `If you subscribe, ${ctx.purchasesMerchant} takes the payment and a receipt is checked against an anonymous identifier. Nothing you wrote is part of that.`,
                 'This website sets no cookies and runs no analytics.',
               ],
             },
             {
-              p: `Everything below is the detail behind those four lines. If any of it turns out to disagree with what the app does, the app’s behaviour is the bug and I want to hear about it: ${ctx.email}.`,
+              p: `Everything below is the detail behind those five lines. If any of it turns out to disagree with what the app does, the app’s behaviour is the bug and I want to hear about it: ${ctx.email}.`,
             },
           ],
         },
@@ -373,6 +397,31 @@ export const en = {
           ],
         },
         {
+          heading: 'If you subscribe',
+          blocks: [
+            {
+              p: `Buying anything is handled by ${ctx.purchasesMerchant}. Payment goes through your Apple Account, ${ctx.purchasesMerchant} is the merchant, and your card details never reach me or this app — I only ever learn that a purchase exists, never who made it.`,
+            },
+            {
+              p: `To check whether a purchase is still valid, the app sends the App Store receipt to ${ctx.purchasesProcessor}, a subscription-management provider acting as a processor on my behalf, on servers in ${ctx.purchasesRegion}. Alongside the receipt it sends an app-user identifier generated at random on your device. That identifier is not your name, your email, your Apple Account or your device id, and it is not connected to anything you log.`,
+            },
+            {
+              p: 'Nothing you write is involved in any of this. Your check-ins, notes, reasons, amounts and urge levels are not sent when you subscribe, restore a purchase, or at any other time.',
+            },
+            {
+              // TODO(launch-blocker): confirm the transfer safeguard from
+              // RevenueCat's current DPA and name it here. Stating that the data
+              // leaves the EU is a fact and is safe to publish; naming a
+              // mechanism — Data Privacy Framework, standard contractual clauses
+              // — is a legal claim, and this page does not get to guess at one.
+              p: `Because that provider operates in ${ctx.purchasesRegion}, a receipt and a random identifier do leave the European Union. Nothing else does, and nothing that identifies you is part of either.`,
+            },
+            {
+              note: `This is the one part of the app that talks to a server, and it exists only because a receipt has to be checked somewhere. It is also the reason the App Store listing declares "Purchases" as data collected but not linked to your identity — that declaration and this paragraph describe the same thing.`,
+            },
+          ],
+        },
+        {
           heading: 'This website',
           blocks: [
             {
@@ -390,7 +439,7 @@ export const en = {
               ul: [
                 'No selling or renting of data, in any form.',
                 'No advertising, no ad networks, no advertising identifiers, and no sharing for advertising.',
-                'No third-party analytics or tracking SDKs in the app beyond the single opt-in service named above.',
+                'No third-party analytics or tracking SDKs. The app talks to exactly two outside services, both named above: the statistics provider, only if you switch statistics on, and the receipt checker, only if you buy something. Neither receives anything you wrote.',
                 'No profiling, no automated decisions about you, and no attempt to work out who you are.',
                 'No social login, no contact-list access, no location access, no health-data access.',
               ],
@@ -485,10 +534,26 @@ export const en = {
           heading: 'What it costs',
           blocks: [
             {
-              p: `${ctx.app} is currently free and contains no in-app purchases and no subscription. If paid features are introduced later, the price and terms will be shown before any purchase, and anything you buy will be handled by Apple rather than by me.`,
+              p: `${ctx.app} is free to download and free to use for the first ${ctx.pricing.trialDays} days, with no payment details required to begin. The trial does not end while there are fewer than eight daily check-ins on the record.`,
             },
             {
-              p: 'The urge screen and the crisis resources will remain free regardless.',
+              p: `After the trial, continued access to the forecast, the patterns screen, your full history and the money figures requires one of three purchases: ${ctx.pricing.monthly} per month or ${ctx.pricing.annual} per year, both of which are auto-renewing subscriptions, or ${ctx.pricing.lifetime} as a single non-renewing payment. Prices are stated in euros; the App Store displays the applicable price in your own currency, on Apple's price tiers, before you confirm.`,
+            },
+            {
+              p: `${ctx.purchasesMerchant} is the merchant of record for every purchase. Payment is taken by ${ctx.purchasesMerchant} through your Apple Account, under ${ctx.purchasesMerchant}'s terms, and I never receive or hold your payment details.`,
+            },
+            {
+              p: 'A subscription renews automatically at the end of each period unless cancelled at least 24 hours beforehand. Cancellation is done in your device Settings under your Apple Account, not in the app; it stops the next renewal and does not shorten the period already paid for. Refunds are requested from Apple, and are at Apple’s discretion rather than mine.',
+            },
+            {
+              p: 'If a price changes, Apple notifies existing subscribers and asks for consent before charging the new amount, in the manner its rules require. I will not introduce a charge for anything that is free at the time you install the app without saying so first.',
+            },
+            {
+              // Tracks `freeAnyway` in mobile/i18n/*/paywall.ts and
+              // `ALWAYS_FREE_ROUTES`. Stated as a term and not only as a feature,
+              // because it is the one promise a paying reader most needs to be
+              // able to hold us to.
+              p: 'The urge screen and the crisis resources remain free regardless of whether you ever pay, and regardless of whether a subscription has lapsed. Settings remains reachable on the same terms, so restoring a purchase and deleting everything are always available.',
             },
           ],
         },
