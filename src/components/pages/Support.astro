@@ -2,6 +2,7 @@
 import { APP_NAME, CONTACT_EMAIL } from '../../config';
 import { path, t, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';
+import { pricingStrings } from '../../pricing';
 import Prose from '../Prose.astro';
 
 /**
@@ -17,7 +18,7 @@ const { locale } = Astro.props;
 const copy = t(locale);
 const c = copy.support;
 const meta = copy.meta.support(APP_NAME);
-const faqs = c.faqs(APP_NAME);
+const faqs = c.faqs(APP_NAME, pricingStrings(locale));
 ---
 
 <Base locale={locale} route="support" title={meta.title} description={meta.description}>

@@ -1,5 +1,14 @@
-import { ANALYTICS, APP_NAME, CONTACT_EMAIL, HOSTING, JURISDICTION, LEGAL_NAME } from './config';
+import {
+  ANALYTICS,
+  APP_NAME,
+  CONTACT_EMAIL,
+  HOSTING,
+  JURISDICTION,
+  LEGAL_NAME,
+  PURCHASES,
+} from './config';
 import type { LegalContext, Locale } from './i18n/types';
+import { pricingStrings } from './pricing';
 
 /**
  * Assembles the provisional values a legal document needs.
@@ -17,5 +26,9 @@ export function legalContext(locale: Locale): LegalContext {
     analyticsProcessor: ANALYTICS.processor,
     analyticsRegion: ANALYTICS.region[locale],
     hostingProvider: HOSTING.provider,
+    purchasesMerchant: PURCHASES.merchant,
+    purchasesProcessor: PURCHASES.processor,
+    purchasesRegion: PURCHASES.processorRegion[locale],
+    pricing: pricingStrings(locale),
   };
 }

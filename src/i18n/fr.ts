@@ -84,8 +84,22 @@ export const fr = {
     // mobile/i18n/fr/onboarding.ts → opening.line3, découpé pour l’affichage.
     refusalList: ['Pas de thérapie', 'Pas de blocage', 'Pas de leçon'],
     comingSoon: 'Bientôt sur l’App Store',
-    comingSoonNote: 'iPhone d’abord. Gratuit pendant la construction.',
+    // Disait « Gratuit pendant la construction » jusqu’au 05/08/2026, ce qui a
+    // cessé d’être vrai dès l’arrivée de `mobile/purchases/` et de l’essai de
+    // 14 jours. L’essai est la version honnête du même accueil.
+    comingSoonNote: 'iPhone d’abord. Gratuit 14 jours, puis un abonnement.',
     download: 'Télécharger dans l’App Store',
+
+    pricing: {
+      eyebrow: 'Ce que ça coûte',
+      trial: (days) => `Gratuit pendant ${days} jours. Sans carte bancaire pour commencer.`,
+      plans: (p) => [
+        `${p.monthly} par mois`,
+        `${p.annual} par an — soit ${p.annualPerMonth} par mois, prélevés une fois par an`,
+        `${p.lifetime} une seule fois`,
+      ],
+      note: 'Les prix sont en euros ; l’App Store affiche le prix dans ta devise avant l’achat. Apple encaisse le paiement, et tu peux résilier depuis tes propres réglages à tout moment.',
+    },
 
     mock: {
       day: 'Jour 62',
@@ -196,7 +210,7 @@ export const fr = {
     responseNote:
       'Réponse en général sous quelques jours. Si c’est urgent au sens où une ligne d’écoute est urgente, passe plutôt par l’une d’elles — elles répondent tout de suite, et moi peut-être pas.',
     faqTitle: 'Les questions qui reviennent',
-    faqs: (app) => [
+    faqs: (app, pricing) => [
       {
         q: `Est-ce que ${app} bloque les sites ou les applis de paris ?`,
         a: [
@@ -241,7 +255,16 @@ export const fr = {
         q: `Combien coûte ${app} ?`,
         a: [
           {
-            p: 'Rien pour le moment. Cette version n’a aucun achat intégré et aucun abonnement. Si des fonctions payantes arrivent plus tard, l’écran d’urgence et les lignes d’écoute resteront gratuits — ce ne sont pas des options.',
+            p: `Les ${pricing.trialDays} premiers jours sont gratuits, et il n’y a pas de carte bancaire à saisir pour commencer. Ensuite c’est ${pricing.monthly} par mois, ${pricing.annual} par an, ou ${pricing.lifetime} une seule fois. Les prix sont en euros — l’App Store affiche le tien dans ta devise avant l’achat.`,
+          },
+          {
+            p: `L’essai dure en réalité un peu plus de ${pricing.trialDays} jours si tu n’as pas fait beaucoup de points quotidiens : il reste ouvert jusqu’à ce qu’il y en ait huit d’enregistrés, parce qu’avant ça la prévision a trop peu à lire et tu paierais pour la version la moins utile de l’app.`,
+          },
+          {
+            p: 'C’est Apple qui encaisse, pas moi — je ne vois jamais ta carte. Un abonnement se renouvelle jusqu’à ce que tu le résilies, et la résiliation se fait dans les réglages de ton iPhone, sous ton compte Apple, et non dans l’app. Résilier arrête le renouvellement suivant et te laisse la période déjà payée.',
+          },
+          {
+            p: 'L’écran d’urgence et les lignes d’écoute restent gratuits quoi que tu choisisses, et le resteront toujours. Ce ne sont pas des options. Les réglages restent accessibles aussi, pour pouvoir toujours restaurer un achat ou tout supprimer.',
           },
         ],
       },
@@ -315,11 +338,12 @@ export const fr = {
                 'Tout ce que vous notez reste sur votre téléphone. Il n’y a pas de compte, aucun serveur qui le détient, et aucune synchronisation.',
                 'Les statistiques anonymes sont désactivées sauf si vous les activez, et elles ne contiennent jamais ce que vous avez écrit.',
                 'Rien n’est vendu, partagé à des fins publicitaires, ni utilisé pour établir un profil de vous.',
+                `Si vous vous abonnez, ${ctx.purchasesMerchant} encaisse le paiement et un reçu est vérifié à l’aide d’un identifiant anonyme. Rien de ce que vous avez écrit n’en fait partie.`,
                 'Ce site ne dépose aucun cookie et n’utilise aucun outil de mesure.',
               ],
             },
             {
-              p: `Tout ce qui suit détaille ces quatre lignes. Si l’une d’elles se révélait en désaccord avec le comportement de l’app, c’est le comportement de l’app qui est le bug, et je veux le savoir : ${ctx.email}.`,
+              p: `Tout ce qui suit détaille ces cinq lignes. Si l’une d’elles se révélait en désaccord avec le comportement de l’app, c’est le comportement de l’app qui est le bug, et je veux le savoir : ${ctx.email}.`,
             },
           ],
         },
@@ -359,6 +383,31 @@ export const fr = {
           ],
         },
         {
+          heading: 'Si vous vous abonnez',
+          blocks: [
+            {
+              p: `Tout achat est géré par ${ctx.purchasesMerchant}. Le paiement passe par votre compte Apple, ${ctx.purchasesMerchant} est le vendeur, et vos coordonnées bancaires ne me parviennent jamais, ni à cette app — j’apprends seulement qu’un achat existe, jamais qui l’a fait.`,
+            },
+            {
+              p: `Pour vérifier qu’un achat est toujours valable, l’app transmet le reçu de l’App Store à ${ctx.purchasesProcessor}, un prestataire de gestion d’abonnements agissant comme sous-traitant pour mon compte, sur des serveurs situés aux ${ctx.purchasesRegion}. Avec le reçu, elle transmet un identifiant d’utilisateur généré aléatoirement sur votre appareil. Cet identifiant n’est ni votre nom, ni votre e-mail, ni votre compte Apple, ni l’identifiant de votre appareil, et il n’est relié à rien de ce que vous notez.`,
+            },
+            {
+              p: 'Rien de ce que vous écrivez n’intervient là-dedans. Vos points quotidiens, vos notes, vos raisons, vos montants et vos niveaux d’envie ne sont transmis ni lors d’un abonnement, ni lors d’une restauration d’achat, ni à aucun autre moment.',
+            },
+            {
+              // TODO(bloquant) : confirmer le mécanisme de transfert dans le DPA
+              // en vigueur de RevenueCat et le nommer ici. Dire que les données
+              // quittent l'UE est un fait et peut être publié ; nommer un
+              // mécanisme — Data Privacy Framework, clauses contractuelles types
+              // — est une affirmation juridique, et cette page ne devine pas.
+              p: `Ce prestataire opérant aux ${ctx.purchasesRegion}, un reçu et un identifiant aléatoire quittent effectivement l’Union européenne. Rien d’autre ne la quitte, et rien qui vous identifie ne fait partie de l’un ou de l’autre.`,
+            },
+            {
+              note: `C’est la seule partie de l’app qui parle à un serveur, et elle n’existe que parce qu’un reçu doit bien être vérifié quelque part. C’est aussi la raison pour laquelle la fiche App Store déclare « Achats » comme donnée collectée mais non reliée à votre identité — cette déclaration et ce paragraphe décrivent la même chose.`,
+            },
+          ],
+        },
+        {
           heading: 'Ce site',
           blocks: [
             {
@@ -376,7 +425,7 @@ export const fr = {
               ul: [
                 'Aucune vente ni location de données, sous quelque forme que ce soit.',
                 'Aucune publicité, aucune régie, aucun identifiant publicitaire, aucun partage à des fins publicitaires.',
-                'Aucun outil de mesure ou de pistage tiers dans l’app, en dehors du seul service facultatif nommé plus haut.',
+                'Aucun outil de mesure ou de pistage tiers. L’app ne parle qu’à deux services extérieurs, tous deux nommés plus haut : le prestataire de statistiques, uniquement si vous les activez, et le vérificateur de reçus, uniquement si vous achetez quelque chose. Ni l’un ni l’autre ne reçoit ce que vous avez écrit.',
                 'Aucun profilage, aucune décision automatisée à votre sujet, aucune tentative de savoir qui vous êtes.',
                 'Aucune connexion via un réseau social, aucun accès aux contacts, à la localisation ou aux données de santé.',
               ],
@@ -471,10 +520,26 @@ export const fr = {
           heading: 'Ce que ça coûte',
           blocks: [
             {
-              p: `${ctx.app} est actuellement gratuite et ne contient aucun achat intégré ni abonnement. Si des fonctions payantes sont introduites plus tard, le prix et les conditions seront affichés avant tout achat, et tout achat sera géré par Apple et non par moi.`,
+              p: `${ctx.app} est gratuite à télécharger et gratuite à utiliser pendant les ${ctx.pricing.trialDays} premiers jours, sans aucune coordonnée bancaire pour commencer. L’essai ne se termine pas tant qu’il y a moins de huit points quotidiens enregistrés.`,
             },
             {
-              p: 'L’écran d’urgence et les ressources d’urgence resteront gratuits dans tous les cas.',
+              p: `À l’issue de l’essai, continuer d’accéder à l’estimation, à l’écran des tendances, à l’intégralité de votre historique et aux chiffres sur l’argent nécessite l’un de trois achats : ${ctx.pricing.monthly} par mois ou ${ctx.pricing.annual} par an, qui sont deux abonnements à renouvellement automatique, ou ${ctx.pricing.lifetime} en un paiement unique sans renouvellement. Les prix sont indiqués en euros ; l’App Store affiche le prix applicable dans votre devise, selon les paliers tarifaires d’Apple, avant toute confirmation.`,
+            },
+            {
+              p: `${ctx.purchasesMerchant} est le vendeur pour tous les achats. Le paiement est encaissé par ${ctx.purchasesMerchant} via votre compte Apple, selon les conditions d’${ctx.purchasesMerchant}, et je ne reçois ni ne conserve jamais vos coordonnées bancaires.`,
+            },
+            {
+              p: 'Un abonnement se renouvelle automatiquement à la fin de chaque période, sauf résiliation au moins 24 heures avant. La résiliation se fait dans les réglages de votre appareil, sous votre compte Apple, et non dans l’app ; elle arrête le renouvellement suivant et ne raccourcit pas la période déjà payée. Les remboursements se demandent à Apple, et relèvent de son appréciation et non de la mienne.',
+            },
+            {
+              p: 'En cas de changement de prix, Apple en informe les abonnés existants et recueille leur accord avant de prélever le nouveau montant, selon les modalités que ses règles imposent. Je n’introduirai pas de facturation pour une fonction gratuite au moment de votre installation sans le dire au préalable.',
+            },
+            {
+              // Reprend `freeAnyway` dans mobile/i18n/*/paywall.ts et
+              // `ALWAYS_FREE_ROUTES`. Énoncé comme une condition et pas seulement
+              // comme une fonctionnalité, parce que c'est la promesse qu'un
+              // lecteur payant a le plus besoin de pouvoir nous opposer.
+              p: 'L’écran d’urgence et les ressources d’urgence restent gratuits, que vous payiez un jour ou non, et même si un abonnement a expiré. Les réglages restent accessibles aux mêmes conditions, de sorte que restaurer un achat et tout supprimer sont toujours possibles.',
             },
           ],
         },

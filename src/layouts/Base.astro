@@ -2,7 +2,16 @@
 import '../styles/base.css';
 
 import Footer from '../components/Footer.astro';
-import { APP_NAME, SITE_URL } from '../config';
+import {
+  APP_NAME,
+  APP_STORE_APP_ID,
+  APP_STORE_URL,
+  CAMPAIGN,
+  CONTACT_EMAIL,
+  LEGAL_NAME,
+  PRICING,
+  SITE_URL,
+} from '../config';
 import { alternates, otherLocale, path, t, type Locale, type RouteKey } from '../i18n';
 
 /**
@@ -38,6 +47,87 @@ const canonical = new URL(path(locale, route), SITE_URL).href;
  * in it. Renaming the app means re-rendering it; see the README.
  */
 const ogImage = new URL('/og-cover.png', SITE_URL).href;
+
+/**
+ * Structured data, and an honest account of what it is for.
+ *
+ * It earns **no rich results**, and it is worth writing that down so nobody
+ * measures it against the wrong expectation. Google restricted FAQ rich results
+ * to authoritative health and government sites in 2023 and deprecated them
+ * outright in May 2026; `MobileApplication` never produced a visual result at
+ * all. Two things do make it worth the bytes:
+ *
+ *  1. **Entity disambiguation.** "Sonar" collides with SonarQube, Sonos, sonar
+ *     the technology, marine fish finders and at least one dating app. An
+ *     `Organization` plus `WebSite` node is how a search engine is told which
+ *     one this is.
+ *  2. **Answer engines.** A meaningful share of "how do I stop betting" now
+ *     happens inside an assistant rather than a results page, and those reward a
+ *     small number of clean, explicitly factual, well-structured pages — which is
+ *     exactly what this site is. The `offers` array is the part that matters
+ *     most, because it makes the price machine-readable and therefore consistent
+ *     with what the landing page and the terms say.
+ *
+ * **This does not break the privacy claim, and the `<script>` tag is not the
+ * exception it looks like.** Inline JSON-LD loads nothing, executes nothing and
+ * contacts no one — `type="application/ld+json"` is data, not JavaScript. The
+ * repo's guard is `grep -ohE 'src="https?://[^"]+"' dist/**` and it stays green,
+ * because there is no `src`. Do not "improve" this by moving it to a file.
+ *
+ * Deliberately absent: `AggregateRating` and `Review`, because there are no
+ * ratings and inventing them is a manual-action offence; and `HowTo`, because a
+ * "how to stop gambling" recipe is an outcome claim in machine-readable form,
+ * which is worse than making one in prose since it cannot be qualified.
+ */
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#org`,
+      name: LEGAL_NAME,
+      url: SITE_URL,
+      email: `mailto:${CONTACT_EMAIL}`,
+      ...(APP_STORE_URL ? { sameAs: [APP_STORE_URL] } : {}),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#site`,
+      name: APP_NAME,
+      url: SITE_URL,
+      inLanguage: copy.htmlLang,
+      publisher: { '@id': `${SITE_URL}/#org` },
+    },
+    // The app itself, on the landing page only — it is a claim about the product,
+    // and repeating it under the privacy policy would say the policy is the app.
+    ...(route === 'home'
+      ? [
+          {
+            '@type': 'MobileApplication',
+            '@id': `${SITE_URL}/#app`,
+            name: APP_NAME,
+            operatingSystem: 'iOS',
+            applicationCategory: 'HealthApplication',
+            inLanguage: ['en', 'fr'],
+            description,
+            publisher: { '@id': `${SITE_URL}/#org` },
+            ...(APP_STORE_URL ? { installUrl: APP_STORE_URL } : {}),
+            offers: [
+              { price: PRICING.monthlyMinor / 100, name: 'Monthly' },
+              { price: PRICING.annualMinor / 100, name: 'Annual' },
+              { price: PRICING.lifetimeMinor / 100, name: 'Lifetime' },
+            ].map((o) => ({
+              '@type': 'Offer',
+              name: o.name,
+              price: o.price.toFixed(2),
+              priceCurrency: PRICING.currency,
+              category: o.name === 'Lifetime' ? 'OneTimePayment' : 'Subscription',
+            })),
+          },
+        ]
+      : []),
+  ],
+};
 ---
 
 <html lang={copy.htmlLang}>
@@ -85,11 +175,36 @@ const ogImage = new URL('/og-cover.png', SITE_URL).href;
     <!-- `summary_large_image` now that there is a wide image to put in it. -->
     <meta name="twitter:card" content="summary_large_image" />
 
+    {
+      /*
+       * Safari's Smart App Banner. One meta tag, no JavaScript, no network
+       * request, and nothing stored — iOS Safari renders it natively and every
+       * other browser ignores it. `app-argument` carries the campaign token so a
+       * tap through the banner is separable in App Store Connect.
+       *
+       * Only rendered once there is an app id to point at. Note that Apple's own
+       * reporting for this surface is patchy; treat it as a convenience for the
+       * reader rather than as a measurement channel.
+       */
+      APP_STORE_APP_ID && (
+        <meta
+          name="apple-itunes-app"
+          content={`app-id=${APP_STORE_APP_ID}, app-argument=${new URL(path(locale, route), SITE_URL).href}?ct=${locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn}`}
+        />
+      )
+    }
+
     <!--
       No analytics, no fonts, no third-party anything. The privacy policy claims
       this page sets no cookies and loads no external resources; adding a script
-      tag here would make that claim false, so don't.
+      tag with a `src` here would make that claim false, so don't.
+
+      The one `<script>` below is not an exception to that: `application/ld+json`
+      is inline data, never executed and never fetched, so nothing leaves the
+      reader's browser. The repo's guard grep looks for `src="http..."` and stays
+      green. See the note on `structuredData` above for why it exists at all.
     -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
 
   <body>

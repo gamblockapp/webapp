@@ -95,6 +95,33 @@ export type Dict = {
     comingSoonNote: string;
     download: string;
 
+    /**
+     * What it costs, next to the button that gets it.
+     *
+     * This exists because the site said the app was free in three places after
+     * the paywall had already landed, which is a 2.3.1 exposure rather than a
+     * copy nit — Apple's rule on misrepresenting a price covers marketing
+     * "whether within or outside of the App Store".
+     *
+     * **Render it adjacent to `trio.free`, in the same visual band.** The free
+     * promise is what makes the number read as honest rather than as a reveal,
+     * and the comment on `trio.free` already asks for exactly this. Splitting
+     * them across sections is the one layout change that would make this section
+     * worse than not having it.
+     *
+     * Nothing here may acquire urgency — no countdown, no "only today", no
+     * launch discount. A time-limited offer aimed at people with impulse-control
+     * difficulty is indefensible, and it is also the register the app's own
+     * paywall copy deliberately refuses.
+     */
+    pricing: {
+      eyebrow: string;
+      trial: (days: number) => string;
+      plans: (p: PricingStrings) => string[];
+      /** Why the euro figures may not be what this reader is charged. */
+      note: string;
+    };
+
     /** The home-screen mock-up in the hero. Never a band without its reasons. */
     mock: {
       day: string;
@@ -162,7 +189,7 @@ export type Dict = {
     emailLead: string;
     responseNote: string;
     faqTitle: string;
-    faqs: (app: string) => Faq[];
+    faqs: (app: string, pricing: PricingStrings) => Faq[];
     bugTitle: string;
     bugBlocks: Block[];
     crisisLead: string;
@@ -203,6 +230,18 @@ export type Dict = {
 };
 
 /**
+ * The prices from `src/config.ts`, formatted for one locale by
+ * `src/pricing.ts`. Passed into the copy for the same reason `LegalContext` is.
+ */
+export type PricingStrings = {
+  trialDays: number;
+  monthly: string;
+  annual: string;
+  lifetime: string;
+  annualPerMonth: string;
+};
+
+/**
  * Everything a legal document needs from `src/config.ts`, passed in rather than
  * imported, so the copy modules stay pure data and the provisional values live
  * in exactly one file.
@@ -215,4 +254,10 @@ export type LegalContext = {
   analyticsProcessor: string;
   analyticsRegion: string;
   hostingProvider: string;
+  /** Apple, which is the merchant of record and takes the payment. */
+  purchasesMerchant: string;
+  /** RevenueCat, which validates the receipt. Named because the policy must name it. */
+  purchasesProcessor: string;
+  purchasesRegion: string;
+  pricing: PricingStrings;
 };

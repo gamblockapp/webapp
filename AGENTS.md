@@ -120,20 +120,66 @@ rather than two conventions.
   commit as the payload; this site is now a fifth place in that set. A privacy
   claim that is nearly true is worse than one that's precise.
 
+  Note the questionnaire now carries **three** declarations rather than two:
+  Purchases (RevenueCat receives the receipt and an anonymous app-user id), opt-in
+  Usage Data → Product Interaction, and nothing else. The policy's "If you
+  subscribe" section and that first declaration describe the same thing and have
+  to keep saying so. There is an open `TODO` in that section: the transfer
+  safeguard for RevenueCat operating outside the EU needs naming from its current
+  DPA. Stating that data leaves the EU is a fact and is published; naming a
+  mechanism is a legal claim and this page does not guess at one.
+
 - **Adding any external resource breaks the privacy policy.** The policy states
   this site loads no third-party scripts, fonts, images or trackers and sets no
   cookies. One `<script src>` or Google Font makes that false. Check with:
   `grep -ohE 'src="https?://[^"]+"' dist/**/*.html` — it should return nothing.
 
+  **The one `<script>` in `Base.astro` is not an exception.** It is
+  `application/ld+json`: inline data, never executed, never fetched, no `src`, so
+  the grep stays green and nothing leaves the reader's browser. Don't "tidy" it
+  into an external file, and don't delete it on sight of the word script — the
+  reasoning for both is in the comment on `structuredData`.
+
+- **`HOSTING` must name the host that actually serves the site.** It said
+  `Cloudflare Pages` while Vercel was serving every request, which means the live
+  privacy policy named the wrong data processor on the one page whose entire value
+  is that it can be checked. Verify in one command, and do it whenever the host
+  moves: `curl -sSI https://trysonarapp.com | grep -i '^server:'`.
+
 - **`APP_STORE_URL` is null until the app ships.** The landing page renders a
   "coming soon" chip instead of a download button while it is. The site has to
   exist before the listing does, because the privacy-policy URL is needed at
-  submission.
+  submission. **Keep the null branch after launch** — it is the correct render for
+  the window between the site going live and the listing being approved.
 
-- **No IAP anywhere in the copy.** The app currently has no purchases wired up
-  (`../mobile/db/entitlement-repo.ts` holds the seam), so the site says the app is
-  free and the terms say there are no in-app purchases. When IAP lands, both change
-  — and Apple's subscription disclosure rules start applying to the landing page.
+- **Prices live in `config.ts`, and four things must agree.** `PRICING` is the only
+  place an amount is written: the landing block, the support FAQ and the terms all
+  read from it through `pricingStrings()`, and `Intl` produces "€9.99" and
+  "9,99 €" from the same number so the two locales cannot drift. The four that must
+  agree are `PRICING` here, `PRICE_MINOR` in `../mobile/app/paywall.tsx`, the
+  products in `../mobile/purchases/index.ts`, and **App Store Connect** — which
+  wins any disagreement, because it is the only one of the four that charges
+  anyone.
+
+  This is a compliance surface, not a copy surface. Guideline 2.3.1 covers
+  promoting a false price "whether within or outside of the App Store" and names
+  removal *and* developer-account termination. The site claimed the app was free in
+  three places for the entire period after the paywall landed; that is what this
+  rule exists to prevent happening again. Grep before shipping:
+  `grep -rniE "free while|no in-app purchase|aucun achat intégré" src/`.
+
+- **The pricing block belongs next to `trio.free`, in the same band.** Read alone,
+  a price list in a recovery app invites suspicion; read directly under "the urge
+  screen and the helplines stay free whatever else happens", it reads as what it
+  is. Separating them is the one layout change that makes the section worse than
+  not having it. And nothing in it may acquire urgency — no countdown, no launch
+  discount, no "only today". A time-limited offer aimed at people with
+  impulse-control difficulty is indefensible, and the app's own paywall copy
+  refuses the same register deliberately.
+
+- **Bump `LEGAL_UPDATED` when the legal pages change substance**, not on typo
+  fixes. The subscription clause and the RevenueCat disclosure were a substance
+  change and moved it to 2026-08-05.
 
 - **Node 22, not 23.** Pinned in `mise.toml` to match `../mobile`. Run
   `mise trust` once in a fresh worktree or every `mise exec` fails.
