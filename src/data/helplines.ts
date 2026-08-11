@@ -132,7 +132,7 @@ export const HELPLINE_REGIONS: HelplineRegion[] = [
           // German-licensed site. Saying so is the difference between a tool and
           // a false sense of safety.
           en: 'Free self-exclusion scheme. One registration blocks your access to online gambling accounts with participating companies licensed in Great Britain. The site is in English.',
-          fr: 'Dispositif d’auto-exclusion britannique, gratuit. Une seule inscription bloque ton accès aux comptes de jeu en ligne des opérateurs participants sous licence britannique — pas aux sites agréés en France. Site en anglais.',
+          fr: 'Dispositif d’auto-exclusion britannique, gratuit. Une seule inscription bloque ton accès aux comptes de jeu en ligne des opérateurs participants sous licence britannique, pas aux sites agréés en France. Site en anglais.',
         },
         contacts: [{ kind: 'web', display: 'gamstop.co.uk', url: 'https://www.gamstop.co.uk' }],
       },

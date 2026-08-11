@@ -38,25 +38,25 @@ export const fr = {
 
   meta: {
     home: (app) => ({
-      title: `${app} — compte ce que le jeu t’a coûté, et te prévient des soirs qui arrivent`,
+      title: `${app}: compte ce que le jeu t’a coûté, et te prévient des soirs qui arrivent`,
       description:
         'Une app pour arrêter de parier. Une estimation quotidienne du risque, construite depuis tes propres schémas et le calendrier sportif réel, un carnet des écarts qui garde ton historique, et tout qui reste sur ton téléphone. Sans compte.',
     }),
     privacy: (app) => ({
-      title: `Politique de confidentialité — ${app}`,
+      title: `Politique de confidentialité · ${app}`,
       description:
         'Ce qui reste sur ton téléphone, ce que contiennent les statistiques anonymes, et ce qui n’est jamais collecté.',
     }),
     terms: (app) => ({
-      title: `Conditions générales d’utilisation — ${app}`,
+      title: `Conditions générales d’utilisation · ${app}`,
       description: `Les conditions qui encadrent ton utilisation de ${app}, y compris ce que l’app n’est pas.`,
     }),
     support: (app) => ({
-      title: `Support — ${app}`,
+      title: `Support · ${app}`,
       description: `Comment obtenir de l’aide sur ${app}, et les réponses aux questions les plus fréquentes.`,
     }),
     help: () => ({
-      title: 'Parler à quelqu’un — lignes d’écoute et ressources d’urgence',
+      title: 'Parler à quelqu’un · lignes d’écoute et ressources d’urgence',
       description:
         'Lignes d’écoute gratuites et confidentielles sur le jeu, par pays. Chaque entrée a été vérifiée sur le site de l’organisme concerné.',
     }),
@@ -80,7 +80,7 @@ export const fr = {
     hook: 'Personne n’est gagnant.',
     line1: 'Ni sur un an. Ni sur dix.',
     lead: (app) =>
-      `${app} compte ce que ça t’a vraiment coûté, et te prévient des soirs qui arrivent — à partir de tes propres schémas et du calendrier sportif réel.`,
+      `${app} compte ce que ça t’a vraiment coûté, et te prévient des soirs qui arrivent, à partir de tes propres schémas et du calendrier sportif réel.`,
     // mobile/i18n/fr/onboarding.ts → opening.line3, découpé pour l’affichage.
     refusalList: ['Pas de thérapie', 'Pas de blocage', 'Pas de leçon'],
     comingSoon: 'Bientôt sur l’App Store',
@@ -97,7 +97,7 @@ export const fr = {
       trial: (days) => `Gratuit pendant ${days} jours. Sans carte bancaire pour commencer.`,
       plans: (p) => [
         `${p.monthly} par mois`,
-        `${p.annual} par an — soit ${p.annualPerMonth} par mois, prélevés une fois par an`,
+        `${p.annual} par an, soit ${p.annualPerMonth} par mois, prélevés une fois par an`,
         `${p.lifetime} une seule fois`,
       ],
       note: 'Les prix sont en euros ; l’App Store affiche le prix dans ta devise avant l’achat. Apple encaisse le paiement, et tu peux résilier depuis tes propres réglages à tout moment.',
@@ -123,7 +123,7 @@ export const fr = {
       bandsEyebrow: 'Trois niveaux, et c’est tout',
       bands: ['Risque faible', 'Risque modéré', 'Risque élevé'],
       caption:
-        'Un soir à risque élevé se lit comme un bulletin de vigilance, pas comme une remontrance. Et l’app montre toujours ce qui a produit l’estimation. Tu peux regarder ces trois lignes et ne pas être d’accord — c’est justement pour ça qu’elles sont écrites. Une estimation fausse avec laquelle on peut discuter est utile ; un score sans explication ne l’est pas.',
+        'Un soir à risque élevé se lit comme un bulletin de vigilance, pas comme une remontrance. Et l’app montre toujours ce qui a produit l’estimation. Tu peux regarder ces trois lignes et ne pas être d’accord, et c’est justement pour ça qu’elles sont écrites. Une estimation fausse avec laquelle on peut discuter est utile ; un score sans explication ne l’est pas.',
     },
 
     slip: {
@@ -141,7 +141,7 @@ export const fr = {
       eyebrow: 'Le chiffre que personne n’a écrit',
       title: 'Où en est l’argent.',
       body:
-        'À l’installation, elle pose une seule question sur l’argent : à peu près ce qu’un mois normal te coûtait. Pas ce que tu misais — ce qui avait vraiment disparu à la fin du mois. Ensuite elle tient le compte de ce que l’ancien rythme aurait pris, moins ce que les écarts ont réellement coûté, et elle dit quand un écart n’a pas de montant enregistré au lieu d’en inventer un.',
+        'À l’installation, elle pose une seule question sur l’argent : à peu près ce qu’un mois normal te coûtait. Pas ce que tu misais, mais ce qui avait vraiment disparu à la fin du mois. Ensuite elle tient le compte de ce que l’ancien rythme aurait pris, moins ce que les écarts ont réellement coûté, et elle dit quand un écart n’a pas de montant enregistré au lieu d’en inventer un.',
       exampleEyebrow: 'Un exemple, pas une promesse',
       example:
         'Quelqu’un qui y mettait 600 € par mois est à 7 200 € sur un an, soit environ 20 € par jour. La plupart des gens ne l’ont jamais vu écrit noir sur blanc.',
@@ -161,7 +161,7 @@ export const fr = {
         {
           title: 'Tes schémas',
           body:
-            'Le jour de la semaine le plus dur, les heures où les envies se concentrent, ce que tes écarts avaient en commun. Quand il n’y a pas assez de données pour dire quelque chose honnêtement, l’écran ne dit rien plutôt que de deviner — tout ce qu’on tirerait de moins que ça serait un horoscope.',
+            'Le jour de la semaine le plus dur, les heures où les envies se concentrent, ce que tes écarts avaient en commun. Quand il n’y a pas assez de données pour dire quelque chose honnêtement, l’écran ne dit rien plutôt que de deviner. Tout ce qu’on tirerait de moins que ça serait un horoscope.',
         },
         {
           title: 'Trente secondes par jour',
@@ -180,7 +180,7 @@ export const fr = {
       // mobile/i18n/fr/onboarding.ts → opening.privacyBody, et
       // mobile/i18n/fr/secondary.ts → settings.data.onDevice.
       body:
-        'Pas de compte. Pas d’e-mail. Rien de synchronisé. Tout ce que tu notes reste sur ce téléphone, aucun serveur ne le détient, et personne d’autre ne peut le voir — nous non plus.',
+        'Pas de compte. Pas d’e-mail. Rien de synchronisé. Tout ce que tu notes reste sur ce téléphone, aucun serveur ne le détient, et personne d’autre ne peut le voir, nous non plus.',
       analytics:
         'L’app signale quels écrans sont utilisés, et rien d’autre : jamais tes notes, tes raisons, tes montants, l’intensité de tes envies, ni les déclencheurs que tu choisis. Pas de compte, pas d’e-mail, rien qui t’identifie. Ces statistiques anonymes sont actives par défaut ; la politique de confidentialité dit exactement ce qu’elles contiennent et comment les arrêter.',
       gapTitle: 'Et le manque qui va avec',
@@ -210,14 +210,14 @@ export const fr = {
       `${app} est développée par une seule personne. L’e-mail est le seul canal de support, et il arrive directement chez moi.`,
     emailLead: 'E-mail',
     responseNote:
-      'Réponse en général sous quelques jours. Si c’est urgent au sens où une ligne d’écoute est urgente, passe plutôt par l’une d’elles — elles répondent tout de suite, et moi peut-être pas.',
+      'Réponse en général sous quelques jours. Si c’est urgent au sens où une ligne d’écoute est urgente, passe plutôt par l’une d’elles : elles répondent tout de suite, et moi peut-être pas.',
     faqTitle: 'Les questions qui reviennent',
     faqs: (app, pricing, paid) => [
       {
         q: `Est-ce que ${app} bloque les sites ou les applis de paris ?`,
         a: [
           {
-            p: 'Non, et ça n’arrivera pas. C’est une app compagnon et un relevé, pas un outil de contrainte. Le blocage est un autre métier, mieux fait par les dispositifs prévus pour — la page ressources liste GAMSTOP pour le Royaume-Uni et les équivalents ailleurs.',
+            p: 'Non, et ça n’arrivera pas. C’est une app compagnon et un relevé, pas un outil de contrainte. Le blocage est un autre métier, mieux fait par les dispositifs prévus pour. La page ressources liste GAMSTOP pour le Royaume-Uni et les équivalents ailleurs.',
           },
         ],
       },
@@ -257,13 +257,13 @@ export const fr = {
         q: `Combien coûte ${app} ?`,
         a: paid ? [
           {
-            p: `Les ${pricing.trialDays} premiers jours sont gratuits, et il n’y a pas de carte bancaire à saisir pour commencer. Ensuite c’est ${pricing.monthly} par mois, ${pricing.annual} par an, ou ${pricing.lifetime} une seule fois. Les prix sont en euros — l’App Store affiche le tien dans ta devise avant l’achat.`,
+            p: `Les ${pricing.trialDays} premiers jours sont gratuits, et il n’y a pas de carte bancaire à saisir pour commencer. Ensuite c’est ${pricing.monthly} par mois, ${pricing.annual} par an, ou ${pricing.lifetime} une seule fois. Les prix sont en euros ; l’App Store affiche le tien dans ta devise avant l’achat.`,
           },
           {
             p: `L’essai dure en réalité un peu plus de ${pricing.trialDays} jours si tu n’as pas fait beaucoup de points quotidiens : il reste ouvert jusqu’à ce qu’il y en ait huit d’enregistrés, parce qu’avant ça la prévision a trop peu à lire et tu paierais pour la version la moins utile de l’app.`,
           },
           {
-            p: 'C’est Apple qui encaisse, pas moi — je ne vois jamais ta carte. Un abonnement se renouvelle jusqu’à ce que tu le résilies, et la résiliation se fait dans les réglages de ton iPhone, sous ton compte Apple, et non dans l’app. Résilier arrête le renouvellement suivant et te laisse la période déjà payée.',
+            p: 'C’est Apple qui encaisse, pas moi, et je ne vois jamais ta carte. Un abonnement se renouvelle jusqu’à ce que tu le résilies, et la résiliation se fait dans les réglages de ton iPhone, sous ton compte Apple, et non dans l’app. Résilier arrête le renouvellement suivant et te laisse la période déjà payée.',
           },
           {
             p: 'L’écran d’urgence et les lignes d’écoute restent gratuits quoi que tu choisisses, et le resteront toujours. Ce ne sont pas des options. Les réglages restent accessibles aussi, pour pouvoir toujours restaurer un achat ou tout supprimer.',
@@ -324,7 +324,7 @@ export const fr = {
     notTreatment:
       'Cette app tient ton relevé et estime où en est ton risque. Ce n’est pas un traitement, et ça ne remplace pas quelqu’un dont c’est le métier.',
     checked:
-      'Chaque entrée a été vérifiée sur le site de l’organisme concerné. Quand un numéro n’a pas pu être confirmé, seul le site est indiqué — un mauvais numéro à 2 h du matin est pire que pas de numéro du tout.',
+      'Chaque entrée a été vérifiée sur le site de l’organisme concerné. Quand un numéro n’a pas pu être confirmé, seul le site est indiqué. Un mauvais numéro à 2 h du matin est pire que pas de numéro du tout.',
     languageNote: 'Chaque entrée précise dans quelle langue on te répond.',
     call: (display) => `Appeler le ${display}`,
     open: (display) => `Ouvrir ${display}`,
@@ -367,7 +367,7 @@ export const fr = {
             },
             {
               note:
-                'Il n’y a pas non plus de sauvegarde. Si vous perdez le téléphone, le remplacez ou supprimez l’app, cet historique est perdu et ne peut pas être récupéré — ni par vous, ni par moi. Vous pouvez aussi le supprimer volontairement à tout moment : Réglages → Tout supprimer, immédiat et sans retour possible.',
+                'Il n’y a pas non plus de sauvegarde. Si vous perdez le téléphone, le remplacez ou supprimez l’app, cet historique est perdu et ne peut pas être récupéré, ni par vous, ni par moi. Vous pouvez aussi le supprimer volontairement à tout moment : Réglages → Tout supprimer, immédiat et sans retour possible.',
             },
           ],
         },
@@ -399,7 +399,7 @@ export const fr = {
           onlyWhenPaid: true,
           blocks: [
             {
-              p: `Tout achat est géré par ${ctx.purchasesMerchant}. Le paiement passe par votre compte Apple, ${ctx.purchasesMerchant} est le vendeur, et vos coordonnées bancaires ne me parviennent jamais, ni à cette app — j’apprends seulement qu’un achat existe, jamais qui l’a fait.`,
+              p: `Tout achat est géré par ${ctx.purchasesMerchant}. Le paiement passe par votre compte Apple, ${ctx.purchasesMerchant} est le vendeur, et vos coordonnées bancaires ne me parviennent jamais, ni à cette app. J’apprends seulement qu’un achat existe, jamais qui l’a fait.`,
             },
             {
               p: `Pour vérifier qu’un achat est toujours valable, l’app transmet le reçu de l’App Store à ${ctx.purchasesProcessor}, un prestataire de gestion d’abonnements agissant comme sous-traitant pour mon compte, sur des serveurs situés aux ${ctx.purchasesRegion}. Avec le reçu, elle transmet un identifiant d’utilisateur généré aléatoirement sur votre appareil. Cet identifiant n’est ni votre nom, ni votre e-mail, ni votre compte Apple, ni l’identifiant de votre appareil, et il n’est relié à rien de ce que vous notez.`,
@@ -416,7 +416,7 @@ export const fr = {
               p: `Ce prestataire opérant aux ${ctx.purchasesRegion}, un reçu et un identifiant aléatoire quittent effectivement l’Union européenne. Rien d’autre ne la quitte, et rien qui vous identifie ne fait partie de l’un ou de l’autre.`,
             },
             {
-              note: `C’est la seule partie de l’app qui parle à un serveur, et elle n’existe que parce qu’un reçu doit bien être vérifié quelque part. C’est aussi la raison pour laquelle la fiche App Store déclare « Achats » comme donnée collectée mais non reliée à votre identité — cette déclaration et ce paragraphe décrivent la même chose.`,
+              note: `C’est la seule partie de l’app qui parle à un serveur, et elle n’existe que parce qu’un reçu doit bien être vérifié quelque part. C’est aussi la raison pour laquelle la fiche App Store déclare « Achats » comme donnée collectée mais non reliée à votre identité. Cette déclaration et ce paragraphe décrivent la même chose.`,
             },
           ],
         },
@@ -424,7 +424,7 @@ export const fr = {
           heading: 'Ce site',
           blocks: [
             {
-              p: 'Ce site est composé de quelques pages statiques. Il ne dépose aucun cookie, n’utilise aucun outil de mesure, n’intègre aucun script, police ou traceur tiers, et ne contient aucun formulaire — il n’a donc rien à collecter sur vous.',
+              p: 'Ce site est composé de quelques pages statiques. Il ne dépose aucun cookie, n’utilise aucun outil de mesure, n’intègre aucun script, police ou traceur tiers, et ne contient aucun formulaire, il n’a donc rien à collecter sur vous.',
             },
             {
               p: `Il est hébergé par ${ctx.hostingProvider}, qui traite des journaux de serveur ordinaires, adresses IP comprises, pour servir les pages et absorber les attaques. Je n’utilise pas ces journaux pour identifier qui que ce soit.`,
@@ -461,7 +461,7 @@ export const fr = {
               p: 'Pour les statistiques anonymes, la base légale invoquée est l’intérêt légitime : comprendre quelles parties de l’app servent, pour que l’app fasse mieux ce pour quoi elle existe. Les données sont volontairement limitées à des compteurs, des booléens et des valeurs prédéfinies, ne contiennent rien de ce que vous avez écrit, et ne servent ni à établir un profil, ni à de la publicité, ni à prendre une décision vous concernant. Vous pouvez vous y opposer à tout moment au titre de l’article 21, et le paragraphe correspondant dit comment.',
             },
             {
-              p: `Si vous souhaitez malgré tout soulever un point, ou si vous n’êtes pas d’accord avec ce qui précède, écrivez à ${ctx.email}. Vous avez également le droit d’introduire une réclamation auprès de votre autorité de protection des données — en France, la CNIL.`,
+              p: `Si vous souhaitez malgré tout soulever un point, ou si vous n’êtes pas d’accord avec ce qui précède, écrivez à ${ctx.email}. Vous avez également le droit d’introduire une réclamation auprès de votre autorité de protection des données : en France, la CNIL.`,
             },
           ],
         },
@@ -517,7 +517,7 @@ export const fr = {
               p: 'Ce n’est pas un outil de blocage ou de contrainte. Elle ne peut pas et ne va pas vous empêcher de jouer, limiter des dépôts, fermer des comptes, ni vous interdire un site ou un établissement. Si c’est ce dont vous avez besoin, les dispositifs d’auto-exclusion listés sur la page ressources existent pour ça.',
             },
             {
-              p: 'L’estimation de risque est produite par des règles simples et publiées, appliquées aux données que vous saisissez et à un calendrier d’événements publics. Elle se trompera parfois. Elle est fournie comme une information avec laquelle discuter, pas comme un verdict — c’est pour cette raison qu’elle indique toujours ses motifs.',
+              p: 'L’estimation de risque est produite par des règles simples et publiées, appliquées aux données que vous saisissez et à un calendrier d’événements publics. Elle se trompera parfois. Elle est fournie comme une information avec laquelle discuter, pas comme un verdict. C’est pour cette raison qu’elle indique toujours ses motifs.',
             },
           ],
         },
@@ -575,7 +575,7 @@ export const fr = {
           heading: 'Ressources d’écoute et d’urgence',
           blocks: [
             {
-              p: 'L’app et ce site listent des lignes d’écoute et des organismes d’aide à titre de service. Ces services sont assurés par des tiers indépendants. Je ne les exploite pas, je n’emploie pas leur personnel, je ne supervise pas leurs conseils et je n’en assume pas la responsabilité — et le fait d’en lister un ne constitue pas une recommandation.',
+              p: 'L’app et ce site listent des lignes d’écoute et des organismes d’aide à titre de service. Ces services sont assurés par des tiers indépendants. Je ne les exploite pas, je n’emploie pas leur personnel, je ne supervise pas leurs conseils et je n’en assume pas la responsabilité, et le fait d’en lister un ne constitue pas une recommandation.',
             },
             {
               p: 'Chaque numéro a été vérifié auprès des coordonnées publiées par l’organisme lui-même, et lorsqu’un numéro n’a pas pu être confirmé, seul un site web est indiqué. Ces coordonnées peuvent malgré tout changer sans préavis. En cas d’urgence, appelez le numéro d’urgence local.',
@@ -641,7 +641,7 @@ export const fr = {
           heading: 'Contact',
           blocks: [
             {
-              p: `${ctx.legalName} — ${ctx.email}.`,
+              p: `${ctx.legalName}, ${ctx.email}.`,
             },
           ],
         },
@@ -650,7 +650,7 @@ export const fr = {
   },
 
   footer: {
-    tagline: (app) => `${app} — une app pour arrêter de parier.`,
+    tagline: (app) => `${app}: une app pour arrêter de parier.`,
     notTreatment: 'Ce n’est pas un traitement, et ça ne remplace pas un accompagnement professionnel.',
     contact: 'Contact',
     copyright: (year, holder) => `© ${year} ${holder}`,

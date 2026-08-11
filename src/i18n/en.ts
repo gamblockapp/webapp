@@ -38,25 +38,25 @@ export const en = {
 
   meta: {
     home: (app) => ({
-      title: `${app} — it counts what gambling cost you, and tells you which nights are coming`,
+      title: `${app}: it counts what gambling cost you, and tells you which nights are coming`,
       description:
         'A companion for stopping gambling. A nightly risk forecast built from your own patterns and the real sports calendar, a slip log that keeps your history, and everything stored on your phone. No account.',
     }),
     privacy: (app) => ({
-      title: `Privacy policy — ${app}`,
+      title: `Privacy policy · ${app}`,
       description:
         'What stays on your phone, what the anonymous statistics contain, and what is never collected.',
     }),
     terms: (app) => ({
-      title: `Terms and conditions — ${app}`,
+      title: `Terms and conditions · ${app}`,
       description: `The agreement covering your use of ${app}, including what it is not.`,
     }),
     support: (app) => ({
-      title: `Support — ${app}`,
+      title: `Support · ${app}`,
       description: `How to get help with ${app}, and answers to the questions that come up most.`,
     }),
     help: () => ({
-      title: 'Talk to someone — gambling helplines and crisis resources',
+      title: 'Talk to someone · gambling helplines and crisis resources',
       description:
         'Free, confidential gambling helplines and crisis lines by country. Checked against each organisation’s own site.',
     }),
@@ -92,7 +92,7 @@ export const en = {
     hook: 'Nobody’s up.',
     line1: 'Not over a year. Not over ten.',
     lead: (app) =>
-      `${app} counts what it actually cost you, and tells you which nights are coming — built from your own patterns and the real sports calendar.`,
+      `${app} counts what it actually cost you, and tells you which nights are coming, built from your own patterns and the real sports calendar.`,
     // mobile/i18n/en/onboarding.ts → opening.line3, split for display.
     refusalList: ['No therapy', 'No blocking', 'No lectures'],
     comingSoon: 'Coming to the App Store',
@@ -109,7 +109,7 @@ export const en = {
       trial: (days) => `Free for ${days} days. No card to start.`,
       plans: (p) => [
         `${p.monthly} a month`,
-        `${p.annual} a year — ${p.annualPerMonth} a month, taken once a year`,
+        `${p.annual} a year, which is ${p.annualPerMonth} a month taken once a year`,
         `${p.lifetime} once`,
       ],
       note: 'Prices are in euros; the App Store shows the price in your own currency before you buy. Apple takes the payment, and you can cancel from your own Settings at any time.',
@@ -131,12 +131,12 @@ export const en = {
       eyebrow: 'The thing it does that nothing else does',
       title: 'Your patterns, crossed with the calendar.',
       body:
-        'Most apps in this category treat an urge as weather to be journalled after the fact. For gambling, the biggest triggers are external and published weeks in advance — payday, a full fixture list, a tournament final. Every evening the app crosses what you have logged with what is actually on, and says what tonight looks like.',
+        'Most apps in this category treat an urge as weather to be journalled after the fact. For gambling, the biggest triggers are external and published weeks in advance: payday, a full fixture list, a tournament final. Every evening the app crosses what you have logged with what is actually on, and says what tonight looks like.',
       bandsEyebrow: 'Three bands, and that’s all',
       bands: ['Low risk', 'Elevated risk', 'High risk'],
       // Invariant 2, stated as a feature rather than a footnote.
       caption:
-        'A high-risk night reads like a weather warning, not a telling-off — and it always shows what produced it. You can look at those reasons and disagree with them; that is the point of printing them. A wrong forecast you can argue with is useful, and a score with no workings is not.',
+        'A high-risk night reads like a weather warning, not a telling-off, and it always shows what produced it. You can look at those reasons and disagree with them; that is the point of printing them. A wrong forecast you can argue with is useful, and a score with no workings is not.',
     },
 
     slip: {
@@ -154,7 +154,7 @@ export const en = {
       eyebrow: 'The number nobody has written down',
       title: 'Where the money stands.',
       body:
-        'During setup it asks one question about money: roughly what a typical month used to cost. Not what you staked — what was actually gone by the end of it. From there it keeps a running account of what the old pattern would have taken, less what slips actually cost, and it says so when a slip has no amount recorded rather than inventing one.',
+        'During setup it asks one question about money: roughly what a typical month used to cost. Not what you staked, but what was actually gone by the end of it. From there it keeps a running account of what the old pattern would have taken, less what slips actually cost, and it says so when a slip has no amount recorded rather than inventing one.',
       exampleEyebrow: 'An example, not a promise',
       example:
         'Someone who put £600 a month in is looking at £7,200 a year, or about £20 a day. Most people have never seen that written down.',
@@ -174,7 +174,7 @@ export const en = {
         {
           title: 'Your patterns',
           body:
-            'The weekday that is hardest, the hours urges cluster in, what your slips had in common. Where there is not enough logged to say something honestly, the screen says nothing rather than guessing — anything drawn from less than that would be a horoscope.',
+            'The weekday that is hardest, the hours urges cluster in, what your slips had in common. Where there is not enough logged to say something honestly, the screen says nothing rather than guessing. Anything drawn from less than that would be a horoscope.',
         },
         {
           title: 'Thirty seconds a day',
@@ -194,9 +194,9 @@ export const en = {
       // mobile/i18n/en/onboarding.ts → opening.privacyBody, and
       // mobile/i18n/en/secondary.ts → settings.data.onDevice.
       body:
-        'No account. No email. Nothing synced. Everything you log is stored on this phone only, there is no server holding it, and no one else can see it — not us either.',
+        'No account. No email. Nothing synced. Everything you log is stored on this phone only, there is no server holding it, and no one else can see it, not us either.',
       analytics:
-        'The app reports which screens get used and nothing else — never your notes, your reasons, your amounts, your urge levels, or which triggers you pick. No account, no email, and nothing that identifies you. These anonymous statistics are on by default; the privacy policy says exactly what they contain and how to stop them.',
+        'The app reports which screens get used and nothing else: never your notes, your reasons, your amounts, your urge levels, or which triggers you pick. No account, no email, and nothing that identifies you. These anonymous statistics are on by default; the privacy policy says exactly what they contain and how to stop them.',
       gapTitle: 'And the gap that comes with that',
       // mobile/i18n/en/secondary.ts → settings.data.noBackup. On the landing
       // page on purpose: better read here than discovered after a phone upgrade.
@@ -225,14 +225,14 @@ export const en = {
       `${app} is built by one person. Email is the only support channel, and it reaches me directly.`,
     emailLead: 'Email',
     responseNote:
-      'Usually answered within a few days. If it’s urgent in the way a helpline is urgent, please use one of those instead — they answer immediately and I might not.',
+      'Usually answered within a few days. If it’s urgent in the way a helpline is urgent, please use one of those instead: they answer immediately and I might not.',
     faqTitle: 'Questions that come up',
     faqs: (app, pricing, paid) => [
       {
         q: `Does ${app} block gambling sites or apps?`,
         a: [
           {
-            p: 'No, and it never will. It is a companion and a record, not an enforcement tool. Blocking is a different job done better by schemes built for it — the resources page lists GAMSTOP for Great Britain and the equivalents elsewhere.',
+            p: 'No, and it never will. It is a companion and a record, not an enforcement tool. Blocking is a different job done better by schemes built for it. The resources page lists GAMSTOP for Great Britain and the equivalents elsewhere.',
           },
         ],
       },
@@ -274,13 +274,13 @@ export const en = {
         q: `What does ${app} cost?`,
         a: paid ? [
           {
-            p: `The first ${pricing.trialDays} days are free, and you don't need to enter a card to start. After that it is ${pricing.monthly} a month, ${pricing.annual} a year, or ${pricing.lifetime} once. Prices are in euros — the App Store shows yours in your own currency before you buy.`,
+            p: `The first ${pricing.trialDays} days are free, and you don't need to enter a card to start. After that it is ${pricing.monthly} a month, ${pricing.annual} a year, or ${pricing.lifetime} once. Prices are in euros; the App Store shows yours in your own currency before you buy.`,
           },
           {
             p: `The trial is actually a little longer than ${pricing.trialDays} days if you have not checked in much: it stays open until there are eight check-ins on the record, because until then the forecast has too little to read and you would be paying for the least useful version of the app.`,
           },
           {
-            p: 'Apple takes the payment, not me — I never see your card. A subscription renews until you cancel it, and you cancel it in your own iPhone Settings under your Apple Account rather than in the app. Cancelling stops the next renewal and leaves you the time you have already paid for.',
+            p: 'Apple takes the payment, not me, and I never see your card. A subscription renews until you cancel it, and you cancel it in your own iPhone Settings under your Apple Account rather than in the app. Cancelling stops the next renewal and leaves you the time you have already paid for.',
           },
           {
             p: 'The urge screen and the helplines stay free whatever you choose, and always will. They aren’t a feature. Settings stays reachable too, so you can always restore a purchase or delete everything.',
@@ -302,7 +302,7 @@ export const en = {
         q: 'How do I turn the anonymous statistics off?',
         a: [
           {
-            p: 'They are on, and there is no switch for them in the app at the moment — that is a deliberate choice I am not going to dress up. Deleting the app stops them for good. Settings → Delete everything discards the random identifier along with your data, so nothing sent afterwards can be joined to anything sent before. If you would rather they stopped and you would rather not delete anything, write to me and I will act on it. The privacy policy lists exactly what they contain.',
+            p: 'They are on, and there is no switch for them in the app at the moment, and that is a deliberate choice I am not going to dress up. Deleting the app stops them for good. Settings → Delete everything discards the random identifier along with your data, so nothing sent afterwards can be joined to anything sent before. If you would rather they stopped and you would rather not delete anything, write to me and I will act on it. The privacy policy lists exactly what they contain.',
           },
         ],
       },
@@ -341,7 +341,7 @@ export const en = {
     notTreatment:
       'This app keeps your record and works out where your risk is. It isn’t treatment, and it isn’t a substitute for talking to someone who does this for a living.',
     checked:
-      'Each of these was checked against the organisation’s own site. Where a number couldn’t be confirmed, only the website is listed — a wrong number at 2am is worse than none.',
+      'Each of these was checked against the organisation’s own site. Where a number couldn’t be confirmed, only the website is listed. A wrong number at 2am is worse than none.',
     languageNote: 'Each entry says which language it is answered in.',
     call: (display) => `Call ${display}`,
     open: (display) => `Open ${display}`,
@@ -383,7 +383,7 @@ export const en = {
             },
             {
               note:
-                'There is also no backup. If you lose the phone, replace it, or delete the app, that history is gone and cannot be recovered — not by you and not by me. You can also delete all of it deliberately at any time: Settings → Delete everything, which is immediate and cannot be undone.',
+                'There is also no backup. If you lose the phone, replace it, or delete the app, that history is gone and cannot be recovered, not by you and not by me. You can also delete all of it deliberately at any time: Settings → Delete everything, which is immediate and cannot be undone.',
             },
           ],
         },
@@ -400,7 +400,7 @@ export const en = {
               p: 'That identifier is invented at random on your phone the first time anything is sent, and kept until the app is deleted. It means the events from one installation can be counted as one person rather than as a crowd of strangers, which is the difference between knowing whether a change helped and knowing nothing. It is derived from nothing: not your device, not your Apple Account, not an advertising identifier, and there is no account identifier because there are no accounts. It cannot be joined to another app’s data or to you, and it dies with the installation.',
             },
             {
-              p: 'What is never sent, ever: your notes, your reasons, the amounts you log, your urge levels, which triggers you pick, your payday, your start date, your monthly figure, or anything else you typed. The rule is counts, flags and fixed values only. It is enforced in the app’s source rather than by policy — one file lists every event and every property permitted, and nothing outside it can be transmitted.',
+              p: 'What is never sent, ever: your notes, your reasons, the amounts you log, your urge levels, which triggers you pick, your payday, your start date, your monthly figure, or anything else you typed. The rule is counts, flags and fixed values only. It is enforced in the app’s source rather than by policy: one file lists every event and every property permitted, and nothing outside it can be transmitted.',
             },
             {
               p: `These messages are processed on my behalf by ${ctx.analyticsProcessor}, an analytics provider, on servers in ${ctx.analyticsRegion}. As with any internet request, it arrives from your IP address, and an approximate country can be derived from that; the IP address is not part of the message and is not stored by me. ${ctx.analyticsProcessor} acts as a processor and may not use the data for its own purposes.`,
@@ -415,7 +415,7 @@ export const en = {
           onlyWhenPaid: true,
           blocks: [
             {
-              p: `Buying anything is handled by ${ctx.purchasesMerchant}. Payment goes through your Apple Account, ${ctx.purchasesMerchant} is the merchant, and your card details never reach me or this app — I only ever learn that a purchase exists, never who made it.`,
+              p: `Buying anything is handled by ${ctx.purchasesMerchant}. Payment goes through your Apple Account, ${ctx.purchasesMerchant} is the merchant, and your card details never reach me or this app. I only ever learn that a purchase exists, never who made it.`,
             },
             {
               p: `To check whether a purchase is still valid, the app sends the App Store receipt to ${ctx.purchasesProcessor}, a subscription-management provider acting as a processor on my behalf, on servers in ${ctx.purchasesRegion}. Alongside the receipt it sends an app-user identifier generated at random on your device. That identifier is not your name, your email, your Apple Account or your device id, and it is not connected to anything you log.`,
@@ -432,7 +432,7 @@ export const en = {
               p: `Because that provider operates in ${ctx.purchasesRegion}, a receipt and a random identifier do leave the European Union. Nothing else does, and nothing that identifies you is part of either.`,
             },
             {
-              note: `This is the one part of the app that talks to a server, and it exists only because a receipt has to be checked somewhere. It is also the reason the App Store listing declares "Purchases" as data collected but not linked to your identity — that declaration and this paragraph describe the same thing.`,
+              note: `This is the one part of the app that talks to a server, and it exists only because a receipt has to be checked somewhere. It is also the reason the App Store listing declares "Purchases" as data collected but not linked to your identity. That declaration and this paragraph describe the same thing.`,
             },
           ],
         },
@@ -440,7 +440,7 @@ export const en = {
           heading: 'This website',
           blocks: [
             {
-              p: `This site is a few static pages. It sets no cookies, runs no analytics, embeds no third-party scripts, fonts or trackers, and has no forms — so there is nothing for it to collect about you.`,
+              p: `This site is a few static pages. It sets no cookies, runs no analytics, embeds no third-party scripts, fonts or trackers, and has no forms, so there is nothing for it to collect about you.`,
             },
             {
               p: `It is hosted by ${ctx.hostingProvider}, which processes ordinary web-server request logs, including IP addresses, to serve pages and absorb attacks. I do not use those logs to identify anyone.`,
@@ -591,7 +591,7 @@ export const en = {
           heading: 'Crisis and support resources',
           blocks: [
             {
-              p: 'The app and this site list helplines and support organisations as a convenience. Those services are run by independent third parties. I do not operate them, employ their staff, supervise their advice or take responsibility for what they do — and listing one is not an endorsement of it.',
+              p: 'The app and this site list helplines and support organisations as a convenience. Those services are run by independent third parties. I do not operate them, employ their staff, supervise their advice or take responsibility for what they do, and listing one is not an endorsement of it.',
             },
             {
               p: 'Every number was checked against the organisation’s own published contact details, and where a number could not be confirmed only a website is listed. Contact details still change without notice. In an emergency, use your local emergency number.',
@@ -657,7 +657,7 @@ export const en = {
           heading: 'Contact',
           blocks: [
             {
-              p: `${ctx.legalName} — ${ctx.email}.`,
+              p: `${ctx.legalName}, ${ctx.email}.`,
             },
           ],
         },
@@ -666,7 +666,7 @@ export const en = {
   },
 
   footer: {
-    tagline: (app) => `${app} — a companion for stopping gambling.`,
+    tagline: (app) => `${app}: a companion for stopping gambling.`,
     notTreatment: 'Not treatment, and not a substitute for professional support.',
     contact: 'Contact',
     copyright: (year, holder) => `© ${year} ${holder}`,

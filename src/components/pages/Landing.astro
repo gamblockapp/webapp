@@ -36,6 +36,39 @@ const meta = copy.meta.home(APP_NAME);
 const pricing = pricingStrings(locale);
 
 /**
+ * The bar field behind the hero, ported from `mobile/components/SonarWave.tsx`.
+ *
+ * It replaced a radar of expanding rings and a rotating wedge. That was a fair
+ * reading of the word *sonar* and the wrong one for this product, because the
+ * app never draws a radar. It draws bars: the cover breathes a field of them
+ * and the home screen's week strip is seven. Someone who meets the site and
+ * then opens the app should recognise the second from the first, and rings
+ * taught them a shape the app does not use.
+ *
+ * Same arithmetic as the app, so the silhouette is the same object. Two sines
+ * multiplied, one for the swell and one for the envelope, which gives the field
+ * a shape rather than a sawtooth and stops any two neighbours matching.
+ *
+ * Computed here, at build time, because this site ships no client-side
+ * JavaScript at all. Each bar carries its own height and delay as custom
+ * properties and CSS does the rest.
+ */
+const WAVE_BARS = 34;
+const WAVE_PERIOD_S = 9;
+const wave = Array.from({ length: WAVE_BARS }, (_, i) => {
+  const swell = 0.5 + 0.5 * Math.sin(i * 0.42 - 1.1);
+  const envelope = 0.42 + 0.58 * (0.5 + 0.5 * Math.sin(i * 0.15 + 0.6));
+  return {
+    // The app's 14-88px bar inside a 118px field, kept as a fraction so this
+    // field can be any height without redoing the numbers.
+    height: (14 + 74 * swell * envelope) / 118,
+    // Negative, so the field is already mid-cycle on first paint rather than
+    // starting from a flat wall and brightening once while someone watches.
+    delay: -(i / WAVE_BARS) * WAVE_PERIOD_S,
+  };
+});
+
+/**
  * The App Store link, carrying the campaign token for this locale so App Store
  * Connect can separate English from French traffic. Null until the app is on
  * sale, which renders the "coming soon" badge instead.
@@ -50,6 +83,26 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   {/* Hero. The headline says what the app does; the hook, one line down, says
        why. Leading with the hook read as a verdict on the reader. */}
   <section class="hero">
+    {/*
+      The app's own bar field, and the full width of the hero rather than a halo
+      around the phone.
+
+      It earns its place the way the rings claimed to: the app is called Sonar
+      and it reads what is ahead rather than totting up what is behind. Bars are
+      how it draws that, on the cover and again as the week strip, so this is
+      the one piece of decoration here that also explains the product.
+
+      Full width because that is what it is in the app: an uninterrupted band
+      with nothing on top of it. Centred on the phone instead, the swell landed
+      behind the mock and only fragments showed at either edge, which reads as
+      noise rather than as a wave. Purely presentational, so it is hidden from
+      assistive tech.
+    */}
+    <div class="wave" aria-hidden="true">
+      {wave.map((bar) => (
+        <span style={`--h:${(bar.height * 100).toFixed(2)}%;--d:${bar.delay.toFixed(3)}s`} />
+      ))}
+    </div>
     <div class="page hero__grid">
       <div class="hero__copy">
         <p class="eyebrow hero__tagline">{c.tagline}</p>
@@ -94,13 +147,6 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
           decoration here that is also an explanation. Purely presentational, so
           it is hidden from assistive tech.
         */}
-        <div class="sonar" aria-hidden="true">
-          <span class="sonar__sweep"></span>
-          <span class="sonar__ring"></span>
-          <span class="sonar__ring"></span>
-          <span class="sonar__ring"></span>
-        </div>
-
         <div class="phone">
           <div class="phone__chrome">
             <span class="phone__name">{APP_NAME}</span>
@@ -446,120 +492,75 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     isolation: isolate;
   }
 
-  /* ---------- The sonar sweep ---------- */
+  /* ---------- The bar field ---------- */
 
-  .sonar {
-    position: absolute;
-    /* Centred on the phone and much larger than it, so the rings read as leaving
-       the device rather than framing it. */
-    top: 50%;
-    left: 50%;
-    width: min(42rem, 175%);
-    aspect-ratio: 1;
-    translate: -50% -50%;
-    z-index: -1;
-    pointer-events: none;
-    /*
-     * Fades to nothing before it reaches its own bounding box.
-     *
-     * Without this the sweep was still at full strength where `.hero`'s
-     * `overflow: hidden` cut it off, which put a hard diagonal edge across the
-     * top-right of the page that read as a rendering bug. The clip still happens;
-     * there is just nothing left to clip by then.
-     */
-    mask: radial-gradient(circle, black 52%, transparent 88%);
-  }
-
-  .sonar__ring,
-  .sonar__sweep {
+  .wave {
     position: absolute;
     inset: 0;
-    border-radius: 50%;
+    z-index: -1;
+    pointer-events: none;
+
+    display: flex;
+    align-items: center;
+    gap: 0.4%;
+
+    /*
+     * Two masks, intersected. Vertically it fades in from the top and out at
+     * the very bottom, so the field is a ground the hero stands on rather than
+     * a pattern behind the headline. Horizontally it is weakest on the left,
+     * where the copy is, and strongest on the right behind the phone: one
+     * field, read at the exposure each half of the layout can carry.
+     *
+     * The fade also does the job the radar's radial mask did. `.hero` has
+     * `overflow: hidden`, and anything still at full strength where the clip
+     * lands leaves a hard edge that reads as a rendering bug.
+     */
+    mask:
+      linear-gradient(to bottom, transparent 4%, black 58%, black 88%, transparent 100%),
+      linear-gradient(to right, transparent 2%, rgb(0 0 0 / 0.3) 32%, black 70%, transparent 99%);
+    mask-composite: intersect;
   }
 
-  .sonar__ring {
-    border: 1px solid var(--c-accent);
-    opacity: 0;
-    animation: sonar-ping 9s cubic-bezier(0.15, 0.6, 0.35, 1) infinite;
+  .wave > span {
+    flex: 1;
+    height: var(--h);
+    border-radius: 999px;
+    background: var(--c-accent);
+    /*
+     * Dim, bright, dim, and never fully on, so the field stays a texture rather
+     * than a light show. The app runs 0.13 to 0.92 on a bare cover screen; this
+     * one has a headline beside it, so the ceiling comes down. The shape is the
+     * part that has to match, not the exposure.
+     */
+    opacity: 0.1;
+    animation: wave-breathe 9s linear infinite;
+    animation-delay: var(--d);
   }
 
-  /* Three rings on one 9s cycle, evenly offset, so a ring leaves every three
-     seconds and the sequence never bunches up. Negative delays start the cycle
-     already in progress rather than with an empty first nine seconds. */
-  .sonar__ring:nth-child(2) {
-    animation-delay: -6s;
-  }
-
-  .sonar__ring:nth-child(3) {
-    animation-delay: -3s;
-  }
-
-  @keyframes sonar-ping {
+  @keyframes wave-breathe {
     0% {
-      transform: scale(0.28);
-      opacity: 0;
+      opacity: 0.1;
     }
-    12% {
+    46% {
       opacity: 0.62;
     }
     100% {
-      transform: scale(1);
-      opacity: 0;
+      opacity: 0.1;
     }
   }
 
   /*
-   * The rotating wedge. A conic gradient turning once every 24 seconds — slow
-   * enough to be atmosphere rather than a spinner, and masked to a soft ring so
-   * it has no hard outer edge to give the trick away.
-   */
-  .sonar__sweep {
-    /*
-     * Both ends of the wedge are transparent, which is the whole trick. Starting
-     * the gradient *at* the colour meant 0deg and 100% were different values, and
-     * a conic gradient joins those two directly — so the seam showed up as a hard
-     * radial line across the top-right corner. Fading in and back out leaves
-     * nothing at the join.
-     */
-    background: conic-gradient(
-      from 0deg,
-      transparent 0%,
-      color-mix(in srgb, var(--c-accent) 30%, transparent) 9%,
-      transparent 27%,
-      transparent 100%
-    );
-    mask: radial-gradient(circle, transparent 26%, black 55%, transparent 78%);
-    animation: sonar-sweep 24s linear infinite;
-  }
-
-  @keyframes sonar-sweep {
-    to {
-      rotate: 1turn;
-    }
-  }
-
-  /*
-   * Reduced motion keeps the sonar, it just stops it moving. Removing it outright
-   * was the first attempt and it was the wrong trade: asking for less movement
-   * isn't asking to be shown a plainer product, and the rings are the only place
-   * the name is explained. Frozen mid-cycle at three fixed radii instead.
+   * Reduced motion keeps the field and stops it moving, which was the right
+   * trade for the rings and is the right one here: asking for less movement is
+   * not asking to be shown a plainer product, and this is the only place on the
+   * page the name is explained. Held flat at a legible value, where the standing
+   * wave is still the shape it was. That shape is the content, and it survives
+   * without the travel.
    */
   @media (prefers-reduced-motion: reduce) {
-    .sonar__ring,
-    .sonar__sweep {
+    .wave > span {
       animation: none;
-    }
-
-    .sonar__ring {
-      opacity: 0.4;
-    }
-
-    .sonar__ring:nth-child(2) {
-      scale: 0.72;
-    }
-
-    .sonar__ring:nth-child(3) {
-      scale: 0.44;
+      opacity: 0.3;
     }
   }
 
