@@ -12,6 +12,7 @@ import {
   LEGAL_NAME,
   PRICING,
   SITE_URL,
+  PAID,
 } from '../config';
 import { alternates, otherLocale, path, t, type Locale, type RouteKey } from '../i18n';
 
@@ -113,17 +114,24 @@ const structuredData = {
             description,
             publisher: { '@id': `${SITE_URL}/#org` },
             ...(APP_STORE_URL ? { installUrl: APP_STORE_URL } : {}),
-            offers: [
-              { price: PRICING.monthlyMinor / 100, name: 'Monthly' },
-              { price: PRICING.annualMinor / 100, name: 'Annual' },
-              { price: PRICING.lifetimeMinor / 100, name: 'Lifetime' },
-            ].map((o) => ({
-              '@type': 'Offer',
-              name: o.name,
-              price: o.price.toFixed(2),
-              priceCurrency: PRICING.currency,
-              category: o.name === 'Lifetime' ? 'OneTimePayment' : 'Subscription',
-            })),
+            // A single zero-price offer while the app charges nothing. This is
+            // the copy of the price that a search or answer engine actually
+            // reads, so leaving the three plans in here would have published a
+            // price to every machine that asks while every human-readable page
+            // said the app was free — the one mismatch nobody would have seen.
+            offers: PAID
+              ? [
+                  { price: PRICING.monthlyMinor / 100, name: 'Monthly' },
+                  { price: PRICING.annualMinor / 100, name: 'Annual' },
+                  { price: PRICING.lifetimeMinor / 100, name: 'Lifetime' },
+                ].map((o) => ({
+                  '@type': 'Offer',
+                  name: o.name,
+                  price: o.price.toFixed(2),
+                  priceCurrency: PRICING.currency,
+                  category: o.name === 'Lifetime' ? 'OneTimePayment' : 'Subscription',
+                }))
+              : [{ '@type': 'Offer', price: '0', priceCurrency: PRICING.currency }],
           },
         ]
       : []),
@@ -146,7 +154,7 @@ const structuredData = {
     }
     <link rel="alternate" hreflang="x-default" href={new URL(path('en', route), SITE_URL).href} />
 
-    <!--
+    {/*
       Three sizes of one mark, all resampled from `og-icon.png`, which is the
       1024px master.
 
@@ -156,7 +164,7 @@ const structuredData = {
 
       Not to be replaced with `../mobile/assets/favicon.png`: that file is still
       Expo's template artwork, blue with the alignment guides visible in it.
-    -->
+    */}
     <link rel="icon" href="/favicon.png" sizes="48x48" type="image/png" />
     <link rel="icon" href="/favicon-96.png" sizes="96x96" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -170,10 +178,10 @@ const structuredData = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <!-- Approved copy, not a fresh sentence: rule 1 applies to alt attributes
-         too, and this is what the card actually has printed on it. -->
+    {/* Approved copy, not a fresh sentence: rule 1 applies to alt attributes
+         too, and this is what the card actually has printed on it. */}
     <meta property="og:image:alt" content={`${APP_NAME} — ${copy.landing.tagline}`} />
-    <!-- `summary_large_image` now that there is a wide image to put in it. -->
+    {/* `summary_large_image` now that there is a wide image to put in it. */}
     <meta name="twitter:card" content="summary_large_image" />
 
     {
@@ -195,7 +203,7 @@ const structuredData = {
       )
     }
 
-    <!--
+    {/*
       No analytics, no fonts, no third-party anything. The privacy policy claims
       this page sets no cookies and loads no external resources; adding a script
       tag with a `src` here would make that claim false, so don't.
@@ -204,18 +212,18 @@ const structuredData = {
       is inline data, never executed and never fetched, so nothing leaves the
       reader's browser. The repo's guard grep looks for `src="http..."` and stays
       green. See the note on `structuredData` above for why it exists at all.
-    -->
+    */}
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
 
   <body>
     <a class="skip-link" href="#main">{copy.nav.skipToContent}</a>
 
-    <!--
+    {/*
       Reading progress. Scrubbed by scroll position in CSS, so it carries no
       state and needs no script. Presentational only — it duplicates the
       scrollbar, which assistive tech already reports.
-    -->
+    */}
     <div class="progress" aria-hidden="true"></div>
 
     <header class="site-header">

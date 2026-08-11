@@ -100,6 +100,8 @@ export const en = {
     // true the moment `mobile/purchases/` and the 14-day trial landed. The trial
     // is the honest version of the same welcome.
     comingSoonNote: 'iPhone first. Free for 14 days, then a subscription.',
+    /** Used instead of the above while `PAID` is false — see src/config.ts. */
+    comingSoonNoteFree: 'iPhone first. Free, with nothing to buy.',
     download: 'Download on the App Store',
 
     pricing: {
@@ -225,7 +227,7 @@ export const en = {
     responseNote:
       'Usually answered within a few days. If it’s urgent in the way a helpline is urgent, please use one of those instead — they answer immediately and I might not.',
     faqTitle: 'Questions that come up',
-    faqs: (app, pricing) => [
+    faqs: (app, pricing, paid) => [
       {
         q: `Does ${app} block gambling sites or apps?`,
         a: [
@@ -266,9 +268,11 @@ export const en = {
           },
         ],
       },
+      // Asked whether or not there is anything to pay, so it is answered either
+      // way rather than omitted — a missing price question reads as evasion.
       {
         q: `What does ${app} cost?`,
-        a: [
+        a: paid ? [
           {
             p: `The first ${pricing.trialDays} days are free, and you don't need to enter a card to start. After that it is ${pricing.monthly} a month, ${pricing.annual} a year, or ${pricing.lifetime} once. Prices are in euros — the App Store shows yours in your own currency before you buy.`,
           },
@@ -280,6 +284,13 @@ export const en = {
           },
           {
             p: 'The urge screen and the helplines stay free whatever you choose, and always will. They aren’t a feature. Settings stays reachable too, so you can always restore a purchase or delete everything.',
+          },
+        ] : [
+          {
+            p: 'Nothing. There is no charge, no trial to run out, and nothing to enter a card for. Every part of the app is open.',
+          },
+          {
+            p: 'That may change later, and if it does I will say so here before it does rather than after. What will not change is the urge screen and the helplines: those stay free whatever happens to the rest, and they are not a feature.',
           },
         ],
       },
@@ -401,6 +412,7 @@ export const en = {
         },
         {
           heading: 'If you subscribe',
+          onlyWhenPaid: true,
           blocks: [
             {
               p: `Buying anything is handled by ${ctx.purchasesMerchant}. Payment goes through your Apple Account, ${ctx.purchasesMerchant} is the merchant, and your card details never reach me or this app — I only ever learn that a purchase exists, never who made it.`,
@@ -538,6 +550,7 @@ export const en = {
         },
         {
           heading: 'What it costs',
+          onlyWhenPaid: true,
           blocks: [
             {
               p: `${ctx.app} is free to download and free to use for the first ${ctx.pricing.trialDays} days, with no payment details required to begin. The trial does not end while there are fewer than eight daily check-ins on the record.`,

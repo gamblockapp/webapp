@@ -88,6 +88,8 @@ export const fr = {
     // cessé d’être vrai dès l’arrivée de `mobile/purchases/` et de l’essai de
     // 14 jours. L’essai est la version honnête du même accueil.
     comingSoonNote: 'iPhone d’abord. Gratuit 14 jours, puis un abonnement.',
+    /** Utilisé à la place de la ligne ci-dessus tant que `PAID` est faux. */
+    comingSoonNoteFree: 'iPhone d’abord. Gratuit, et rien à acheter.',
     download: 'Télécharger dans l’App Store',
 
     pricing: {
@@ -210,7 +212,7 @@ export const fr = {
     responseNote:
       'Réponse en général sous quelques jours. Si c’est urgent au sens où une ligne d’écoute est urgente, passe plutôt par l’une d’elles — elles répondent tout de suite, et moi peut-être pas.',
     faqTitle: 'Les questions qui reviennent',
-    faqs: (app, pricing) => [
+    faqs: (app, pricing, paid) => [
       {
         q: `Est-ce que ${app} bloque les sites ou les applis de paris ?`,
         a: [
@@ -253,7 +255,7 @@ export const fr = {
       },
       {
         q: `Combien coûte ${app} ?`,
-        a: [
+        a: paid ? [
           {
             p: `Les ${pricing.trialDays} premiers jours sont gratuits, et il n’y a pas de carte bancaire à saisir pour commencer. Ensuite c’est ${pricing.monthly} par mois, ${pricing.annual} par an, ou ${pricing.lifetime} une seule fois. Les prix sont en euros — l’App Store affiche le tien dans ta devise avant l’achat.`,
           },
@@ -265,6 +267,13 @@ export const fr = {
           },
           {
             p: 'L’écran d’urgence et les lignes d’écoute restent gratuits quoi que tu choisisses, et le resteront toujours. Ce ne sont pas des options. Les réglages restent accessibles aussi, pour pouvoir toujours restaurer un achat ou tout supprimer.',
+          },
+        ] : [
+          {
+            p: 'Rien. Il n’y a pas de prix, pas d’essai qui se termine, et aucune carte à saisir. Toutes les parties de l’app sont ouvertes.',
+          },
+          {
+            p: 'Ça pourra changer plus tard, et si c’est le cas je l’écrirai ici avant, pas après. Ce qui ne changera pas, c’est l’écran d’urgence et les lignes d’écoute : ils restent gratuits quoi qu’il arrive, et ce ne sont pas des options.',
           },
         ],
       },
@@ -387,6 +396,7 @@ export const fr = {
         },
         {
           heading: 'Si vous vous abonnez',
+          onlyWhenPaid: true,
           blocks: [
             {
               p: `Tout achat est géré par ${ctx.purchasesMerchant}. Le paiement passe par votre compte Apple, ${ctx.purchasesMerchant} est le vendeur, et vos coordonnées bancaires ne me parviennent jamais, ni à cette app — j’apprends seulement qu’un achat existe, jamais qui l’a fait.`,
@@ -524,6 +534,7 @@ export const fr = {
         },
         {
           heading: 'Ce que ça coûte',
+          onlyWhenPaid: true,
           blocks: [
             {
               p: `${ctx.app} est gratuite à télécharger et gratuite à utiliser pendant les ${ctx.pricing.trialDays} premiers jours, sans aucune coordonnée bancaire pour commencer. L’essai ne se termine pas tant qu’il y a moins de huit points quotidiens enregistrés.`,

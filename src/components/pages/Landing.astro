@@ -1,5 +1,5 @@
 ---
-import { APP_NAME, CAMPAIGN, PRICING, appStoreLink } from '../../config';
+import { APP_NAME, CAMPAIGN, PRICING, appStoreLink, PAID } from '../../config';
 import { path, t, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 import { pricingStrings } from '../../pricing';
@@ -47,19 +47,19 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
 ---
 
 <Base locale={locale} route="home" title={meta.title} description={meta.description}>
-  <!-- Hero. The headline says what the app does; the hook, one line down, says
-       why. Leading with the hook read as a verdict on the reader. -->
+  {/* Hero. The headline says what the app does; the hook, one line down, says
+       why. Leading with the hook read as a verdict on the reader. */}
   <section class="hero">
     <div class="page hero__grid">
       <div class="hero__copy">
         <p class="eyebrow hero__tagline">{c.tagline}</p>
 
-        <!--
+        {/*
           Both halves of the claim are inside the H1: "Nobody's up" on its own is a
           bare assertion, and "not over a year, not over ten" is the part that makes
           it a statement about the house edge rather than about the reader. The
           heading a screen reader announces should be the whole argument.
-        -->
+        */}
         <h1 class="hero__headline">
           <span class="display hero__headline-main">{c.hook}</span>
           <span class="hero__headline-sub">{c.line1}</span>
@@ -81,19 +81,19 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
               <p class="badge">{c.comingSoon}</p>
             )
           }
-          <p class="small faint">{c.comingSoonNote}</p>
+          <p class="small faint">{PAID ? c.comingSoonNote : c.comingSoonNoteFree}</p>
         </div>
       </div>
 
-      <!-- Invariant 2: the band never appears without the reasons under it. -->
+      {/* Invariant 2: the band never appears without the reasons under it. */}
       <figure class="hero__mock">
-        <!--
+        {/*
           The sonar sweep, and the reason it earns its place: the app is called
           Sonar, and what it does is read what's ahead rather than tot up what's
           behind. Rings leaving the phone is that idea, and it is the one piece of
           decoration here that is also an explanation. Purely presentational, so
           it is hidden from assistive tech.
-        -->
+        */}
         <div class="sonar" aria-hidden="true">
           <span class="sonar__sweep"></span>
           <span class="sonar__ring"></span>
@@ -119,11 +119,11 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     </div>
   </section>
 
-  <!--
+  {/*
     The forecast, explained. Laid out as a scale rather than a column of prose:
     the three bands are the whole idea, so they get the width and a track to sit
     on. Still the band labels with their caption, never a score — invariant 2.
-  -->
+  */}
   <section class="band band--tint reveal">
     <div class="page feature feature--stacked">
       <div class="feature__copy">
@@ -148,11 +148,11 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     </div>
   </section>
 
-  <!--
+  {/*
     The slip flow. `precise` is the load-bearing sentence on this page — the one
     that must not be tightened into the stronger, false claim — so it stops being
     a pull-quote in a sidebar and becomes the section itself.
-  -->
+  */}
   <section class="band reveal">
     <div class="page statement">
       <p class="eyebrow accent">{c.slip.eyebrow}</p>
@@ -164,8 +164,8 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     </div>
   </section>
 
-  <!-- Money. Mirrored, so the figure leads and the explanation follows it. The
-       example stays labelled as an example, out loud. -->
+  {/* Money. Mirrored, so the figure leads and the explanation follows it. The
+       example stays labelled as an example, out loud. */}
   <section class="band band--tint reveal">
     <div class="page feature feature--mirror">
       <div class="feature__aside">
@@ -200,7 +200,7 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
       </ul>
       <p class="trio__free">{c.trio.free}</p>
 
-      <!--
+      {/*
         Pricing, immediately under the free-forever promise and inside the same
         band. The adjacency is the whole design: read on its own, a price list in
         a recovery app is a thing to be suspicious of; read directly under "the
@@ -216,20 +216,24 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
         launch discount. A time-limited offer aimed at people with
         impulse-control difficulty is indefensible, and the app's own paywall
         copy refuses the same register on purpose.
-      -->
-      <div class="pricing">
-        <p class="eyebrow">{c.pricing.eyebrow}</p>
-        <p class="pricing__trial">{c.pricing.trial(PRICING.trialDays)}</p>
-        <ul class="pricing__plans">
-          {c.pricing.plans(pricing).map((plan) => <li>{plan}</li>)}
-        </ul>
-        <p class="small faint">{c.pricing.note}</p>
-      </div>
+      */}
+      {
+        PAID && (
+          <div class="pricing">
+            <p class="eyebrow">{c.pricing.eyebrow}</p>
+            <p class="pricing__trial">{c.pricing.trial(PRICING.trialDays)}</p>
+            <ul class="pricing__plans">
+              {c.pricing.plans(pricing).map((plan) => <li>{plan}</li>)}
+            </ul>
+            <p class="small faint">{c.pricing.note}</p>
+          </div>
+        )
+      }
     </div>
   </section>
 
-  <!-- Privacy, and the gap that comes with it. The gap is on the landing page
-       on purpose: better read here than discovered after a phone upgrade. -->
+  {/* Privacy, and the gap that comes with it. The gap is on the landing page
+       on purpose: better read here than discovered after a phone upgrade. */}
   <section class="band band--accent reveal">
     <div class="page feature">
       <div class="feature__copy">
@@ -251,8 +255,8 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     </div>
   </section>
 
-  <!-- What it isn't. Load-bearing: the not-treatment and doesn't-block
-       disclaimers both live here, as plain statements rather than small print. -->
+  {/* What it isn't. Load-bearing: the not-treatment and doesn't-block
+       disclaimers both live here, as plain statements rather than small print. */}
   <section class="band reveal">
     <div class="page close">
       <p class="eyebrow accent">{c.close.eyebrow}</p>

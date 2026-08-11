@@ -200,6 +200,27 @@ export const PURCHASES = {
  * changes, not on typo fixes — a date that moves for nothing tells the reader
  * nothing.
  */
+/**
+ * Whether the app currently charges for anything. **It does not.**
+ *
+ * Mirrors `PAYWALL_ENABLED` in `mobile/domain/entitlement.ts`, and the two must
+ * agree: the app ships with the paywall switched off, so a site quoting a
+ * fourteen-day trial and three prices is advertising something nobody is
+ * charged for. That is the mismatch App Review notices, and it is a promise to
+ * a reader that the build does not keep.
+ *
+ * While this is false the landing page drops its pricing block, the support FAQ
+ * omits the pricing question, and both legal documents drop every section
+ * marked `onlyWhenPaid` — the purchases clause of the terms and the
+ * payment-processor section of the privacy policy, which describes a receipt
+ * going to RevenueCat that no longer leaves the phone at all.
+ *
+ * Nothing is deleted. Turning the paywall back on means flipping this and
+ * `PAYWALL_ENABLED` together, and checking that `PRICING` below still matches
+ * App Store Connect.
+ */
+export const PAID = false;
+
 export const LEGAL_UPDATED = '2026-08-11';
 
 /**

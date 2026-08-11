@@ -1,6 +1,6 @@
 ---
 import Prose from '../components/Prose.astro';
-import { LEGAL_UPDATED } from '../config';
+import { LEGAL_UPDATED, PAID } from '../config';
 import type { LegalDoc } from '../i18n/types';
 import { t, type Locale, type RouteKey } from '../i18n';
 import Base from './Base.astro';
@@ -13,6 +13,12 @@ import Base from './Base.astro';
  * in order. Numbered headings are deliberate — it makes "section 7" a thing
  * someone can point at in an email.
  */
+/**
+ * Sections that only make sense while the app charges for something are dropped
+ * when it doesn't — see `PAID` in `src/config.ts`. Filtered once, here, because
+ * the contents list and the body both number these, and numbering two different
+ * lists is how "section 7" stops meaning one thing.
+ */
 interface Props {
   locale: Locale;
   route: Extract<RouteKey, 'privacy' | 'terms'>;
@@ -22,6 +28,8 @@ interface Props {
 }
 
 const { locale, route, doc, title, description } = Astro.props;
+
+const sections = doc.sections.filter((section) => PAID || !section.onlyWhenPaid);
 const copy = t(locale);
 ---
 
@@ -36,7 +44,7 @@ const copy = t(locale);
     </header>
 
     <div class="legal__body">
-      <!--
+      {/*
         The section list, and it is the answer to a layout problem rather than a
         feature for its own sake.
 
@@ -47,12 +55,12 @@ const copy = t(locale);
         which is also the thing a numbered document actually needs: the numbered
         headings exist so "section 7" is something someone can point at in an
         email, and now there is somewhere to see all of them at once.
-      -->
+      */}
       <nav class="legal__toc" aria-label={copy.legal.contents}>
         <p class="eyebrow">{copy.legal.contents}</p>
         <ol class="legal__toc-list">
           {
-            doc.sections.map((section, i) => (
+            sections.map((section, i) => (
               <li>
                 <a href={`#section-${i + 1}`}>
                   <span class="legal__toc-num">{i + 1}</span>
@@ -66,7 +74,7 @@ const copy = t(locale);
 
       <article class="legal__doc">
         {
-          doc.sections.map((section, i) => (
+          sections.map((section, i) => (
             <section class="legal__section" id={`section-${i + 1}`}>
               <h2 class="heading legal__heading">
                 <span class="legal__num faint">{i + 1}</span>

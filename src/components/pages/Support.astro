@@ -1,5 +1,5 @@
 ---
-import { APP_NAME, CONTACT_EMAIL } from '../../config';
+import { APP_NAME, CONTACT_EMAIL, PAID } from '../../config';
 import { path, t, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 import { pricingStrings } from '../../pricing';
@@ -18,12 +18,12 @@ const { locale } = Astro.props;
 const copy = t(locale);
 const c = copy.support;
 const meta = copy.meta.support(APP_NAME);
-const faqs = c.faqs(APP_NAME, pricingStrings(locale));
+const faqs = c.faqs(APP_NAME, pricingStrings(locale), PAID);
 ---
 
 <Base locale={locale} route="support" title={meta.title} description={meta.description}>
   <div class="page support">
-    <!--
+    {/*
       Two columns from 60rem up: the pitch on the left, the address in a card that
       sticks alongside it on the right.
 
@@ -31,7 +31,7 @@ const faqs = c.faqs(APP_NAME, pricingStrings(locale));
       legal document and the wrong one here — on a wide monitor it left the page
       about a fifth full, with the one thing anybody comes to this page for
       (the email address) below the fold of a mostly empty screen.
-    -->
+    */}
     <header class="support__top">
       <div class="support__intro stack">
         <h1 class="display-sm">{c.title}</h1>
@@ -52,8 +52,8 @@ const faqs = c.faqs(APP_NAME, pricingStrings(locale));
 
     <section class="support__section reveal">
       <h2 class="title">{c.faqTitle}</h2>
-      <!-- Two columns of answers rather than one long scroll. `masonry`-free: a
-           plain grid with `align-items: start` so short answers don't stretch. -->
+      {/* Two columns of answers rather than one long scroll. `masonry`-free: a
+           plain grid with `align-items: start` so short answers don't stretch. */}
       <dl class="faq reveal-group">
         {
           faqs.map((faq) => (
@@ -68,8 +68,8 @@ const faqs = c.faqs(APP_NAME, pricingStrings(locale));
       </dl>
     </section>
 
-    <!-- Heading beside its content rather than above it, so this last short
-         section doesn't leave half the page empty the way the FAQ grid doesn't. -->
+    {/* Heading beside its content rather than above it, so this last short
+         section doesn't leave half the page empty the way the FAQ grid doesn't. */}
     <section class="support__section support__section--split reveal">
       <h2 class="title">{c.bugTitle}</h2>
       <div class="support__blocks">

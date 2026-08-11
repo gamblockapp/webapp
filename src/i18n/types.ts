@@ -21,7 +21,22 @@ export type RouteKey = 'home' | 'privacy' | 'terms' | 'support' | 'help';
 /** A block of legal or FAQ prose. Rendered by `Prose.astro`, nothing else. */
 export type Block = { p: string } | { ul: string[] } | { note: string };
 
-export type Section = { heading: string; blocks: Block[] };
+export type Section = {
+  heading: string;
+  blocks: Block[];
+  /**
+   * Marks a section that is only true while the app charges for something.
+   * `Legal.astro` drops these when `PAID` is false, which is how the purchases
+   * clause of the terms and the payment-processor section of the privacy
+   * policy disappear together without either document being edited.
+   *
+   * Deleting the prose instead would mean rewriting both documents in both
+   * languages twice — once now and once when the paywall returns — and legal
+   * copy that has been through a review is the last thing worth retyping from
+   * memory.
+   */
+  onlyWhenPaid?: true;
+};
 
 export type LegalDoc = {
   title: string;
@@ -93,6 +108,7 @@ export type Dict = {
     refusalList: string[];
     comingSoon: string;
     comingSoonNote: string;
+    comingSoonNoteFree: string;
     download: string;
 
     /**
@@ -189,7 +205,11 @@ export type Dict = {
     emailLead: string;
     responseNote: string;
     faqTitle: string;
-    faqs: (app: string, pricing: PricingStrings) => Faq[];
+    /**
+   * `paid` is false while the app charges for nothing, and the pricing question
+   * is omitted rather than answered with a price nobody is asked for.
+   */
+  faqs: (app: string, pricing: PricingStrings, paid: boolean) => Faq[];
     bugTitle: string;
     bugBlocks: Block[];
     crisisLead: string;
