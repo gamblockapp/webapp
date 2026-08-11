@@ -200,7 +200,7 @@ export const PURCHASES = {
  * changes, not on typo fixes — a date that moves for nothing tells the reader
  * nothing.
  */
-export const LEGAL_UPDATED = '2026-08-05';
+export const LEGAL_UPDATED = '2026-08-11';
 
 /**
  * Where opt-in analytics go, named because the privacy policy has to name it.

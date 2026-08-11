@@ -45,7 +45,7 @@ export const fr = {
     privacy: (app) => ({
       title: `Politique de confidentialité — ${app}`,
       description:
-        'Ce qui reste sur ton téléphone, ce que contiennent les statistiques anonymes facultatives, et ce qui n’est jamais collecté.',
+        'Ce qui reste sur ton téléphone, ce que contiennent les statistiques anonymes, et ce qui n’est jamais collecté.',
     }),
     terms: (app) => ({
       title: `Conditions générales d’utilisation — ${app}`,
@@ -180,7 +180,7 @@ export const fr = {
       body:
         'Pas de compte. Pas d’e-mail. Rien de synchronisé. Tout ce que tu notes reste sur ce téléphone, aucun serveur ne le détient, et personne d’autre ne peut le voir — nous non plus.',
       analytics:
-        'Les statistiques anonymes sont désactivées sauf si tu les actives. Dans ce cas, l’app signale quels écrans sont utilisés, et rien d’autre : jamais tes notes, tes raisons, tes montants, l’intensité de tes envies, ni les déclencheurs que tu choisis. Pas de compte, pas d’identifiant, et une session ne peut pas être reliée à la précédente.',
+        'L’app signale quels écrans sont utilisés, et rien d’autre : jamais tes notes, tes raisons, tes montants, l’intensité de tes envies, ni les déclencheurs que tu choisis. Pas de compte, pas d’e-mail, rien qui t’identifie. Ces statistiques anonymes sont actives par défaut ; la politique de confidentialité dit exactement ce qu’elles contiennent et comment les arrêter.',
       gapTitle: 'Et le manque qui va avec',
       // mobile/i18n/fr/secondary.ts → settings.data.noBackup.
       gap:
@@ -276,7 +276,7 @@ export const fr = {
         q: 'Comment désactiver les statistiques anonymes ?',
         a: [
           {
-            p: 'Elles sont désactivées jusqu’à ce que tu les actives. Si tu l’avais fait : Réglages → Statistiques anonymes → Ne rien envoyer. La politique de confidentialité détaille exactement ce qu’elles contiennent.',
+            p: 'Elles sont actives, et il n’y a pas d’interrupteur dans l’app pour l’instant : autant le dire franchement plutôt que de l’enrober. Supprimer l’app les arrête définitivement. Réglages → Tout supprimer efface aussi l’identifiant aléatoire, donc rien de ce qui part ensuite ne peut être rattaché à ce qui est parti avant. Si tu préfères qu’elles s’arrêtent sans rien supprimer, écris-moi et je m’en occupe. La politique de confidentialité détaille exactement ce qu’elles contiennent.',
           },
         ],
       },
@@ -336,7 +336,7 @@ export const fr = {
             {
               ul: [
                 'Tout ce que vous notez reste sur votre téléphone. Il n’y a pas de compte, aucun serveur qui le détient, et aucune synchronisation.',
-                'Les statistiques anonymes sont désactivées sauf si vous les activez, et elles ne contiennent jamais ce que vous avez écrit.',
+                'Les statistiques anonymes sont actives par défaut, et elles ne contiennent jamais ce que vous avez écrit.',
                 'Rien n’est vendu, partagé à des fins publicitaires, ni utilisé pour établir un profil de vous.',
                 `Si vous vous abonnez, ${ctx.purchasesMerchant} encaisse le paiement et un reçu est vérifié à l’aide d’un identifiant anonyme. Rien de ce que vous avez écrit n’en fait partie.`,
                 'Ce site ne dépose aucun cookie et n’utilise aucun outil de mesure.',
@@ -363,22 +363,25 @@ export const fr = {
           ],
         },
         {
-          heading: 'Les statistiques anonymes, si vous les activez',
+          heading: 'Les statistiques anonymes',
           blocks: [
             {
-              p: 'Elles sont désactivées par défaut. Rien n’est envoyé tant que vous ne les activez pas dans les réglages, et vous pouvez les désactiver à tout moment. Leur seul but est de me dire quelles parties de l’app sont utilisées, pour que la prochaine chose construite soit la bonne.',
+              p: 'Elles sont actives par défaut, et l’app ne pose pas la question. Je préfère l’écrire clairement plutôt que de le noyer : leur seul but est de me dire quelles parties de l’app sont utilisées, pour que la prochaine chose construite soit la bonne. Une app dont le problème est que les gens partent la première semaine ne peut pas l’apprendre à partir de données que personne n’a activées.',
             },
             {
-              p: 'Quand elles sont actives, un message est envoyé par événement. Chaque message contient : le nom de l’événement, pris dans une liste fixe et publiée ; un petit nombre de compteurs, de valeurs vrai-ou-faux et de valeurs prédéfinies qui s’y rattachent, par exemple si un point quotidien a enregistré une journée sans pari ou combien d’étiquettes ont été sélectionnées ; la version de l’app ; le nom et la version du système d’exploitation ; la langue de votre appareil ; s’il s’agit d’une version de développement ; un horodatage ; et un identifiant de session aléatoire.',
+              p: 'Quand elles sont actives, un message est envoyé par événement. Chaque message contient : le nom de l’événement, pris dans une liste fixe et publiée ; un petit nombre de compteurs, de valeurs vrai-ou-faux et de valeurs prédéfinies qui s’y rattachent, par exemple si un point quotidien a enregistré une journée sans pari ou combien d’étiquettes ont été sélectionnées ; la version de l’app ; le nom et la version du système d’exploitation ; la langue de votre appareil ; s’il s’agit d’une version de développement ; un horodatage ; et un identifiant aléatoire.',
             },
             {
-              p: 'Cet identifiant de session est régénéré à chaque lancement de l’app et n’est jamais conservé : deux sessions ne peuvent donc pas être reliées entre elles, et aucune ne peut être reliée à vous. Il n’y a pas d’identifiant d’appareil, pas d’identifiant publicitaire et pas d’identifiant de compte, puisqu’il n’en existe aucun.',
+              p: 'Cet identifiant est inventé au hasard sur votre téléphone au premier envoi, et conservé jusqu’à la suppression de l’app. Il permet de compter les événements d’une installation comme une personne plutôt que comme une foule d’inconnus, ce qui fait la différence entre savoir si un changement a aidé et ne rien savoir. Il n’est dérivé de rien : ni de votre appareil, ni de votre compte Apple, ni d’un identifiant publicitaire, et il n’y a pas d’identifiant de compte puisqu’il n’y a pas de comptes. Il ne peut être rapproché ni des données d’une autre app, ni de vous, et il disparaît avec l’installation.',
             },
             {
-              p: 'Ce qui n’est jamais envoyé, quel que soit votre réglage : vos notes, vos raisons, les montants que vous consignez, l’intensité de vos envies, les déclencheurs que vous choisissez, votre paie, votre date de départ, votre montant mensuel, ou quoi que ce soit d’autre que vous auriez saisi. La règle est : compteurs, booléens et valeurs prédéfinies uniquement. Elle est appliquée dans le code source de l’app et pas seulement dans un document : un fichier liste chaque événement et chaque propriété autorisés, et rien en dehors ne peut être transmis.',
+              p: 'Ce qui n’est jamais envoyé, jamais : vos notes, vos raisons, les montants que vous consignez, l’intensité de vos envies, les déclencheurs que vous choisissez, votre paie, votre date de départ, votre montant mensuel, ou quoi que ce soit d’autre que vous auriez saisi. La règle est : compteurs, booléens et valeurs prédéfinies uniquement. Elle est appliquée dans le code source de l’app et pas seulement dans un document : un fichier liste chaque événement et chaque propriété autorisés, et rien en dehors ne peut être transmis.',
             },
             {
               p: `Ces messages sont traités pour mon compte par ${ctx.analyticsProcessor}, un prestataire de mesure d’audience, sur des serveurs situés dans ${ctx.analyticsRegion}. Comme pour toute requête internet, elle arrive depuis votre adresse IP, dont un pays approximatif peut être déduit ; l’adresse IP ne fait pas partie du message et n’est pas conservée par moi. ${ctx.analyticsProcessor} agit en tant que sous-traitant et ne peut pas utiliser ces données à ses propres fins.`,
+            },
+            {
+              p: `Comment les arrêter : il n’y a pas d’interrupteur dans l’app pour l’instant, et je ne vais pas décrire ça autrement que comme un manque. Supprimer l’app les arrête définitivement. Réglages → Tout supprimer efface l’identifiant aléatoire en même temps que vos données, donc rien de ce qui part ensuite ne peut être rattaché à ce qui est parti avant. Et vous pouvez vous y opposer en écrivant à ${ctx.email}, ce dont je tiendrai compte.`,
             },
           ],
         },
@@ -442,7 +445,10 @@ export const fr = {
               p: 'Pour ce que l’app enregistre, ces droits s’exercent sur l’appareil lui-même, puisque c’est le seul endroit où ces données existent : vous y avez déjà pleinement accès dans l’app, et Réglages → Tout supprimer constitue un effacement immédiat et complet. Je n’ai rien à vous envoyer et rien à supprimer, parce que je ne l’ai jamais eu.',
             },
             {
-              p: 'Pour les statistiques anonymes, la base légale est votre consentement, donné en les activant, et le retirer dans les réglages arrête tout envoi ultérieur. Les messages déjà envoyés ne contiennent aucun identifiant permettant de les retrouver, ce qui est une conséquence voulue de la conception plutôt qu’un obstacle à vos droits.',
+              p: 'Pour les statistiques, la position honnête est que l’identifiant aléatoire est la seule chose qui relie un ensemble d’événements entre eux, et que je n’ai aucun moyen de savoir lequel est le vôtre. Si vous me le transmettez, je peux supprimer ce qu’il désigne ; sans lui, je ne peux ni retrouver vos événements pour vous les communiquer, ni les effacer. C’est la conséquence de ne rien collecter qui vous identifie, pas une façon d’éluder la demande.',
+            },
+            {
+              p: 'Pour les statistiques anonymes, la base légale invoquée est l’intérêt légitime : comprendre quelles parties de l’app servent, pour que l’app fasse mieux ce pour quoi elle existe. Les données sont volontairement limitées à des compteurs, des booléens et des valeurs prédéfinies, ne contiennent rien de ce que vous avez écrit, et ne servent ni à établir un profil, ni à de la publicité, ni à prendre une décision vous concernant. Vous pouvez vous y opposer à tout moment au titre de l’article 21, et le paragraphe correspondant dit comment.',
             },
             {
               p: `Si vous souhaitez malgré tout soulever un point, ou si vous n’êtes pas d’accord avec ce qui précède, écrivez à ${ctx.email}. Vous avez également le droit d’introduire une réclamation auprès de votre autorité de protection des données — en France, la CNIL.`,

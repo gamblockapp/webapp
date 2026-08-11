@@ -45,7 +45,7 @@ export const en = {
     privacy: (app) => ({
       title: `Privacy policy — ${app}`,
       description:
-        'What stays on your phone, what the opt-in anonymous statistics contain, and what is never collected.',
+        'What stays on your phone, what the anonymous statistics contain, and what is never collected.',
     }),
     terms: (app) => ({
       title: `Terms and conditions — ${app}`,
@@ -194,7 +194,7 @@ export const en = {
       body:
         'No account. No email. Nothing synced. Everything you log is stored on this phone only, there is no server holding it, and no one else can see it — not us either.',
       analytics:
-        'Anonymous usage statistics are off unless you switch them on. If you do, the app reports which screens get used and nothing else — never your notes, your reasons, your amounts, your urge levels, or which triggers you pick. No account, no identifier, and each session is unlinkable to the last.',
+        'The app reports which screens get used and nothing else — never your notes, your reasons, your amounts, your urge levels, or which triggers you pick. No account, no email, and nothing that identifies you. These anonymous statistics are on by default; the privacy policy says exactly what they contain and how to stop them.',
       gapTitle: 'And the gap that comes with that',
       // mobile/i18n/en/secondary.ts → settings.data.noBackup. On the landing
       // page on purpose: better read here than discovered after a phone upgrade.
@@ -291,7 +291,7 @@ export const en = {
         q: 'How do I turn the anonymous statistics off?',
         a: [
           {
-            p: 'They are off until you turn them on. If you did turn them on: Settings → Anonymous usage stats → Send nothing. The privacy policy lists exactly what they contain.',
+            p: 'They are on, and there is no switch for them in the app at the moment — that is a deliberate choice I am not going to dress up. Deleting the app stops them for good. Settings → Delete everything discards the random identifier along with your data, so nothing sent afterwards can be joined to anything sent before. If you would rather they stopped and you would rather not delete anything, write to me and I will act on it. The privacy policy lists exactly what they contain.',
           },
         ],
       },
@@ -377,22 +377,25 @@ export const en = {
           ],
         },
         {
-          heading: 'Anonymous usage statistics, if you switch them on',
+          heading: 'Anonymous usage statistics',
           blocks: [
             {
-              p: 'These are off by default. Nothing is sent unless you turn them on in Settings, and you can turn them off again at any point. Their only purpose is telling me which parts of the app get used, so the next thing built is the right one.',
+              p: 'These are on by default, and the app does not ask. I would rather say that plainly than bury it: their only purpose is telling me which parts of the app get used, so the next thing built is the right one, and an app whose problem is people leaving in the first week cannot learn that from data nobody switched on.',
             },
             {
-              p: 'When they are on, one message is sent per event. Each message contains: the name of the event, from a fixed published list; a small number of counts, true-or-false flags and fixed values attached to it, such as whether a check-in recorded a clean day or how many trigger tags were selected; the app version; the operating-system name and version; your device language; whether the build is a development build; a timestamp; and a random session identifier.',
+              p: 'One message is sent per event. Each message contains: the name of the event, from a fixed published list; a small number of counts, true-or-false flags and fixed values attached to it, such as whether a check-in recorded a clean day or how many trigger tags were selected; the app version; the operating-system name and version; your device language; whether the build is a development build; a timestamp; and one random identifier.',
             },
             {
-              p: 'That session identifier is generated fresh each time the app launches and is never stored, so two sessions cannot be linked to each other and none of them can be linked to you. There is no device identifier, no advertising identifier and no account identifier, because none exists.',
+              p: 'That identifier is invented at random on your phone the first time anything is sent, and kept until the app is deleted. It means the events from one installation can be counted as one person rather than as a crowd of strangers, which is the difference between knowing whether a change helped and knowing nothing. It is derived from nothing: not your device, not your Apple Account, not an advertising identifier, and there is no account identifier because there are no accounts. It cannot be joined to another app’s data or to you, and it dies with the installation.',
             },
             {
-              p: 'What is never sent, whatever your setting: your notes, your reasons, the amounts you log, your urge levels, which triggers you pick, your payday, your start date, your monthly figure, or anything else you typed. The rule is counts, flags and fixed values only. It is enforced in the app’s source rather than by policy — one file lists every event and every property permitted, and nothing outside it can be transmitted.',
+              p: 'What is never sent, ever: your notes, your reasons, the amounts you log, your urge levels, which triggers you pick, your payday, your start date, your monthly figure, or anything else you typed. The rule is counts, flags and fixed values only. It is enforced in the app’s source rather than by policy — one file lists every event and every property permitted, and nothing outside it can be transmitted.',
             },
             {
               p: `These messages are processed on my behalf by ${ctx.analyticsProcessor}, an analytics provider, on servers in ${ctx.analyticsRegion}. As with any internet request, it arrives from your IP address, and an approximate country can be derived from that; the IP address is not part of the message and is not stored by me. ${ctx.analyticsProcessor} acts as a processor and may not use the data for its own purposes.`,
+            },
+            {
+              p: `How to stop them: there is no switch for this in the app at the moment, and I am not going to describe that as anything other than a gap. Deleting the app stops it permanently. Settings → Delete everything discards the random identifier as well as your data, so nothing sent after that point can be joined to anything sent before it. And you can object by writing to ${ctx.email}, which I will act on.`,
             },
           ],
         },
@@ -456,7 +459,10 @@ export const en = {
               p: 'For what the app stores, those rights are satisfied on the device itself, because that is the only place it exists: you already have full access to it in the app, and Settings → Delete everything is an immediate and complete erasure. There is nothing for me to send you and nothing for me to delete, because I never had it.',
             },
             {
-              p: `For the anonymous statistics, the lawful basis is your consent, given by switching them on, and withdrawing it in Settings stops any further sending. The messages already sent contain no identifier that could locate them again, which is a deliberate consequence of the design rather than an obstacle to your rights.`,
+              p: 'For the statistics, the honest position is that the random identifier is the only thing tying a set of events together, and I have no way of knowing which one is yours. If you send it to me I can delete what it points at; without it I cannot find your events to give you or to erase, which is a consequence of collecting nothing that identifies you rather than a way of avoiding the request.',
+            },
+            {
+              p: `For the anonymous statistics, the lawful basis I rely on is legitimate interest: understanding which parts of the app are used, so that the app gets better at the thing it exists for. The data is deliberately kept to counts, flags and fixed values, contains nothing you wrote, and is not used to build a profile, to advertise, or to make any decision about you. You have the right to object to this at any time under Article 21, and the paragraph above says how.`,
             },
             {
               p: `If you want to raise something regardless, or you disagree with any of the above, write to ${ctx.email}. You also have the right to complain to your national data protection authority.`,
