@@ -516,8 +516,8 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
      * lands leaves a hard edge that reads as a rendering bug.
      */
     mask:
-      linear-gradient(to bottom, transparent 4%, black 58%, black 88%, transparent 100%),
-      linear-gradient(to right, transparent 2%, rgb(0 0 0 / 0.3) 32%, black 70%, transparent 99%);
+      linear-gradient(to bottom, transparent 10%, black 66%, black 88%, transparent 100%),
+      linear-gradient(to right, transparent 6%, rgb(0 0 0 / 0.14) 34%, black 78%, transparent 99%);
     mask-composite: intersect;
   }
 
@@ -528,24 +528,29 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     background: var(--c-accent);
     /*
      * Dim, bright, dim, and never fully on, so the field stays a texture rather
-     * than a light show. The app runs 0.13 to 0.92 on a bare cover screen; this
-     * one has a headline beside it, so the ceiling comes down. The shape is the
-     * part that has to match, not the exposure.
+     * than a light show.
+     *
+     * The app runs 0.13 to 0.92 on a bare cover screen, where the field is the
+     * only thing there and is allowed to be the subject. Here it is behind a
+     * headline, a lead paragraph and a phone, and at anything like the app's
+     * exposure it competes with all three: the eye keeps going to the movement
+     * instead of the sentence. Ceiling roughly a third of the app's. The shape
+     * is what had to carry over, not the brightness.
      */
-    opacity: 0.1;
+    opacity: 0.05;
     animation: wave-breathe 9s linear infinite;
     animation-delay: var(--d);
   }
 
   @keyframes wave-breathe {
     0% {
-      opacity: 0.1;
+      opacity: 0.05;
     }
     46% {
-      opacity: 0.62;
+      opacity: 0.32;
     }
     100% {
-      opacity: 0.1;
+      opacity: 0.05;
     }
   }
 
@@ -560,7 +565,7 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   @media (prefers-reduced-motion: reduce) {
     .wave > span {
       animation: none;
-      opacity: 0.3;
+      opacity: 0.16;
     }
   }
 
@@ -722,9 +727,22 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     }
   }
 
+  /*
+   * Centred, and every child held to a measure inside it.
+   *
+   * It was ranged left with `max-width: 44rem` on a page that is 82rem wide, so
+   * the whole section lived in the left half and the right half was empty. That
+   * is fine for a two-column feature, where the other column is the picture, and
+   * wrong for a stacked one, where there is no other column: the eye reads the
+   * empty half as something failing to load.
+   *
+   * The measures are unchanged. Only where they sit is different.
+   */
   .feature--stacked {
     grid-template-columns: 1fr;
     gap: var(--space-3xl);
+    justify-items: center;
+    text-align: center;
   }
 
   .feature--stacked .feature__copy {
@@ -733,6 +751,9 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
 
   .feature--stacked .feature__copy p {
     max-width: 40rem;
+    /* The paragraph is narrower than its parent, so it needs centring in its own
+       right; `text-align` moves the words, not the box. */
+    margin-inline: auto;
   }
 
   /* ---------- The risk scale ---------- */
@@ -743,11 +764,27 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
      from 68rem to 82rem, so the proportion is what it was. */
   .scale {
     max-width: 62rem;
+    /* Wider than the copy above it, so it centres against the section rather
+       than inheriting the copy's edge. */
+    width: 100%;
   }
 
   .scale__track {
     position: relative;
     margin-top: var(--space-lg);
+  }
+
+  /*
+   * The pills sit above the hairline, which they did not.
+   *
+   * `::before` is positioned and the list is not, so the rule painted over the
+   * pills and struck through "Low risk" and "Elevated risk". It reads as a
+   * rendering fault rather than as a scale, and it is invisible in the CSS
+   * because nothing about the two declarations mentions the other.
+   */
+  .scale__track .bands {
+    position: relative;
+    z-index: 1;
   }
 
   /*
@@ -785,6 +822,7 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   .scale__caption {
     margin-top: var(--space-lg);
     max-width: 40rem;
+    margin-inline: auto;
   }
 
   /* ---------- The slip statement ---------- */
