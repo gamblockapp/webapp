@@ -40,7 +40,7 @@ export const fr = {
     home: (app) => ({
       title: `${app}: compte ce que le jeu t’a coûté, et te prévient des soirs qui arrivent`,
       description:
-        'Une app pour arrêter de parier. Une estimation quotidienne du risque, construite depuis tes propres schémas et le calendrier sportif réel, un carnet des écarts qui garde ton historique, et tout qui reste sur ton téléphone. Sans compte.',
+        'Une app pour arrêter de parier. Une estimation quotidienne du risque, construite depuis tes propres schémas et le jour où ta paie tombe, un carnet des écarts qui garde ton historique, et tout qui reste sur ton téléphone. Sans compte.',
     }),
     privacy: (app) => ({
       title: `Politique de confidentialité · ${app}`,
@@ -80,7 +80,7 @@ export const fr = {
     hook: 'Personne n’est gagnant.',
     line1: 'Ni sur un an. Ni sur dix.',
     lead: (app) =>
-      `${app} compte ce que ça t’a vraiment coûté, et te prévient des soirs qui arrivent, à partir de tes propres schémas et du calendrier sportif réel.`,
+      `${app} compte ce que ça t’a vraiment coûté, et te prévient des soirs qui arrivent, à partir de tes propres schémas et du jour où ta paie tombe.`,
     // mobile/i18n/fr/onboarding.ts → opening.line3, découpé pour l’affichage.
     refusalList: ['Pas de thérapie', 'Pas de blocage', 'Pas de leçon'],
     comingSoon: 'Bientôt sur l’App Store',
@@ -107,19 +107,22 @@ export const fr = {
       day: 'Jour 62',
       eyebrow: 'Ce soir',
       band: 'Risque élevé',
+      // Mot pour mot ce que rend le moteur, depuis mobile/i18n/fr/reasons.ts :
+      // `paydayToday`, `slipCorroboration(2, 2, 'payday')` et `firstFortnight`.
+      // Une maquette qui invente ses propres phrases est une maquette qui dérive.
       reasons: [
         'La paie est tombée aujourd’hui.',
-        'Trois matchs ce soir, dont deux de Ligue des champions.',
-        'Tes deux derniers écarts étaient des soirs de match après la paie.',
+        'Jusqu’ici, tes deux écarts sont tombés un jour de paie.',
+        'Tu en es à 9 jours. Les deux premières semaines sont les plus fragiles.',
       ],
       caption: 'Une illustration de l’écran d’accueil.',
     },
 
     forecast: {
       eyebrow: 'Ce que les autres ne font pas',
-      title: 'Tes schémas, croisés avec le calendrier.',
+      title: 'Tes schémas, croisés avec ta paie.',
       body:
-        'La plupart des apps du genre traitent l’envie comme une météo intérieure, à noter après coup. Pour le jeu, les plus gros déclencheurs sont extérieurs et publiés à l’avance : la paie, une grosse soirée de matchs, une finale de tournoi. Chaque soir, l’app croise tes propres schémas avec le calendrier réel et te dit à quoi ressemble la soirée.',
+        'La plupart des apps du genre traitent l’envie comme une météo intérieure, à noter après coup. Pour le jeu, le plus gros déclencheur est extérieur et suit un calendrier : le jour où la paie tombe, et les deux soirs qui suivent. Chaque soir, l’app croise tes propres schémas avec l’endroit où tu en es dans ce cycle et te dit à quoi ressemble la soirée.',
       bandsEyebrow: 'Trois niveaux, et c’est tout',
       bands: ['Risque faible', 'Risque modéré', 'Risque élevé'],
       caption:
@@ -293,7 +296,7 @@ export const fr = {
         q: 'Pourquoi l’estimation ne me dit rien d’utile ?',
         a: [
           {
-            p: 'La première semaine, c’est surtout le calendrier, et elle le dit franchement. Elle garde tous les signaux liés à tes propres schémas de côté jusqu’à ce qu’il y ait assez de points quotidiens pour que ça veuille dire quelque chose : un schéma tiré de trois jours serait une supposition déguisée en constat.',
+            p: 'La première semaine, elle n’a pas grand-chose au-delà de ta paie et de la date de ton dernier pari, et elle le dit franchement. Elle garde tous les signaux liés à tes propres schémas de côté jusqu’à ce qu’il y ait assez de points quotidiens pour que ça veuille dire quelque chose : un schéma tiré de trois jours serait une supposition déguisée en constat.',
           },
         ],
       },
@@ -517,7 +520,7 @@ export const fr = {
               p: 'Ce n’est pas un outil de blocage ou de contrainte. Elle ne peut pas et ne va pas vous empêcher de jouer, limiter des dépôts, fermer des comptes, ni vous interdire un site ou un établissement. Si c’est ce dont vous avez besoin, les dispositifs d’auto-exclusion listés sur la page ressources existent pour ça.',
             },
             {
-              p: 'L’estimation de risque est produite par des règles simples et publiées, appliquées aux données que vous saisissez et à un calendrier d’événements publics. Elle se trompera parfois. Elle est fournie comme une information avec laquelle discuter, pas comme un verdict. C’est pour cette raison qu’elle indique toujours ses motifs.',
+              p: 'L’estimation de risque est produite par des règles simples et publiées, appliquées aux données que vous saisissez. Elle se trompera parfois. Elle est fournie comme une information avec laquelle discuter, pas comme un verdict. C’est pour cette raison qu’elle indique toujours ses motifs.',
             },
           ],
         },

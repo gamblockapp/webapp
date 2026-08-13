@@ -40,7 +40,7 @@ export const en = {
     home: (app) => ({
       title: `${app}: it counts what gambling cost you, and tells you which nights are coming`,
       description:
-        'A companion for stopping gambling. A nightly risk forecast built from your own patterns and the real sports calendar, a slip log that keeps your history, and everything stored on your phone. No account.',
+        'A companion for stopping gambling. A nightly risk forecast built from your own patterns and when your money lands, a slip log that keeps your history, and everything stored on your phone. No account.',
     }),
     privacy: (app) => ({
       title: `Privacy policy · ${app}`,
@@ -92,7 +92,7 @@ export const en = {
     hook: 'Nobody’s up.',
     line1: 'Not over a year. Not over ten.',
     lead: (app) =>
-      `${app} counts what it actually cost you, and tells you which nights are coming, built from your own patterns and the real sports calendar.`,
+      `${app} counts what it actually cost you, and tells you which nights are coming, built from your own patterns and the day your money lands.`,
     // mobile/i18n/en/onboarding.ts → opening.line3, split for display.
     refusalList: ['No therapy', 'No blocking', 'No lectures'],
     comingSoon: 'Coming to the App Store',
@@ -119,19 +119,22 @@ export const en = {
       day: 'Day 62',
       eyebrow: 'Tonight',
       band: 'Elevated risk',
+      // Word for word what the engine renders, from mobile/i18n/en/reasons.ts:
+      // `paydayToday`, `slipCorroboration(2, 2, 'payday')` and `firstFortnight`.
+      // A mock that invents its own sentences is a mock that drifts.
       reasons: [
-        'Payday landed today.',
-        'Three matches tonight, two of them Champions League.',
-        'Your last two slips were both match nights after payday.',
+        'Money landed today.',
+        'Both of your slips so far were on payday.',
+        'You’re 9 days in. The first fortnight is the fragile part.',
       ],
       caption: 'An illustration of the home screen.',
     },
 
     forecast: {
       eyebrow: 'The thing it does that nothing else does',
-      title: 'Your patterns, crossed with the calendar.',
+      title: 'Your patterns, crossed with your payday.',
       body:
-        'Most apps in this category treat an urge as weather to be journalled after the fact. For gambling, the biggest triggers are external and published weeks in advance: payday, a full fixture list, a tournament final. Every evening the app crosses what you have logged with what is actually on, and says what tonight looks like.',
+        'Most apps in this category treat an urge as weather to be journalled after the fact. For gambling, the biggest trigger is external and on a schedule: the day the money lands, and the two nights after it. Every evening the app crosses what you have logged with where you are in that cycle, and says what tonight looks like.',
       bandsEyebrow: 'Three bands, and that’s all',
       bands: ['Low risk', 'Elevated risk', 'High risk'],
       // Invariant 2, stated as a feature rather than a footnote.
@@ -310,7 +313,7 @@ export const en = {
         q: 'Why is the forecast telling me nothing useful?',
         a: [
           {
-            p: 'For the first week or so it is mostly the calendar, and it says so out loud. It holds every personal-pattern signal back until there are enough check-ins to mean something, because a pattern drawn from three days would be a guess dressed up as a finding.',
+            p: 'For the first week or so it has little to work with beyond your payday and how recently you bet, and it says so out loud. It holds every personal-pattern signal back until there are enough check-ins to mean something, because a pattern drawn from three days would be a guess dressed up as a finding.',
           },
         ],
       },
@@ -533,7 +536,7 @@ export const en = {
               p: 'It is not a blocking or enforcement tool. It cannot and will not prevent you from gambling, restrict deposits, close accounts, or bar you from any site or venue. If that is what you need, the self-exclusion schemes listed on the resources page exist to do it.',
             },
             {
-              p: 'The risk estimate is produced by simple published rules over the data you enter plus a public events calendar. It will sometimes be wrong. It is offered as information to argue with, not as a verdict, which is why it always states its reasons.',
+              p: 'The risk estimate is produced by simple published rules over the data you enter. It will sometimes be wrong. It is offered as information to argue with, not as a verdict, which is why it always states its reasons.',
             },
           ],
         },
