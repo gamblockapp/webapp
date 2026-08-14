@@ -92,6 +92,12 @@ export const fr = {
     comingSoonNoteFree: 'iPhone d’abord. Gratuit, et rien à acheter.',
     download: 'Télécharger dans l’App Store',
 
+    facts: (paid) => [
+      'Une estimation chaque soir, avec les raisons qui vont avec',
+      'Tout ton historique reste sur ton téléphone',
+      paid ? 'Gratuit 14 jours, puis un abonnement' : 'Gratuit, et rien à acheter',
+    ],
+
     pricing: {
       eyebrow: 'Ce que ça coûte',
       trial: (days) => `Gratuit pendant ${days} jours. Sans carte bancaire pour commencer.`,
@@ -116,11 +122,17 @@ export const fr = {
         'Tu en es à 9 jours. Les deux premières semaines sont les plus fragiles.',
       ],
       caption: 'Une illustration de l’écran d’accueil.',
+      today: 'vendredi',
+      // Formes courtes, à partir de ce soir. Ce n’est pas une semaine de
+      // calendrier : la bande de l’app commence aujourd’hui, parce que ce qui est
+      // derrière n’est pas ce à quoi elle sert.
+      weekdays: ['ven.', 'sam.', 'dim.', 'lun.', 'mar.', 'mer.', 'jeu.'],
     },
 
     forecast: {
       eyebrow: 'Ce que les autres ne font pas',
       title: 'Tes schémas, croisés avec ta paie.',
+      marks: 'Les traits à côté de chaque raison, c’est ce qu’elle a lu pour y arriver.',
       body:
         'La plupart des apps du genre traitent l’envie comme une météo intérieure, à noter après coup. Pour le jeu, le plus gros déclencheur est extérieur et suit un calendrier : le jour où la paie tombe, et les deux soirs qui suivent. Chaque soir, l’app croise tes propres schémas avec l’endroit où tu en es dans ce cycle et te dit à quoi ressemble la soirée.',
       bandsEyebrow: 'Trois niveaux, et c’est tout',
@@ -145,9 +157,24 @@ export const fr = {
       title: 'Où en est l’argent.',
       body:
         'À l’installation, elle pose une seule question sur l’argent : à peu près ce qu’un mois normal te coûtait. Pas ce que tu misais, mais ce qui avait vraiment disparu à la fin du mois. Ensuite elle tient le compte de ce que l’ancien rythme aurait pris, moins ce que les écarts ont réellement coûté, et elle dit quand un écart n’a pas de montant enregistré au lieu d’en inventer un.',
+      bodyEyebrow: 'Comment elle arrive à ce chiffre',
       exampleEyebrow: 'Un exemple, pas une promesse',
       example:
         'Quelqu’un qui y mettait 600 € par mois est à 7 200 € sur un an, soit environ 20 € par jour. La plupart des gens ne l’ont jamais vu écrit noir sur blanc.',
+      // Chaque chiffre ci-dessous figure déjà dans `example`. Ils en sont sortis
+      // pour que le total de l’année soit posé comme un nombre plutôt que noyé
+      // dans une phrase — et il est posé immobile. Voir la note dans types.ts.
+      basis: 'Un an, à 600 € par mois',
+      figure: '7 200 €',
+      figures: [
+        { value: '20 €', label: 'Par jour' },
+        { value: '600 €', label: 'Par mois' },
+        { value: '7 200 €', label: 'Sur un an' },
+      ],
+      gridStart: 'Première nuit',
+      gridEnd: '365e nuit',
+      gridNote:
+        'Une marque par nuit de l’année. La plupart des gens ne l’ont jamais vu écrit, et encore moins étalé comme ça.',
       // mobile/i18n/fr/onboarding.ts → done.closingBody.
       caveat:
         'Cet argent est parti, et l’app ne peut pas le récupérer. Ce qu’elle peut faire, c’est compter ce que tu ne perds plus.',
@@ -657,5 +684,11 @@ export const fr = {
     notTreatment: 'Ce n’est pas un traitement, et ça ne remplace pas un accompagnement professionnel.',
     contact: 'Contact',
     copyright: (year, holder) => `© ${year} ${holder}`,
+    appHeading: 'L’app',
+    helpHeading: 'Aide',
+    legalHeading: 'Mentions',
+    howItWorks: 'Comment ça marche',
+    yourData: 'Tes données',
+    theMoney: 'Où en est l’argent',
   },
 } satisfies Dict;

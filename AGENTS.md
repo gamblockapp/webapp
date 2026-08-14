@@ -45,8 +45,20 @@ exactly as they bind the app, because a marketing page is a store listing.
    **The app's version of this rule is untouched.** It applies to
    `../mobile` exactly as before. Do not carry anything below back into the app.
 
-   What the website now has: scroll reveals, a sonar sweep in the hero, hover lift
+   What the website now has: scroll reveals, a sonar trace in the hero, hover lift
    on cards and buttons, a reading-progress bar, page transitions.
+
+   The current layout comes from the design bundle in
+   `Downloads/Form screens and variations` — `Sonar Web.dc.html` for the landing
+   page and `Sonar Web Pages.dc.html` for the other four. **Two things in that
+   bundle are deliberately not implemented, and re-adding them from the source
+   file would break a rule rather than complete the port:** the money figure
+   counts up from £0 over 1.6s behind a `requestAnimationFrame`, and the reveals
+   and the 365-night grid are driven by an `IntersectionObserver`. The first is
+   the jackpot counter forbidden below; the second is client-side JavaScript on a
+   site whose privacy policy says there is none. Both are done here without it —
+   the figure is simply printed, the grid is simply drawn, and the reveals use
+   `animation-timeline`.
 
    What is still off the table, and the reason is not squeamishness:
 
