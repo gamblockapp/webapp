@@ -16,6 +16,7 @@ import {
 } from '../config';
 import { alternates, otherLocale, path, t, type Locale, type RouteKey } from '../i18n';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 /**
  * The shell every page uses. Owns <head>, the header and the footer.
@@ -218,6 +219,9 @@ const structuredData = {
     
     {/* Vercel Web Analytics */}
     <Analytics />
+    
+    {/* Vercel Speed Insights */}
+    <SpeedInsights />
   </head>
 
   <body>
