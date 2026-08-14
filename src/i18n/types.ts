@@ -148,7 +148,99 @@ export type Dict = {
       note: string;
     };
 
-    /** The home-screen mock-up in the hero. Never a band without its reasons. */
+    /**
+     * The working demonstration of the app in the hero.
+     *
+     * Four screens, seven selectable nights, and controls that respond — driven
+     * entirely by `:checked` and `:has()`, because this site runs no JavaScript.
+     * See `src/components/Demo.astro`.
+     *
+     * Two things this copy must keep doing:
+     *
+     * - **Say that it is a demonstration.** `caption` and `cueBody` are what stop
+     *   a reader taking "62 days clean" or "£1,240 kept" for their own figures,
+     *   or for a typical result. Rule 1 binds here as hard as anywhere: none of
+     *   these numbers may be presented as what the app produces for someone.
+     * - **Never show a band without its reasons.** Every entry in `home.nights`
+     *   carries both, and invariant 2 is why the two are one object rather than
+     *   two parallel arrays that could drift.
+     */
+    demo: {
+      caption: string;
+      cueTitle: string;
+      cueBody: string;
+      /** Accessible names for the two radio groups the layout is built on. */
+      screenGroupLabel: string;
+      nightGroupLabel: string;
+      /** Names of the four screens, used on the controls that switch to them. */
+      screens: { home: string; checkin: string; urge: string; slip: string };
+
+      home: {
+        daysCleanValue: string;
+        daysCleanLabel: string;
+        moneyKeptValue: string;
+        moneyKeptLabel: string;
+        weekLabel: string;
+        /**
+         * Seven nights, tonight first. Order matches `RiskBand` tones in
+         * `Demo.astro`, so an entry added here needs one added there.
+         */
+        nights: { day: string; band: string; when: string; reasons: string[] }[];
+        ledgerLabel: string;
+        ledger: { label: string; value: string }[];
+        slipNote: string;
+      };
+
+      checkin: {
+        eyebrow: string;
+        question: string;
+        clean: string[];
+        urgeQuestion: string;
+        /** Five, one per point on the scale. */
+        urgeWords: string[];
+        whenQuestion: string;
+        when: string[];
+        whyQuestion: string;
+        whyOptional: string;
+        why: string[];
+        close: string;
+        save: string;
+      };
+
+      urge: {
+        eyebrow: string;
+        /**
+         * Static. The app's timer counts up, and the design file ticks it with a
+         * `setInterval` — this site has no script to tick it with, and a clock
+         * that runs is also the one kind of counting invariant 3 is wary of.
+         */
+        clock: string;
+        clockNote: string;
+        hereLabel: string;
+        dropsLabel: string;
+        quotesLabel: string;
+        quotes: string[];
+        actions: string[];
+        helplines: string;
+        through: string;
+      };
+
+      slip: {
+        title: string;
+        amountLabel: string;
+        amount: string;
+        amountNote: string;
+        whenLabel: string;
+        when: string[];
+        whyLabel: string;
+        why: string[];
+        note: string;
+        cancel: string;
+        save: string;
+      };
+    };
+
+    /** The forecast card, now in the forecast section. Never a band alone. */
     mock: {
       day: string;
       eyebrow: string;

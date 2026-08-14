@@ -49,16 +49,32 @@ exactly as they bind the app, because a marketing page is a store listing.
    on cards and buttons, a reading-progress bar, page transitions.
 
    The current layout comes from the design bundle in
-   `Downloads/Form screens and variations` — `Sonar Web.dc.html` for the landing
-   page and `Sonar Web Pages.dc.html` for the other four. **Two things in that
-   bundle are deliberately not implemented, and re-adding them from the source
-   file would break a rule rather than complete the port:** the money figure
-   counts up from £0 over 1.6s behind a `requestAnimationFrame`, and the reveals
-   and the 365-night grid are driven by an `IntersectionObserver`. The first is
-   the jackpot counter forbidden below; the second is client-side JavaScript on a
-   site whose privacy policy says there is none. Both are done here without it —
-   the figure is simply printed, the grid is simply drawn, and the reveals use
-   `animation-timeline`.
+   `Downloads/Form screens and variations (2)` — `Sonar Web.dc.html` for the
+   landing page, `Sonar Web Pages.dc.html` for the other four, and
+   `SonarDemo.dc.html` for the working demonstration in the hero. `(2)` is the
+   only one of the three folders that contains the web pages at all; the earlier
+   two are app screens and identity.
+
+   **Everything in that bundle is implemented except three pieces of runtime
+   behaviour, and re-adding any of them from the source would break a rule
+   rather than complete the port:**
+
+   - The money figure **counts up from £0 over 1.6s** behind a
+     `requestAnimationFrame`. That is the jackpot counter forbidden above, on the
+     one number that is what somebody lost. It is printed, and still.
+   - The reveals and the 365-night grid run off an **`IntersectionObserver`**.
+     The reveals use `animation-timeline` instead and the grid is simply drawn.
+   - The demo's **urge timer ticks once a second** on a `setInterval`. It is a
+     fixed `04:12`, and the line under it still says what it is.
+
+   The demo itself *is* implemented, and with no JavaScript — see
+   `src/components/Demo.astro`. Four screens, seven selectable nights, chips,
+   segments and a scale, all driven by `:checked` and `:has()`. Two things to
+   know before editing it: the `:has()` rules live inside
+   `@supports selector(:has(*))` and the defaults outside it are the state the
+   demo opens in, so a browser without `:has()` gets a working home screen rather
+   than four screens stacked; and the inputs are visually hidden but **not**
+   `display: none`, because that would take the whole demo out of the tab order.
 
    What is still off the table, and the reason is not squeamishness:
 
@@ -97,6 +113,10 @@ src/i18n/fr.ts         All French copy. Not a word-for-word translation.
 src/i18n/index.ts      The routing table — the one source of truth for URLs.
 src/data/helplines.ts  Mirror of ../mobile/domain/helplines.ts. See below.
 src/layouts/           Base (head, header, footer) and Legal (both documents).
+src/components/Demo.astro
+                       The app, working, in the hero. Four screens and seven
+                       nights on `:checked` and `:has()`, no script. Read its
+                       header before changing it.
 src/components/pages/  One component per page, taking `locale` as a prop.
 src/pages/             Thin route wrappers. Ten files, four lines each.
 ```
@@ -145,6 +165,14 @@ rather than two conventions.
   this site loads no third-party scripts, fonts, images or trackers and sets no
   cookies. One `<script src>` or Google Font makes that false. Check with:
   `grep -ohE 'src="https?://[^"]+"' dist/**/*.html` — it should return nothing.
+
+  **The demo in the hero is not an exception either.** It is form controls and
+  CSS: nothing is submitted, nothing is stored, nothing leaves the page. But the
+  policy's "This website" section used to say the site "has no forms", and the
+  demo is built out of radio buttons — so that clause was reworded on 2026-08-14
+  to describe the controls rather than deny them, and `LEGAL_UPDATED` moved with
+  it. Adding any other interactive thing to this site means checking that clause
+  again. A privacy claim that is nearly true is worse than one that's precise.
 
   **The one `<script>` in `Base.astro` is not an exception.** It is
   `application/ld+json`: inline data, never executed, never fetched, no `src`, so

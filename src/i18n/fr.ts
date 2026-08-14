@@ -109,10 +109,173 @@ export const fr = {
       note: 'Les prix sont en euros ; l’App Store affiche le prix dans ta devise avant l’achat. Apple encaisse le paiement, et tu peux résilier depuis tes propres réglages à tout moment.',
     },
 
+    /**
+     * La démonstration dans le hero. La copie reprend celle de l'app partout où
+     * l'app en a une — mobile/i18n/fr/* — parce qu'une démo qui invente ses
+     * propres phrases est une démo qui dérive de ce qu'elle démontre.
+     *
+     * Tous les chiffres sont illustratifs et la page le dit deux fois, dans
+     * `cueBody` puis dans `caption`. Règle 1 : rien ici n'affirme un résultat.
+     */
+    demo: {
+      caption:
+        'Une illustration qui fonctionne, mais ce n’est le relevé de personne. Tous les chiffres sont inventés.',
+      cueTitle: 'Essaie toi-même',
+      cueBody:
+        'C’est la vraie chose, pas une image. Touche un soir, fais le point, ou ouvre l’écran d’urgence.',
+      screenGroupLabel: 'Écran de démonstration',
+      nightGroupLabel: 'Soir',
+      screens: {
+        home: 'Accueil',
+        checkin: 'Faire le point',
+        urge: 'Envie',
+        slip: 'Noter un écart',
+      },
+
+      home: {
+        daysCleanValue: '62',
+        daysCleanLabel: 'Jours sans pari',
+        moneyKeptValue: '1 240 €',
+        moneyKeptLabel: 'Argent gardé',
+        weekLabel: 'Les sept prochains soirs',
+        // Mot pour mot ce que rend le moteur, depuis mobile/i18n/fr/reasons.ts.
+        nights: [
+          {
+            day: 'ven.',
+            band: 'Modéré',
+            when: 'ce soir, vendredi',
+            reasons: [
+              'La paie est tombée aujourd’hui.',
+              'Jusqu’ici, tes deux écarts sont tombés un jour de paie.',
+              'Trois matchs ce soir.',
+            ],
+          },
+          {
+            day: 'sam.',
+            band: 'Élevé',
+            when: 'demain, samedi',
+            reasons: [
+              'Six matchs, dont celui de fin de soirée.',
+              'Le samedi est ton soir le plus dur : quatre de tes six écarts.',
+              'La paie est tombée deux jours avant.',
+            ],
+          },
+          {
+            day: 'dim.',
+            band: 'Faible',
+            when: 'dimanche',
+            reasons: [
+              'Aucun match que tu suis.',
+              'Le dimanche n’a jamais été un problème pour toi.',
+            ],
+          },
+          {
+            day: 'lun.',
+            band: 'Faible',
+            when: 'lundi',
+            reasons: ['Rien au calendrier.', 'Quatre jours depuis que la paie est tombée.'],
+          },
+          {
+            day: 'mar.',
+            band: 'Faible',
+            when: 'mardi',
+            reasons: [
+              'Rien au calendrier.',
+              'Ton jour de semaine le plus calme jusqu’ici.',
+            ],
+          },
+          {
+            day: 'mer.',
+            band: 'Modéré',
+            when: 'mercredi',
+            reasons: [
+              'Deux matchs en soirée.',
+              'Les matchs de milieu de semaine sont revenus deux fois dans tes points.',
+            ],
+          },
+          {
+            day: 'jeu.',
+            band: 'Faible',
+            when: 'jeudi',
+            reasons: ['Rien au calendrier.', 'Une semaine avant la prochaine paie.'],
+          },
+        ],
+        ledgerLabel: 'Ce que ça donne',
+        ledger: [
+          { label: '62 soirs à ton ancien rythme', value: '1 320 €' },
+          { label: 'Ce que les écarts ont coûté', value: '−80 €' },
+          { label: 'Gardé', value: '1 240 €' },
+        ],
+        slipNote: 'un relevé, pas un verdict',
+      },
+
+      checkin: {
+        eyebrow: 'Vendredi soir',
+        question: 'La journée s’est passée sans pari ?',
+        clean: ['Oui', 'Non'],
+        urgeQuestion: 'Quelle force avaient les envies ?',
+        urgeWords: [
+          'Aucune',
+          'Légères',
+          'Présentes, mais gérables',
+          'Fortes. Difficile de penser à autre chose.',
+          'Au maximum',
+        ],
+        whenQuestion: 'Quand étaient-elles les plus fortes ?',
+        when: ['Matin', 'Après-midi', 'Soir', 'Nuit'],
+        whyQuestion: 'Qu’est-ce qui se passait ?',
+        whyOptional: 'facultatif',
+        why: ['Il y avait un match', 'Jour de paie', 'Alcool', 'Seul'],
+        close: 'Fermer',
+        save: 'Enregistrer',
+      },
+
+      urge: {
+        eyebrow: 'Traverser le moment',
+        clock: '04:12',
+        clockNote: 'Ça compte vers le haut. Il n’y a rien à atteindre.',
+        hereLabel: 'Tu es ici',
+        dropsLabel: 'Ça redescend ensuite',
+        quotesLabel: 'Tu as écrit ça',
+        quotes: [
+          'Je veux arrêter de mentir à Rachel sur l’appli de la banque.',
+          '8 400 € l’an dernier. C’était censé être l’apport.',
+        ],
+        actions: [
+          'De l’eau froide sur les poignets. Soixante secondes.',
+          'Marcher jusqu’au bout de la rue et revenir.',
+          'Manger quelque chose. N’importe quoi fera l’affaire.',
+        ],
+        helplines: 'Lignes d’écoute',
+        through: 'C’est passé',
+      },
+
+      slip: {
+        title: 'Qu’est-ce qui s’est passé ?',
+        amountLabel: 'Combien ?',
+        amount: '40 €',
+        amountNote: 'Laisse vide si tu préfères ne pas le compter.',
+        whenLabel: 'Quand ?',
+        when: ['Ce soir', 'Hier', 'Avant'],
+        whyLabel: 'Qu’est-ce qui se passait ?',
+        why: ['Il y avait un match', 'Se refaire', 'Jour de paie', 'Alcool'],
+        // mobile/i18n/fr/core.ts → slip.stillYours, raccourci. La formulation
+        // exacte, pas la plus forte.
+        note: 'Un relevé, pas un verdict. L’écrire ne remet pas à zéro ton total de jours sans pari, et ne l’a jamais fait.',
+        cancel: 'Annuler',
+        save: 'Enregistrer le relevé',
+      },
+    },
+
     mock: {
       day: 'Jour 62',
       eyebrow: 'Ce soir',
-      band: 'Risque élevé',
+      // 'Risque élevé' jusqu'au 14/08/2026, ce qui nommait le niveau HAUT alors
+      // que la carte est peinte au ton « modéré » et que la bande de la semaine
+      // montre vendredi en modéré. C'est , comme en anglais
+      // (« Elevated risk »). La démo dans le hero dit « Modéré » pour le même
+      // soir, ce qui a rendu la contradiction visible côte à côte.
+      band: 'Risque modéré',
       // Mot pour mot ce que rend le moteur, depuis mobile/i18n/fr/reasons.ts :
       // `paydayToday`, `slipCorroboration(2, 2, 'payday')` et `firstFortnight`.
       // Une maquette qui invente ses propres phrases est une maquette qui dérive.
@@ -454,7 +617,14 @@ export const fr = {
           heading: 'Ce site',
           blocks: [
             {
-              p: 'Ce site est composé de quelques pages statiques. Il ne dépose aucun cookie, n’utilise aucun outil de mesure, n’intègre aucun script, police ou traceur tiers, et ne contient aucun formulaire, il n’a donc rien à collecter sur vous.',
+              // Reformulé le 14/08/2026, quand la page d’accueil a reçu la
+              // démonstration de l’app. La phrase disait « ne contient aucun
+              // formulaire » — la démo est faite de boutons radio et de cases à
+              // cocher, donc elle a cessé d’être exacte, alors même que rien de
+              // ce que le site collecte n’avait changé. Une affirmation presque
+              // vraie est pire qu’une affirmation précise : elle décrit donc
+              // maintenant les contrôles au lieu de nier qu’ils existent.
+              p: 'Ce site est composé de quelques pages statiques. Il ne dépose aucun cookie, n’utilise aucun outil de mesure et n’intègre aucun script, police ou traceur tiers. La démonstration de l’app sur la page d’accueil est faite des contrôles ordinaires de la page et de rien d’autre : choisir un soir ou un écran ne change que ce qui est affiché, rien n’est envoyé nulle part, et rien n’est conservé d’une visite à l’autre. Il n’y a rien ici que ce site puisse collecter sur vous.',
             },
             {
               p: `Il est hébergé par ${ctx.hostingProvider}, qui traite des journaux de serveur ordinaires, adresses IP comprises, pour servir les pages et absorber les attaques. Je n’utilise pas ces journaux pour identifier qui que ce soit.`,

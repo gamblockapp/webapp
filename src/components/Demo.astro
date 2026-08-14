@@ -1,0 +1,1387 @@
+---
+import { path, t, type Locale } from '../i18n';
+
+/**
+ * A working demonstration of the app, in the page, with no JavaScript.
+ *
+ * ## Why it is built this way
+ *
+ * The design bundle ships this as a React component (`SonarDemo.dc.html`) with
+ * four screens, seven selectable nights, toggleable chips and a `setInterval`
+ * ticking the urge timer. This repo runs no client-side script — see the top of
+ * `AGENTS.md` — so the whole thing is rebuilt on form controls:
+ *
+ * - **Every screen and every night is rendered**, and `:checked` decides which
+ *   one is visible. Nothing is fetched, nothing is computed at runtime.
+ * - **Local state uses adjacency.** `.dchoice:checked + label` styles a chip, a
+ *   segment or a scale point. One rule covers every control of that kind, and it
+ *   works in every browser with no `:has()` required.
+ * - **Remote state uses `:has()`** — the band panel that changes when you tap a
+ *   different night, and the word under the urge scale. Those rules live inside
+ *   `@supports selector(:has(*))`, and the defaults outside it are the state the
+ *   demo opens in. A browser without `:has()` therefore gets a working home
+ *   screen showing Friday rather than a broken one, which is the same failure
+ *   mode the scroll reveals are guarded against in `base.css`.
+ *
+ * The inputs are visually hidden but not `display: none`, so they stay in the
+ * tab order and keyboard users can move through a radio group with the arrow
+ * keys exactly as they would in any other radio group.
+ *
+ * ## What is deliberately not ported
+ *
+ * **The timer does not run.** The app's urge timer counts up and the design file
+ * ticks it once a second. There is no script here to tick it with, and a clock
+ * running on a landing page is also the kind of counting invariant 3 is wary of,
+ * so `demo.urge.clock` is a fixed 04:12 and the line under it still says what it
+ * is: counting up, with nothing to reach.
+ *
+ * ## Two rules this component has to keep
+ *
+ * 1. **It says it is a demonstration, twice** — in the cue above it and the
+ *    caption below it. "62 days clean" and "£1,240 kept" are invented, and a
+ *    reader must not take either for a typical result. That is rule 1.
+ * 2. **No band without its reasons.** Every one of the seven nights renders its
+ *    band name and the reasons behind it together, which is invariant 2. They
+ *    are one object in the copy for exactly that reason.
+ */
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const c = t(locale).landing.demo;
+
+/** Low, elevated, high — the app's own order and the app's own tones. */
+type Tone = 'low' | 'elevated' | 'high';
+
+/** How tall a band's bar is drawn, as a percentage of its well. */
+const BAND_HEIGHT: Record<Tone, number> = { low: 22, elevated: 54, high: 86 };
+
+/**
+ * The seven nights, as they are in the design file.
+ *
+ * Only the shape lives here — the sentences are in the copy modules. `bars` is
+ * one row of five marks per reason, `lit` says which of them the reason read.
+ * Zipped with `c.home.nights[i].reasons` by index, so the two arrays have to
+ * stay the same length; the render below stops at whichever is shorter rather
+ * than throwing on a locale that writes one fewer reason.
+ */
+const NIGHTS: { tone: Tone; evidence: { bars: number[]; lit: number[]; tone: Tone }[] }[] = [
+  {
+    tone: 'elevated',
+    evidence: [
+      { bars: [20, 20, 100, 68, 46], lit: [2, 3, 4], tone: 'elevated' },
+      { bars: [100, 26, 100, 26, 26], lit: [0, 2], tone: 'high' },
+      { bars: [100, 100, 100, 18, 18], lit: [0, 1, 2], tone: 'elevated' },
+    ],
+  },
+  {
+    tone: 'high',
+    evidence: [
+      { bars: [100, 100, 100, 80, 60], lit: [0, 1, 2, 3, 4], tone: 'high' },
+      { bars: [100, 26, 100, 100, 26], lit: [0, 2, 3], tone: 'high' },
+      { bars: [20, 20, 100, 68, 46], lit: [2, 3, 4], tone: 'elevated' },
+    ],
+  },
+  {
+    tone: 'low',
+    evidence: [
+      { bars: [18, 18, 18, 18, 18], lit: [], tone: 'low' },
+      { bars: [100, 26, 26, 26, 26], lit: [0], tone: 'low' },
+    ],
+  },
+  {
+    tone: 'low',
+    evidence: [
+      { bars: [18, 18, 18, 18, 18], lit: [], tone: 'low' },
+      { bars: [100, 68, 46, 26, 18], lit: [0, 1], tone: 'low' },
+    ],
+  },
+  {
+    tone: 'low',
+    evidence: [
+      { bars: [18, 18, 18, 18, 18], lit: [], tone: 'low' },
+      { bars: [26, 26, 100, 26, 26], lit: [2], tone: 'low' },
+    ],
+  },
+  {
+    tone: 'elevated',
+    evidence: [
+      { bars: [100, 100, 18, 18, 18], lit: [0, 1], tone: 'elevated' },
+      { bars: [100, 26, 100, 26, 26], lit: [0, 2], tone: 'elevated' },
+    ],
+  },
+  {
+    tone: 'low',
+    evidence: [
+      { bars: [18, 18, 18, 18, 18], lit: [], tone: 'low' },
+      { bars: [26, 26, 26, 68, 100], lit: [3, 4], tone: 'low' },
+    ],
+  },
+];
+
+/**
+ * The urge curve: rises, peaks, drops. A Gaussian, same as the design file, with
+ * the peak eight bars in and "you are here" sitting on it.
+ *
+ * It is a picture of what an urge does rather than a reading of anything, which
+ * is the point the screen is making — sitting through the peak is the whole
+ * trick, and the drop on the right is the part nobody believes in the moment.
+ */
+const URGE_CURVE = Array.from({ length: 22 }, (_, i) => {
+  const x = (i - 8) / 4.6;
+  return {
+    height: Math.round(10 + 90 * Math.exp(-x * x)),
+    state: i === 8 ? 'now' : i < 8 ? 'rise' : 'fall',
+  };
+});
+
+/** The scale point the check-in opens on, and the urge word that goes with it. */
+const URGE_DEFAULT = 3;
+/** The screen the demo opens on, and the night it opens showing. */
+const NIGHT_DEFAULT = 0;
+---
+
+<figure class="demo-figure">
+  <div class="cue">
+    <p class="cue__title">
+      <span class="cue__dot" aria-hidden="true"></span>
+      {c.cueTitle}
+    </p>
+    <p class="small muted cue__body">{c.cueBody}</p>
+  </div>
+
+  <div class="phone-wrap">
+    <div class="phone">
+      <div class="phone__island" aria-hidden="true"></div>
+
+      {/* ---------- Home ---------- */}
+      <div class="dscreen dscreen--home">
+        <div class="dscroll">
+          <div class="dcard dstats">
+            <div class="dstat">
+              <p class="dstat__value">{c.home.daysCleanValue}</p>
+              <p class="dlabel">{c.home.daysCleanLabel}</p>
+            </div>
+            <div class="dstat">
+              <p class="dstat__value">{c.home.moneyKeptValue}</p>
+              <p class="dlabel">{c.home.moneyKeptLabel}</p>
+            </div>
+          </div>
+
+          <div class="dcard">
+            <p class="dlabel dweek__title">{c.home.weekLabel}</p>
+            <div class="dweek" role="group" aria-label={c.nightGroupLabel}>
+              {
+                c.home.nights.map((night, i) => (
+                  <>
+                    <input
+                      class="dchoice"
+                      type="radio"
+                      name="sonar-night"
+                      id={`sonar-night-${i}`}
+                      checked={i === NIGHT_DEFAULT}
+                    />
+                    <label
+                      class={`dweek__day dtone--${NIGHTS[i].tone}`}
+                      for={`sonar-night-${i}`}
+                    >
+                      <span class="dweek__plot">
+                        <span
+                          class="dweek__bar"
+                          style={`--h:${BAND_HEIGHT[NIGHTS[i].tone]}%`}
+                        />
+                      </span>
+                      <span class="dweek__label">{night.day}</span>
+                    </label>
+                  </>
+                ))
+              }
+            </div>
+          </div>
+
+          {/* Invariant 2: each night's band and its reasons are one block, and
+               there is no arrangement of this markup that shows one without the
+               other. */}
+          <div class="dcard">
+            {
+              c.home.nights.map((night, i) => (
+                <div class={`dnight dnight--${i}`}>
+                  <p class="dnight__head">
+                    <span class="dnight__band">{night.band}</span>
+                    <span class="dnight__when">{night.when}</span>
+                  </p>
+                  <ul class="dreasons">
+                    {night.reasons.slice(0, NIGHTS[i].evidence.length).map((reason, j) => (
+                      <li class="dreason">
+                        <span
+                          class={`dmarks dtone--${NIGHTS[i].evidence[j].tone}`}
+                          aria-hidden="true"
+                        >
+                          {NIGHTS[i].evidence[j].bars.map((h, k) => (
+                            <span
+                              class="dmarks__bar"
+                              data-lit={NIGHTS[i].evidence[j].lit.includes(k) ? '' : undefined}
+                              style={`--h:${h}%`}
+                            />
+                          ))}
+                        </span>
+                        <span>{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="dledger">
+            <p class="dlabel">{c.home.ledgerLabel}</p>
+            <dl class="dledger__list">
+              {
+                c.home.ledger.map((row, i) => (
+                  <div class="dledger__row" data-total={i === c.home.ledger.length - 1 ? '' : undefined}>
+                    <dt>{row.label}</dt>
+                    <dd>{row.value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+        </div>
+
+        <div class="dfade" aria-hidden="true"></div>
+        {/*
+          Each control is a radio with its own visible label immediately after
+          it, so the whole switcher is operable and focusable from the keyboard.
+          The class is what the `:has()` rules read, not the id, which is what
+          lets four different controls on three different screens all mean
+          "go back to home".
+        */}
+        <div class="dbar dbar--home" role="group" aria-label={c.screenGroupLabel}>
+          <div class="dbar__row">
+            <input
+              class="dchoice dgo-checkin"
+              type="radio"
+              name="sonar-screen"
+              id="sonar-to-checkin"
+            />
+            <label class="dbtn dbtn--primary" for="sonar-to-checkin">{c.screens.checkin}</label>
+
+            <input class="dchoice dgo-urge" type="radio" name="sonar-screen" id="sonar-to-urge" />
+            <label class="dbtn dbtn--ghost dbtn--narrow" for="sonar-to-urge">
+              {c.screens.urge}
+            </label>
+          </div>
+
+          <input class="dchoice dgo-slip" type="radio" name="sonar-screen" id="sonar-to-slip" />
+          <label class="dbtn dbtn--plain" for="sonar-to-slip">
+            <span class="dbtn__danger">{c.screens.slip}</span>
+            <span class="dbtn__note">{c.home.slipNote}</span>
+          </label>
+        </div>
+      </div>
+
+      {/* ---------- Check in ---------- */}
+      <div class="dscreen dscreen--checkin">
+        <div class="dscroll">
+          <p class="dlabel">{c.checkin.eyebrow}</p>
+          <p class="dquestion">{c.checkin.question}</p>
+
+          <div class="dpair" role="group" aria-label={c.checkin.question}>
+            {
+              c.checkin.clean.map((option, i) => (
+                <>
+                  <input
+                    class="dchoice"
+                    type="radio"
+                    name="sonar-clean"
+                    id={`sonar-clean-${i}`}
+                    checked={i === 0}
+                  />
+                  <label class="dbig" for={`sonar-clean-${i}`}>{option}</label>
+                </>
+              ))
+            }
+          </div>
+
+          <p class="dsub">{c.checkin.urgeQuestion}</p>
+          <div class="dscale" role="group" aria-label={c.checkin.urgeQuestion}>
+            {
+              c.checkin.urgeWords.map((word, i) => (
+                <>
+                  <input
+                    class="dchoice"
+                    type="radio"
+                    name="sonar-urge"
+                    id={`sonar-urge-${i}`}
+                    checked={i === URGE_DEFAULT}
+                    aria-label={word}
+                  />
+                  <label class="dscale__point" for={`sonar-urge-${i}`}>{i}</label>
+                </>
+              ))
+            }
+          </div>
+          <p class="dword-slot">
+            {c.checkin.urgeWords.map((word, i) => <span class={`dword dword--${i}`}>{word}</span>)}
+          </p>
+
+          <p class="dsub">{c.checkin.whenQuestion}</p>
+          <div class="dseg" role="group" aria-label={c.checkin.whenQuestion}>
+            {
+              c.checkin.when.map((option, i) => (
+                <>
+                  <input
+                    class="dchoice"
+                    type="radio"
+                    name="sonar-when"
+                    id={`sonar-when-${i}`}
+                    checked={i === 3}
+                  />
+                  <label class="dseg__item" for={`sonar-when-${i}`}>{option}</label>
+                </>
+              ))
+            }
+          </div>
+
+          <p class="dsub">
+            {c.checkin.whyQuestion}
+            <span class="dsub__optional">{c.checkin.whyOptional}</span>
+          </p>
+          <div class="dchips">
+            {
+              c.checkin.why.map((option, i) => (
+                <>
+                  <input
+                    class="dchoice"
+                    type="checkbox"
+                    id={`sonar-why-${i}`}
+                    checked={i === 0 || i === 3}
+                  />
+                  <label class="dchip" for={`sonar-why-${i}`}>
+                    <span class="dchip__box" aria-hidden="true" />
+                    <span>{option}</span>
+                  </label>
+                </>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="dbar" role="group" aria-label={c.screenGroupLabel}>
+          <input class="dchoice dgo-home" type="radio" name="sonar-screen" id="sonar-checkin-close" />
+          <label class="dbtn dbtn--ghost dbtn--auto" for="sonar-checkin-close">
+            {c.checkin.close}
+          </label>
+
+          <input class="dchoice dgo-home" type="radio" name="sonar-screen" id="sonar-checkin-save" />
+          <label class="dbtn dbtn--primary" for="sonar-checkin-save">{c.checkin.save}</label>
+        </div>
+      </div>
+
+      {/* ---------- Urge ---------- */}
+      <div class="dscreen dscreen--urge">
+        <div class="dscroll">
+          <p class="dlabel">{c.urge.eyebrow}</p>
+          {/* Fixed, not ticking. See the note at the top of this file. */}
+          <p class="dclock">{c.urge.clock}</p>
+          <p class="dclock__note">{c.urge.clockNote}</p>
+
+          <div class="dcurve" aria-hidden="true">
+            {
+              URGE_CURVE.map((bar) => (
+                <span class={`dcurve__bar dcurve__bar--${bar.state}`} style={`--h:${bar.height}%`} />
+              ))
+            }
+          </div>
+          <p class="dcurve__ends">
+            <span class="dlabel">{c.urge.hereLabel}</span>
+            <span class="dlabel">{c.urge.dropsLabel}</span>
+          </p>
+
+          <div class="dquotes">
+            <p class="dlabel">{c.urge.quotesLabel}</p>
+            {c.urge.quotes.map((quote) => <p class="dquote">{quote}</p>)}
+          </div>
+
+          <ul class="dactions">
+            {c.urge.actions.map((action) => <li>{action}</li>)}
+          </ul>
+        </div>
+
+        <div class="dbar" role="group" aria-label={c.screenGroupLabel}>
+          {/*
+            The one control in here that leaves the demonstration, and it is a
+            real link to the real page. Crisis resources are reachable from every
+            page of this site; the urge screen would be a perverse place to make
+            the button a prop.
+          */}
+          <a class="dbtn dbtn--ghost dbtn--auto" href={path(locale, 'help')}>
+            {c.urge.helplines}
+          </a>
+
+          <input class="dchoice dgo-home" type="radio" name="sonar-screen" id="sonar-urge-done" />
+          <label class="dbtn dbtn--primary" for="sonar-urge-done">{c.urge.through}</label>
+        </div>
+      </div>
+
+      {/* ---------- Log a slip ---------- */}
+      <div class="dscreen dscreen--slip">
+        <div class="dscroll">
+          <p class="dquestion dquestion--lead">{c.slip.title}</p>
+
+          <p class="dsub">{c.slip.amountLabel}</p>
+          <p class="damount">{c.slip.amount}</p>
+          <p class="dnote">{c.slip.amountNote}</p>
+
+          <p class="dsub">{c.slip.whenLabel}</p>
+          <div class="dseg" role="group" aria-label={c.slip.whenLabel}>
+            {
+              c.slip.when.map((option, i) => (
+                <>
+                  <input
+                    class="dchoice"
+                    type="radio"
+                    name="sonar-slipwhen"
+                    id={`sonar-slipwhen-${i}`}
+                    checked={i === 0}
+                  />
+                  <label class="dseg__item" for={`sonar-slipwhen-${i}`}>{option}</label>
+                </>
+              ))
+            }
+          </div>
+
+          <p class="dsub">{c.slip.whyLabel}</p>
+          <div class="dchips">
+            {
+              c.slip.why.map((option, i) => (
+                <>
+                  <input
+                    class="dchoice"
+                    type="checkbox"
+                    id={`sonar-slipwhy-${i}`}
+                    checked={i === 0 || i === 1}
+                  />
+                  <label class="dchip" for={`sonar-slipwhy-${i}`}>
+                    <span class="dchip__box" aria-hidden="true" />
+                    <span>{option}</span>
+                  </label>
+                </>
+              ))
+            }
+          </div>
+
+          {/* The precise claim, and it is here rather than in a footnote because
+               this is the screen someone reaches at the worst moment. */}
+          <p class="dslip-note">{c.slip.note}</p>
+        </div>
+
+        <div class="dbar" role="group" aria-label={c.screenGroupLabel}>
+          <input class="dchoice dgo-home" type="radio" name="sonar-screen" id="sonar-slip-cancel" />
+          <label class="dbtn dbtn--ghost dbtn--auto" for="sonar-slip-cancel">
+            {c.slip.cancel}
+          </label>
+
+          <input class="dchoice dgo-home" type="radio" name="sonar-screen" id="sonar-slip-save" />
+          <label class="dbtn dbtn--danger" for="sonar-slip-save">{c.slip.save}</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Said out loud, and not in the smallest type on the page: none of the
+       figures above are anybody's. Rule 1. */}
+  <figcaption class="small faint demo__caption">{c.caption}</figcaption>
+</figure>
+
+<style>
+  /* `min-width: 0` so the 402px device inside cannot widen the grid or flex
+     column holding this figure. See the note on `.hero__grid` in Landing.astro. */
+  .demo-figure {
+    margin: 0;
+    min-width: 0;
+  }
+
+  /* ---------- The cue above it ---------- */
+
+  .cue {
+    margin-bottom: var(--space-lg);
+    max-width: 26rem;
+  }
+
+  .cue__title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--type-eyebrow);
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+
+  .cue__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-pill);
+    background: var(--c-accent);
+    flex: none;
+  }
+
+  .cue__body {
+    margin-top: var(--space-sm);
+    text-wrap: pretty;
+  }
+
+  /* ---------- The device ---------- */
+
+  /*
+   * A fixed 402px screen, scaled at two breakpoints rather than reflowed.
+   *
+   * The whole demo is authored at the app's own dimensions, so its type sizes and
+   * paddings are the app's numbers rather than web approximations of them. Making
+   * it fluid would mean re-deriving every one of those, and the result would no
+   * longer be the thing it is demonstrating. The design file scales it too.
+   */
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+    height: 874px;
+    overflow: hidden;
+  }
+
+  .phone {
+    position: relative;
+    flex: none;
+    width: 402px;
+    height: 874px;
+    transform-origin: top center;
+    background: var(--c-bg);
+    color: var(--c-text);
+    border: 10px solid var(--c-border-strong);
+    border-radius: 54px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    /* The screens are absolutely positioned inside it. */
+    isolation: isolate;
+  }
+
+  @media (max-width: 30rem) {
+    .phone {
+      transform: scale(0.84);
+    }
+
+    .phone-wrap {
+      height: 734px;
+    }
+  }
+
+  @media (max-width: 23.5rem) {
+    .phone {
+      transform: scale(0.74);
+    }
+
+    .phone-wrap {
+      height: 647px;
+    }
+  }
+
+  .phone__island {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 108px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    background: var(--c-border-strong);
+    z-index: 3;
+  }
+
+  /* ---------- Controls ---------- */
+
+  /*
+   * Visually hidden, still focusable, still a radio group. `display: none` would
+   * take these out of the tab order and out of the accessibility tree, which
+   * would make the demo unusable by keyboard — the one way of breaking it that
+   * nobody testing with a mouse would notice.
+   */
+  .dchoice {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .dchoice:focus-visible + label {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Screens ---------- */
+
+  /*
+   * The home screen is the default and is visible without any `:has()` support.
+   * Everything that switches screens lives inside the `@supports` block, so a
+   * browser that cannot do it renders a static, correct home screen instead of
+   * four screens stacked on top of each other.
+   */
+  .dscreen {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .dscreen--home {
+    display: block;
+  }
+
+  .dscroll {
+    position: absolute;
+    inset: 0;
+    padding: 74px 20px 210px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+
+  .dscreen--checkin .dscroll,
+  .dscreen--slip .dscroll {
+    padding: 78px 20px 150px;
+    gap: 0;
+  }
+
+  .dscreen--urge .dscroll {
+    padding: 82px 20px 150px;
+    gap: 0;
+  }
+
+  /*
+   * Home is whatever is left. No radio starts checked, so there is no hidden
+   * default control sitting in the tab order with nothing to label it — home
+   * shows while none of the other three is selected, and the "Close", "Save",
+   * "I'm through it" and "Cancel" radios return to it by unchecking whichever
+   * one was.
+   */
+  @supports selector(:has(*)) {
+    .dscreen--home {
+      display: none;
+    }
+
+    .phone:has(.dgo-checkin:checked) .dscreen--checkin,
+    .phone:has(.dgo-urge:checked) .dscreen--urge,
+    .phone:has(.dgo-slip:checked) .dscreen--slip {
+      display: block;
+    }
+
+    .phone:not(:has(.dgo-checkin:checked, .dgo-urge:checked, .dgo-slip:checked)) .dscreen--home {
+      display: block;
+    }
+  }
+
+  /* ---------- Shared furniture ---------- */
+
+  .dcard {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .dlabel {
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-text-subtle);
+  }
+
+  .dstats {
+    display: flex;
+    padding: 0;
+  }
+
+  .dstat {
+    flex: 1;
+    padding: 14px 16px;
+  }
+
+  .dstat + .dstat {
+    border-left: 1px solid var(--c-border);
+  }
+
+  .dstat__value {
+    font-family: var(--font-serif);
+    font-size: 38px;
+    line-height: 42px;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 2px;
+  }
+
+  /* ---------- Week strip ---------- */
+
+  .dweek__title {
+    margin-bottom: 11px;
+  }
+
+  .dweek {
+    display: flex;
+    gap: 5px;
+    align-items: flex-end;
+  }
+
+  .dweek__day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    align-items: center;
+    cursor: pointer;
+    min-width: 0;
+  }
+
+  .dweek__plot {
+    width: 100%;
+    height: 80px;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: 9px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    transition: border-color var(--motion-fast) ease-out;
+  }
+
+  .dweek__bar {
+    width: 100%;
+    height: var(--h);
+    background: var(--tone-plot);
+    border-top: 2px solid var(--tone-fg);
+  }
+
+  .dweek__label {
+    font-size: 11px;
+    line-height: 14px;
+    color: var(--c-text-subtle);
+  }
+
+  /* The selected night. Adjacency, so this needs no `:has()` and no per-index
+     rule — one declaration covers all seven. */
+  .dchoice:checked + .dweek__day .dweek__plot {
+    border-color: var(--c-accent);
+  }
+
+  .dchoice:checked + .dweek__day .dweek__label {
+    color: var(--c-text);
+    font-weight: 600;
+  }
+
+  /* ---------- The night panel ---------- */
+
+  .dnight {
+    display: none;
+  }
+
+  .dnight--0 {
+    display: block;
+  }
+
+  @supports selector(:has(*)) {
+    .dnight--0 {
+      display: none;
+    }
+
+    .phone:has(#sonar-night-0:checked) .dnight--0,
+    .phone:has(#sonar-night-1:checked) .dnight--1,
+    .phone:has(#sonar-night-2:checked) .dnight--2,
+    .phone:has(#sonar-night-3:checked) .dnight--3,
+    .phone:has(#sonar-night-4:checked) .dnight--4,
+    .phone:has(#sonar-night-5:checked) .dnight--5,
+    .phone:has(#sonar-night-6:checked) .dnight--6 {
+      display: block;
+    }
+  }
+
+  .dnight__head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 2px 2px 12px;
+  }
+
+  .dnight__band {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    line-height: 34px;
+    letter-spacing: -0.015em;
+  }
+
+  .dnight__when {
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--c-text-muted);
+  }
+
+  .dreason {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 13px;
+    align-items: center;
+    padding: 11px 2px;
+    border-top: 1px solid var(--c-border);
+    font-size: 15px;
+    line-height: 22px;
+    text-wrap: pretty;
+  }
+
+  .dmarks {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    height: 20px;
+  }
+
+  .dmarks__bar {
+    flex: 1;
+    height: var(--h);
+    border-radius: 1px;
+    background: var(--c-border);
+  }
+
+  .dmarks__bar[data-lit] {
+    background: var(--tone-fg);
+  }
+
+  /* ---------- The ledger ---------- */
+
+  .dledger {
+    background: var(--c-surface-alt);
+    border-radius: 14px;
+    padding: 12px 16px 14px;
+  }
+
+  .dledger__list {
+    margin-top: 4px;
+  }
+
+  .dledger__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    padding: 7px 0;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .dledger__row dt {
+    color: var(--c-text-muted);
+  }
+
+  .dledger__row dd {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dledger__row[data-total] {
+    border-top: 1px solid var(--c-border);
+    margin-top: 4px;
+  }
+
+  .dledger__row[data-total] dt {
+    color: var(--c-text);
+    font-weight: 600;
+  }
+
+  /* ---------- The action bars ---------- */
+
+  /* The gradient the home screen's content runs under, so the bar reads as
+     floating over a continuing list rather than as the end of one. */
+  .dfade {
+    position: absolute;
+    inset: auto 0 0;
+    height: 216px;
+    background: linear-gradient(to top, var(--c-bg) 44%, transparent);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .dbar {
+    position: absolute;
+    inset: auto 12px 26px;
+    z-index: 2;
+    display: flex;
+    gap: 8px;
+    padding: 7px;
+    border-radius: 26px;
+    background: color-mix(in srgb, var(--c-surface-alt) 72%, transparent);
+    backdrop-filter: blur(26px) saturate(1.8);
+    -webkit-backdrop-filter: blur(26px) saturate(1.8);
+    border: 1px solid var(--c-border-strong);
+    box-shadow: var(--shadow-lg);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .dbar {
+      background: var(--c-surface-alt);
+    }
+  }
+
+  .dbar--home {
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dbar__row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dbtn {
+    flex: 1;
+    min-height: 52px;
+    border-radius: 19px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    padding-inline: 12px;
+  }
+
+  .dbtn--primary {
+    background: var(--c-accent);
+    color: var(--c-accent-fg);
+  }
+
+  .dbtn--ghost {
+    border: 1px solid var(--c-border-strong);
+    color: var(--c-text);
+  }
+
+  .dbtn--danger {
+    background: var(--c-danger-soft);
+    border: 1px solid var(--c-danger);
+    color: var(--c-danger);
+  }
+
+  .dbtn--narrow {
+    flex: none;
+    width: 118px;
+  }
+
+  .dbtn--auto {
+    flex: none;
+    padding-inline: 20px;
+  }
+
+  .dbtn--plain {
+    min-height: 44px;
+    flex-wrap: wrap;
+  }
+
+  .dbtn__danger {
+    color: var(--c-danger);
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .dbtn__note {
+    color: var(--c-text-subtle);
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: 400;
+  }
+
+  /* ---------- Check-in ---------- */
+
+  .dquestion {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    line-height: 36px;
+    letter-spacing: -0.015em;
+    margin-top: 8px;
+    text-wrap: pretty;
+  }
+
+  .dquestion--lead {
+    margin-top: 0;
+    margin-bottom: 24px;
+  }
+
+  .dsub {
+    font-size: 17px;
+    line-height: 23px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-top: 26px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .dsub__optional {
+    font-size: 13px;
+    line-height: 19px;
+    font-weight: 400;
+    color: var(--c-text-subtle);
+  }
+
+  .dpair {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .dbig {
+    flex: 1;
+    min-height: 60px;
+    border-radius: 12px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    cursor: pointer;
+    transition:
+      background var(--motion-fast) ease-out,
+      border-color var(--motion-fast) ease-out;
+  }
+
+  .dchoice:checked + .dbig {
+    background: var(--c-accent-soft);
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .dscale {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dscale__point {
+    flex: 1;
+    min-height: 60px;
+    border-radius: 12px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 21px;
+    color: var(--c-text-muted);
+    cursor: pointer;
+    transition:
+      background var(--motion-fast) ease-out,
+      border-color var(--motion-fast) ease-out;
+  }
+
+  .dchoice:checked + .dscale__point {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+    color: var(--c-accent-fg);
+  }
+
+  /*
+   * The word under the scale. All five are rendered; `:has()` picks one. Without
+   * it the default stays put, which is the word for the point the scale opens on
+   * — so the two never disagree.
+   */
+  .dword-slot {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--c-text-muted);
+    min-height: 19px;
+  }
+
+  .dword {
+    display: none;
+  }
+
+  .dword--3 {
+    display: inline;
+  }
+
+  @supports selector(:has(*)) {
+    .dword--3 {
+      display: none;
+    }
+
+    .phone:has(#sonar-urge-0:checked) .dword--0,
+    .phone:has(#sonar-urge-1:checked) .dword--1,
+    .phone:has(#sonar-urge-2:checked) .dword--2,
+    .phone:has(#sonar-urge-3:checked) .dword--3,
+    .phone:has(#sonar-urge-4:checked) .dword--4 {
+      display: inline;
+    }
+  }
+
+  .dseg {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 15px;
+    background: var(--c-surface-alt);
+  }
+
+  .dseg__item {
+    flex: 1;
+    min-height: 48px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 6px;
+    font-size: 14px;
+    line-height: 18px;
+    color: var(--c-text-muted);
+    cursor: pointer;
+    transition: background var(--motion-fast) ease-out;
+  }
+
+  .dchoice:checked + .dseg__item {
+    background: var(--c-accent);
+    color: var(--c-accent-fg);
+    font-weight: 600;
+  }
+
+  .dchips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .dchip {
+    min-height: 52px;
+    padding: 0 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    font-size: 15px;
+    line-height: 19px;
+    cursor: pointer;
+    text-wrap: pretty;
+    transition:
+      background var(--motion-fast) ease-out,
+      border-color var(--motion-fast) ease-out;
+  }
+
+  .dchip__box {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    flex: none;
+    border: 1px solid var(--c-border-strong);
+    position: relative;
+  }
+
+  .dchoice:checked + .dchip {
+    background: var(--c-accent-soft);
+    border-color: var(--c-accent);
+    color: var(--c-accent);
+    font-weight: 600;
+  }
+
+  .dchoice:checked + .dchip .dchip__box {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+  }
+
+  /* The tick, drawn from two borders rather than an SVG so it inherits the
+     button foreground and costs no request. */
+  .dchoice:checked + .dchip .dchip__box::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 9px;
+    height: 5px;
+    margin-top: 5px;
+    border-left: 2px solid var(--c-accent-fg);
+    border-bottom: 2px solid var(--c-accent-fg);
+    transform: rotate(-45deg);
+  }
+
+  /* ---------- Urge ---------- */
+
+  .dclock {
+    margin-top: 8px;
+    font-family: var(--font-serif);
+    font-size: 56px;
+    line-height: 60px;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dclock__note {
+    margin-top: 4px;
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--c-text-subtle);
+  }
+
+  .dcurve {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(22, 1fr);
+    gap: 3px;
+    align-items: end;
+    height: 76px;
+  }
+
+  .dcurve__bar {
+    height: var(--h);
+    border-radius: 2px;
+  }
+
+  .dcurve__bar--rise {
+    background: var(--c-risk-elevated-plot);
+    border-top: 2px solid var(--c-risk-elevated-fg);
+  }
+
+  .dcurve__bar--fall {
+    background: var(--c-risk-low-plot);
+    border-top: 2px solid var(--c-risk-low-fg);
+  }
+
+  .dcurve__bar--now {
+    background: var(--c-accent);
+    border-top: 2px solid var(--c-accent);
+  }
+
+  .dcurve__ends {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dquotes {
+    margin-top: 22px;
+    background: var(--c-surface-alt);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .dquote {
+    margin-top: 10px;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 17px;
+    line-height: 26px;
+    text-wrap: pretty;
+  }
+
+  .dactions {
+    margin-top: 20px;
+  }
+
+  .dactions li {
+    font-size: 17px;
+    line-height: 25px;
+    padding: 13px 0;
+    border-top: 1px solid var(--c-border);
+  }
+
+  /* ---------- Slip ---------- */
+
+  .damount {
+    height: 72px;
+    border-radius: 12px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    font-family: var(--font-serif);
+    font-size: 34px;
+    line-height: 38px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dnote {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 19px;
+    color: var(--c-text-subtle);
+  }
+
+  .dslip-note {
+    margin-top: 26px;
+    background: var(--c-surface-alt);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 22px;
+    color: var(--c-text-muted);
+    text-wrap: pretty;
+  }
+
+  /* ---------- Band tones ---------- */
+
+  .dtone--low {
+    --tone-plot: var(--c-risk-low-plot);
+    --tone-fg: var(--c-risk-low-fg);
+  }
+
+  .dtone--elevated {
+    --tone-plot: var(--c-risk-elevated-plot);
+    --tone-fg: var(--c-risk-elevated-fg);
+  }
+
+  .dtone--high {
+    --tone-plot: var(--c-risk-high-plot);
+    --tone-fg: var(--c-risk-high-fg);
+  }
+
+  .demo__caption {
+    margin-top: var(--space-lg);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  /*
+   * On paper the demonstration is a screenshot of one screen, which is the most
+   * a printed page can honestly be. The controls and the floating bars go.
+   */
+  @media print {
+    .cue,
+    .dbar,
+    .dfade {
+      display: none;
+    }
+
+    .phone {
+      box-shadow: none;
+    }
+  }
+</style>
