@@ -15,6 +15,7 @@ import {
   PAID,
 } from '../config';
 import { alternates, otherLocale, path, t, type Locale, type RouteKey } from '../i18n';
+import Analytics from '@vercel/analytics/astro';
 
 /**
  * The shell every page uses. Owns <head>, the header and the footer.
@@ -214,6 +215,9 @@ const structuredData = {
       green. See the note on `structuredData` above for why it exists at all.
     */}
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    
+    {/* Vercel Web Analytics */}
+    <Analytics />
   </head>
 
   <body>
