@@ -32,34 +32,47 @@ const faqs = c.faqs(APP_NAME, pricingStrings(locale), PAID);
       about a fifth full, with the one thing anybody comes to this page for
       (the email address) below the fold of a mostly empty screen.
     */}
-    <header class="support__top">
-      <div class="support__intro stack">
-        <h1 class="display-sm">{c.title}</h1>
-        <p class="support__lead muted">{c.intro(APP_NAME)}</p>
-        <p class="small">
-          {c.crisisLead} <a href={path(locale, 'help')}>{c.crisisLink}</a>
-        </p>
-      </div>
+    <header class="doc-head">
+      <h1 class="display-sm doc-head__title">{c.title}</h1>
+      <p class="lead doc-head__lead">{c.intro(APP_NAME)}</p>
+      <p class="doc-head__note">
+        {c.crisisLead} <a class="support__crisis" href={path(locale, 'help')}>{c.crisisLink} →</a>
+      </p>
+    </header>
 
-      <div class="card card--interactive contact">
+    {/*
+      The address, and what to put in the message, as a pair of cards above the
+      questions. This is the page App Store Connect's "Support URL" points at, so
+      the way to reach a human is the first thing on it rather than the last.
+    */}
+    <div class="support__cards">
+      <div class="card card--interactive">
         <p class="eyebrow">{c.emailLead}</p>
         <p class="contact__address">
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         </p>
-        <p class="small muted">{c.responseNote}</p>
+        <p class="body-lg muted">{c.responseNote}</p>
       </div>
-    </header>
 
-    <section class="support__section reveal">
-      <h2 class="title">{c.faqTitle}</h2>
-      {/* Two columns of answers rather than one long scroll. `masonry`-free: a
-           plain grid with `align-items: start` so short answers don't stretch. */}
-      <dl class="faq reveal-group">
+      <div class="card">
+        <p class="eyebrow">{c.bugTitle}</p>
+        <div class="support__blocks">
+          <Prose blocks={c.bugBlocks} />
+        </div>
+      </div>
+    </div>
+
+    <section class="support__faq reveal">
+      <h2 class="eyebrow">{c.faqTitle}</h2>
+      {/* One question per row, question beside answer. Two columns of stacked
+           question-and-answer left the eye no consistent place to land; a
+           question always in the same column can be scanned. */}
+      <dl class="faq">
         {
           faqs.map((faq) => (
             <div class="faq__item">
-              <dt class="heading">{faq.q}</dt>
-              <dd>
+              <dt class="faq__q">{faq.q}</dt>
+              <dd class="faq__a">
                 <Prose blocks={faq.a} />
               </dd>
             </div>
@@ -67,101 +80,102 @@ const faqs = c.faqs(APP_NAME, pricingStrings(locale), PAID);
         }
       </dl>
     </section>
-
-    {/* Heading beside its content rather than above it, so this last short
-         section doesn't leave half the page empty the way the FAQ grid doesn't. */}
-    <section class="support__section support__section--split reveal">
-      <h2 class="title">{c.bugTitle}</h2>
-      <div class="support__blocks">
-        <Prose blocks={c.bugBlocks} />
-      </div>
-    </section>
   </div>
 </Base>
 
 <style>
   .support {
-    padding-block: var(--space-3xl) var(--space-2xl);
+    padding-bottom: var(--space-2xl);
   }
 
-  .support__top {
+  .support__crisis {
+    color: var(--c-accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .support__crisis:hover {
+    text-decoration: underline;
+  }
+
+  .support__cards {
+    margin-top: var(--space-3xl);
     display: grid;
-    gap: var(--space-2xl);
-    align-items: start;
-  }
-
-  @media (min-width: 60rem) {
-    .support__top {
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: var(--space-4xl);
-    }
-
-    .contact {
-      position: sticky;
-      top: 6rem;
-    }
-  }
-
-  .support__intro {
-    max-width: var(--measure);
-  }
-
-  .support__lead {
-    font-family: var(--font-serif);
-    font-size: clamp(1.125rem, 1.8vw, 1.375rem);
-    line-height: 1.5;
-  }
-
-  .contact__address {
-    margin-top: var(--space-sm);
-    margin-bottom: var(--space-md);
-    font-family: var(--font-serif);
-    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
-    word-break: break-word;
-  }
-
-  .support__section {
-    margin-top: var(--space-4xl);
-    padding-top: var(--space-2xl);
-    border-top: 1px solid var(--c-border);
-  }
-
-  .faq {
-    margin-top: var(--space-xl);
-    display: grid;
-    gap: var(--space-2xl) var(--space-4xl);
+    gap: var(--space-xl);
     align-items: start;
   }
 
   @media (min-width: 56rem) {
-    .faq {
-      grid-template-columns: repeat(2, 1fr);
+    .support__cards {
+      grid-template-columns: 1fr 1fr;
     }
   }
 
-  .faq__item dt {
-    max-width: var(--measure);
+  .card {
+    padding: clamp(var(--space-xl), 3vw, 40px);
   }
 
-  .faq__item dd {
-    margin-top: var(--space-sm);
-    color: var(--c-text-muted);
+  .contact__address {
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 2.4vw, 1.875rem);
+    letter-spacing: -0.01em;
+    word-break: break-word;
+  }
+
+  .contact__address a {
+    text-decoration: none;
+  }
+
+  .contact__address a:hover {
+    text-decoration: underline;
   }
 
   .support__blocks {
     margin-top: var(--space-lg);
+    color: var(--c-text-muted);
+    font-size: var(--type-body-lg);
+    line-height: 1.67;
   }
 
-  @media (min-width: 60rem) {
-    .support__section--split {
-      display: grid;
-      grid-template-columns: 1fr 1.6fr;
-      gap: var(--space-4xl);
-      align-items: start;
-    }
+  .support__faq {
+    margin-top: clamp(56px, 6vw, 96px);
+  }
 
-    .support__section--split .support__blocks {
-      margin-top: 0;
+  .faq {
+    margin-top: var(--space-2xl);
+  }
+
+  .faq__item {
+    display: grid;
+    gap: var(--space-md);
+    align-items: start;
+    padding-block: var(--space-2xl);
+    border-top: 1px solid var(--c-border);
+  }
+
+  @media (min-width: 56rem) {
+    .faq__item {
+      grid-template-columns: 1fr 1.4fr;
+      gap: var(--space-5xl);
     }
+  }
+
+  .faq__q {
+    font-family: var(--font-serif);
+    font-size: clamp(1.25rem, 2.1vw, 1.625rem);
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    text-wrap: pretty;
+  }
+
+  .faq__a {
+    color: var(--c-text-muted);
+    font-size: var(--type-body-lg);
+    line-height: 1.67;
+    /* `Prose.astro` holds its paragraphs to `--measure`; in this column the
+       answer is the wide half and 34rem left a ragged gutter beside it. */
+    --measure: 44rem;
   }
 </style>

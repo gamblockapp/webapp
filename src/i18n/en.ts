@@ -104,6 +104,12 @@ export const en = {
     comingSoonNoteFree: 'iPhone first. Free, with nothing to buy.',
     download: 'Download on the App Store',
 
+    facts: (paid) => [
+      'A forecast every evening, with the reasons behind it',
+      'Your whole history stays on your phone',
+      paid ? 'Free for 14 days, then a subscription' : 'Free, with nothing to buy',
+    ],
+
     pricing: {
       eyebrow: 'What it costs',
       trial: (days) => `Free for ${days} days. No card to start.`,
@@ -128,6 +134,11 @@ export const en = {
         'You’re 9 days in. The first fortnight is the fragile part.',
       ],
       caption: 'An illustration of the home screen.',
+      today: 'Friday',
+      // Short forms, running forwards from tonight. Not a calendar week: the
+      // app's own strip starts at today, because what is behind you isn't the
+      // thing it is for.
+      weekdays: ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'],
     },
 
     forecast: {
@@ -135,6 +146,7 @@ export const en = {
       title: 'Your patterns, crossed with your payday.',
       body:
         'Most apps in this category treat an urge as weather to be journalled after the fact. For gambling, the biggest trigger is external and on a schedule: the day the money lands, and the two nights after it. Every evening the app crosses what you have logged with where you are in that cycle, and says what tonight looks like.',
+      marks: 'The marks beside each reason are what it read to get there.',
       bandsEyebrow: 'Three bands, and that’s all',
       bands: ['Low risk', 'Elevated risk', 'High risk'],
       // Invariant 2, stated as a feature rather than a footnote.
@@ -158,9 +170,24 @@ export const en = {
       title: 'Where the money stands.',
       body:
         'During setup it asks one question about money: roughly what a typical month used to cost. Not what you staked, but what was actually gone by the end of it. From there it keeps a running account of what the old pattern would have taken, less what slips actually cost, and it says so when a slip has no amount recorded rather than inventing one.',
+      bodyEyebrow: 'How it arrives at the figure',
       exampleEyebrow: 'An example, not a promise',
       example:
         'Someone who put £600 a month in is looking at £7,200 a year, or about £20 a day. Most people have never seen that written down.',
+      // Every figure below is already in `example` above. Broken out so the year
+      // total can be set as a number rather than buried in a sentence — and it is
+      // set still. See the note on this block in types.ts.
+      basis: 'One year, at £600 a month',
+      figure: '£7,200',
+      figures: [
+        { value: '£20', label: 'A day' },
+        { value: '£600', label: 'A month' },
+        { value: '£7,200', label: 'A year' },
+      ],
+      gridStart: 'Night one',
+      gridEnd: 'Night 365',
+      gridNote:
+        'One mark for every night of the year. Most people have never seen it written down at all, let alone laid out.',
       // mobile/i18n/en/onboarding.ts → done.closingBody.
       caveat:
         'That money’s gone and this app can’t fetch it. What it can do is count what you don’t lose from here.',
@@ -673,5 +700,11 @@ export const en = {
     notTreatment: 'Not treatment, and not a substitute for professional support.',
     contact: 'Contact',
     copyright: (year, holder) => `© ${year} ${holder}`,
+    appHeading: 'The app',
+    helpHeading: 'Help',
+    legalHeading: 'Legal',
+    howItWorks: 'How it works',
+    yourData: 'Your data',
+    theMoney: 'Where the money stands',
   },
 } satisfies Dict;

@@ -35,12 +35,12 @@ const copy = t(locale);
 
 <Base locale={locale} route={route} title={title} description={description}>
   <div class="page legal">
-    <header class="legal__header stack">
-      <h1 class="display-sm">{doc.title}</h1>
-      <p class="small faint">
+    <header class="doc-head">
+      <p class="eyebrow">
         <time datetime={LEGAL_UPDATED}>{copy.legal.updated(LEGAL_UPDATED)}</time>
       </p>
-      <p class="legal__intro">{doc.intro}</p>
+      <h1 class="display-sm doc-head__title">{doc.title}</h1>
+      <p class="lead doc-head__lead">{doc.intro}</p>
     </header>
 
     <div class="legal__body">
@@ -76,7 +76,7 @@ const copy = t(locale);
         {
           sections.map((section, i) => (
             <section class="legal__section" id={`section-${i + 1}`}>
-              <h2 class="heading legal__heading">
+              <h2 class="legal__heading">
                 <span class="legal__num faint">{i + 1}</span>
                 {section.heading}
               </h2>
@@ -100,23 +100,12 @@ const copy = t(locale);
    * has to tighten the width.
    */
   .legal {
-    max-width: 70rem;
-    padding-block: var(--space-3xl) var(--space-2xl);
-  }
-
-  /* Matched to the document body below rather than to `--measure`, so the intro
-     and the sections share one left-to-right rhythm. */
-  .legal__header {
-    max-width: 42rem;
-    padding-bottom: var(--space-xl);
-    border-bottom: 1px solid var(--c-border);
-  }
-
-  .legal__intro {
-    color: var(--c-text-muted);
+    max-width: 76rem;
+    padding-bottom: var(--space-2xl);
   }
 
   .legal__body {
+    margin-top: var(--space-3xl);
     display: grid;
     gap: var(--space-2xl);
   }
@@ -132,15 +121,18 @@ const copy = t(locale);
    * document column from having dead space down its right-hand side.
    */
   .legal__doc {
-    --measure: 42rem;
+    --measure: 46rem;
+    font-size: var(--type-body-lg);
+    line-height: 1.72;
+    color: var(--c-text-muted);
   }
 
   @media (min-width: 64rem) {
     .legal__body {
       /* Fixed sidebar, flexible document — the list should not get wider just
          because the window did. */
-      grid-template-columns: 16rem minmax(0, 1fr);
-      gap: var(--space-4xl);
+      grid-template-columns: 18rem minmax(0, 1fr);
+      gap: var(--space-5xl);
       align-items: start;
     }
 
@@ -191,16 +183,26 @@ const copy = t(locale);
     color: var(--c-accent);
   }
 
+  /* A hairline per clause rather than space alone. On a document that is scanned
+     for one section, the rule is what makes a section a thing with edges. */
   .legal__section {
-    padding-top: var(--space-2xl);
+    padding-block: var(--space-2xl);
+    border-top: 1px solid var(--c-border);
   }
 
   .legal__heading {
     display: flex;
-    gap: var(--space-md);
+    gap: var(--space-lg);
     align-items: baseline;
     margin-bottom: var(--space-lg);
     max-width: var(--measure);
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 2.2vw, 1.875rem);
+    line-height: 1.3;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+    color: var(--c-text);
+    text-wrap: pretty;
   }
 
   .legal__num {

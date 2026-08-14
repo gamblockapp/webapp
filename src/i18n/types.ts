@@ -112,6 +112,16 @@ export type Dict = {
     download: string;
 
     /**
+     * Three short statements under the hero, on a hairline.
+     *
+     * They are the page's argument compressed to a line each, for the reader who
+     * will not scroll: what it does, where the data lives, what it costs. The
+     * last one takes `paid` because it is a price claim and the site has said the
+     * wrong thing about the price before — see `PAID` in `src/config.ts`.
+     */
+    facts: (paid: boolean) => string[];
+
+    /**
      * What it costs, next to the button that gets it.
      *
      * This exists because the site said the app was free in three places after
@@ -145,12 +155,26 @@ export type Dict = {
       band: string;
       reasons: string[];
       caption: string;
+      /** The weekday the mock-up is set on, spelled out, beside `eyebrow`. */
+      today: string;
+      /**
+       * Seven short weekday labels for the week strip, starting at `today`. The
+       * strip is the app's own, so it runs forwards from tonight rather than from
+       * Monday.
+       */
+      weekdays: string[];
     };
 
     forecast: {
       eyebrow: string;
       title: string;
       body: string;
+      /**
+       * What the small bars beside each reason are. They are drawn on the
+       * landing page now, so they have to be explained on it — an unlabelled
+       * chart beside a sentence is decoration pretending to be evidence.
+       */
+      marks: string;
       bandsEyebrow: string;
       /** Low, elevated, high — in that order, matching `RiskBand` in the app. */
       bands: string[];
@@ -168,10 +192,29 @@ export type Dict = {
     money: {
       eyebrow: string;
       title: string;
+      /** How the app arrives at the figure. Set as a card beside the caveat. */
       body: string;
+      bodyEyebrow: string;
       exampleEyebrow: string;
       example: string;
       caveat: string;
+      /**
+       * The worked example, broken out of `example` so it can be set as a figure
+       * rather than as a sentence.
+       *
+       * **`figure` never animates.** It is what somebody lost, and rolling it up
+       * from zero like a jackpot counter — which is what the design file does —
+       * makes a joke of the one number on this page that is supposed to land.
+       * See AGENTS.md. Every number here already appears in `example`; none of
+       * them is a new claim.
+       */
+      basis: string;
+      figure: string;
+      figures: { value: string; label: string }[];
+      /** Either end of the 365-night grid. */
+      gridStart: string;
+      gridEnd: string;
+      gridNote: string;
     };
 
     trio: {
@@ -246,6 +289,13 @@ export type Dict = {
     notTreatment: string;
     contact: string;
     copyright: (year: number, holder: string) => string;
+    /** Column headings, and the three in-page links the first column carries. */
+    appHeading: string;
+    helpHeading: string;
+    legalHeading: string;
+    howItWorks: string;
+    yourData: string;
+    theMoney: string;
   };
 };
 

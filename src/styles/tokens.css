@@ -42,7 +42,19 @@
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 22px;
+  /* Web-only, from the new page design: the large panels — the money block, the
+     forecast card, the crisis band — are drawn at a softer corner than anything
+     in the app, because they are the size of a card rather than of a control. */
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
   --radius-pill: 999px;
+
+  /*
+   * Page gutter, as a token because three breakpoints change it and the header,
+   * the footer and every section have to agree. 40 / 28 / 20, which is what the
+   * design file uses.
+   */
+  --page-pad: 40px;
 
   /*
    * The app's scale, opened up for the web.
@@ -54,21 +66,34 @@
    * product — it just stops whispering.
    */
   /*
-   * The 6.5vw middle term is the French headline's constraint, not a guess.
+   * The vw middle term is the French headline's constraint, not a guess.
    *
    * The hero copy column is a fraction of the page, but the display size was
    * scaling on raw viewport width — so between roughly 1000px and 1300px the type
    * grew faster than the column holding it and "Personne n'est gagnant." broke over
-   * three lines. 6.5vw keeps it inside its column all the way down. The 2.75rem
-   * floor is reached below 677px either way, so phones are unaffected.
+   * three lines. This keeps it inside its column all the way down.
+   *
+   * The ceiling is 70px rather than the design file's 76px for exactly that
+   * reason: at 76px the French hook overruns the hero's copy column, and all
+   * three lines of the headline are one tier now, so there is no smaller tier for
+   * it to fall into. 4.8vw reaches 70px at about 1460px, past this site's widest
+   * container, so in practice the headline is 63px on a 1312px page.
    */
-  --type-display: clamp(2.75rem, 6.5vw, 5.5rem);
-  --type-display-sm: clamp(2rem, 5vw, 3rem);
+  --type-display: clamp(2.125rem, 4.8vw, 4.375rem);
+  --type-display-sm: clamp(1.75rem, 3.9vw, 3.25rem);
   --type-title: clamp(1.5rem, 3vw, 2rem);
+  /* The section quote — the precise slip sentence, the money caveat. */
+  --type-quote: clamp(1.5rem, 2.5vw, 2.125rem);
+  /* The one figure on the page that is a sum of money. */
+  --type-figure: clamp(3.5rem, 7.5vw, 6.75rem);
   --type-heading: 1.1875rem;
+  /* The standfirst under a heading, and the hero lead. */
+  --type-lead: clamp(1.125rem, 1.7vw, 1.5rem);
+  /* Section prose. Larger than `--type-body`, which is now only the base. */
+  --type-body-lg: 1.125rem;
   --type-body: 1.0625rem;
   --type-small: 0.875rem;
-  --type-eyebrow: 0.6875rem;
+  --type-eyebrow: 0.75rem;
 
   --motion-fast: 140ms;
   --motion-base: 220ms;
@@ -134,6 +159,22 @@
   --c-risk-high-fg: #8a4033;
   --c-risk-high-bg: #f7eae6;
   --c-risk-high-border: #e5c9c1;
+
+  /*
+   * Plot fills — the body of a bar in the week strip and the three-band chart,
+   * under a bright top edge in the band's own foreground tone.
+   *
+   * Web-only: the app draws its bars as flat fills, and a chart needs a fill that
+   * is legibly a *quantity* against the recessed surface behind it rather than a
+   * chip. Mixed from the two tokens either side of it rather than picked as new
+   * hex, so they follow the palette into dark mode on their own and there is
+   * still exactly one place raw colour is written down. Declared once, here:
+   * `var()` is substituted where it is used, so these pick up the dark values
+   * below without being restated.
+   */
+  --c-risk-low-plot: color-mix(in srgb, var(--c-risk-low-fg) 26%, var(--c-risk-low-bg));
+  --c-risk-elevated-plot: color-mix(in srgb, var(--c-risk-elevated-fg) 26%, var(--c-risk-elevated-bg));
+  --c-risk-high-plot: color-mix(in srgb, var(--c-risk-high-fg) 26%, var(--c-risk-high-bg));
 
   color-scheme: light dark;
 }

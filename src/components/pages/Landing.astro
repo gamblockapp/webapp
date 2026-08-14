@@ -9,21 +9,31 @@ import { pricingStrings } from '../../pricing';
  *
  * Composition notes, because they were decisions rather than defaults:
  *
- * - **The product is in the hero.** A home-screen mock-up sits beside the
- *   headline instead of three screens down. Someone deciding whether to install
- *   this needs to see what it looks like before reading an argument about the
- *   house edge.
- * - **Sections alternate tinted and untinted full-bleed bands.** A page of
- *   hairline rules over one flat background is what made the first version read
- *   as a document rather than a site.
- * - **The sonar sweep is the one bit of decoration that argues.** The app reads
- *   what is ahead; rings leaving the phone say that faster than the paragraph
- *   underneath does. It is also the app's name, so it is branding for free.
+ * - **The product is in the hero.** A forecast panel sits beside the headline
+ *   instead of three screens down. Someone deciding whether to install this
+ *   needs to see what it looks like before reading an argument about the house
+ *   edge. It is the app's home screen rendered in the page's own materials
+ *   rather than a phone bezel, because a picture of a phone on a phone is a
+ *   picture of a phone.
+ * - **Sections are separated by space and a hairline**, not by alternating
+ *   tints. Four tinted bands in a row were what made the middle of the page read
+ *   as one long thing; a shared rhythm — eyebrow, heading, then a two-column
+ *   body — does the same job without the stripes.
+ * - **The sonar trace is the one bit of decoration that argues.** The app is
+ *   called Sonar and it draws bars: the cover breathes a field of them and the
+ *   home screen's week strip is seven. Someone who meets the site and then opens
+ *   the app should recognise the second from the first.
  * - **Motion is allowed here now, with one exception.** See AGENTS.md: the "no
  *   motion at all" rule was lifted for the website. The exception that survived
- *   it is the money figure — it is what somebody lost, and rolling it upward like
- *   a jackpot counter would make a joke of the one number on this page that is
- *   supposed to land. It is styled large and left completely still.
+ *   it is the money figure — it is what somebody lost, and rolling it upward
+ *   like a jackpot counter would make a joke of the one number on this page that
+ *   is supposed to land. The design file this layout comes from does exactly
+ *   that, with a 1.6s `requestAnimationFrame` count from £0. It is not carried
+ *   over; the figure is styled large and left completely still.
+ * - **Everything here is CSS.** The design file drives its reveals and its
+ *   365-night grid from an `IntersectionObserver`. This site's privacy policy
+ *   claims it loads and runs no JavaScript, so the reveals are
+ *   `animation-timeline: view()` (see base.css) and the grid is simply drawn.
  */
 interface Props {
   locale: Locale;
@@ -36,14 +46,7 @@ const meta = copy.meta.home(APP_NAME);
 const pricing = pricingStrings(locale);
 
 /**
- * The bar field behind the hero, ported from `mobile/components/SonarWave.tsx`.
- *
- * It replaced a radar of expanding rings and a rotating wedge. That was a fair
- * reading of the word *sonar* and the wrong one for this product, because the
- * app never draws a radar. It draws bars: the cover breathes a field of them
- * and the home screen's week strip is seven. Someone who meets the site and
- * then opens the app should recognise the second from the first, and rings
- * taught them a shape the app does not use.
+ * The sonar trace under the hero copy, ported from `mobile/components/SonarWave.tsx`.
  *
  * Same arithmetic as the app, so the silhouette is the same object. Two sines
  * multiplied, one for the swell and one for the envelope, which gives the field
@@ -53,20 +56,72 @@ const pricing = pricingStrings(locale);
  * JavaScript at all. Each bar carries its own height and delay as custom
  * properties and CSS does the rest.
  */
-const WAVE_BARS = 34;
-const WAVE_PERIOD_S = 9;
-const wave = Array.from({ length: WAVE_BARS }, (_, i) => {
-  const swell = 0.5 + 0.5 * Math.sin(i * 0.42 - 1.1);
-  const envelope = 0.42 + 0.58 * (0.5 + 0.5 * Math.sin(i * 0.15 + 0.6));
+const TRACE_BARS = 48;
+const TRACE_PERIOD_S = 9;
+const trace = Array.from({ length: TRACE_BARS }, (_, i) => {
+  const swell = 0.5 + 0.5 * Math.sin(i * 0.38 - 1.1);
+  const envelope = 0.4 + 0.6 * (0.5 + 0.5 * Math.sin(i * 0.13 + 0.6));
   return {
-    // The app's 14-88px bar inside a 118px field, kept as a fraction so this
-    // field can be any height without redoing the numbers.
-    height: (14 + 74 * swell * envelope) / 118,
+    // The app's 8–52px bar inside a 56px field, kept as a fraction so the field
+    // can be any height without redoing the numbers.
+    height: (8 + 44 * swell * envelope) / 56,
     // Negative, so the field is already mid-cycle on first paint rather than
     // starting from a flat wall and brightening once while someone watches.
-    delay: -(i / WAVE_BARS) * WAVE_PERIOD_S,
+    delay: -(i / TRACE_BARS) * TRACE_PERIOD_S,
   };
 });
+
+/**
+ * The headline's second tier, one sentence per line.
+ *
+ * `line1` is two short sentences — "Not over a year. Not over ten." — and the
+ * design sets each on its own line, which is also what makes the pair read as a
+ * timescale rather than as a wrapped paragraph. Split here for display only, the
+ * same way `refusalList` is: the copy stays one string, so a rewrite doesn't have
+ * to think about the markup and a locale that writes it as one sentence simply
+ * gets one line.
+ */
+const headlineLines = c.line1.split(/(?<=\.)\s+/);
+
+/** Ties each band label to its palette tone, in the app's own order. */
+const BAND_TONES = ['low', 'elevated', 'high'] as const;
+type BandTone = (typeof BAND_TONES)[number];
+
+/** How tall each band's bar is drawn in the three-band chart, as a percentage. */
+const BAND_HEIGHT: Record<BandTone, number> = { low: 22, elevated: 54, high: 86 };
+
+/**
+ * The week strip in the forecast panel — tonight first, then the six nights
+ * after it. Elevated tonight, matching `mock.band`, with the weekend after
+ * payday high: this is the shape the mock-up's reasons describe, so the chart
+ * and the sentences beside it have to agree.
+ */
+const WEEK: BandTone[] = ['elevated', 'high', 'low', 'low', 'low', 'elevated', 'low'];
+
+/**
+ * The evidence marks beside each reason.
+ *
+ * Five bars per reason, of which the lit ones are what that reason read. They
+ * are a sparkline of the same three signals the copy names — money landing, the
+ * two slips on payday, the fixtures — and they are labelled as such by
+ * `forecast.marks`, because an unlabelled chart beside a sentence is decoration
+ * pretending to be evidence.
+ */
+const EVIDENCE: { heights: number[]; lit: number[]; tone: BandTone }[] = [
+  { heights: [20, 20, 100, 68, 46], lit: [2, 3, 4], tone: 'elevated' },
+  { heights: [100, 26, 100, 26, 26], lit: [0, 2], tone: 'high' },
+  { heights: [100, 100, 100, 18, 18], lit: [0, 1, 2], tone: 'elevated' },
+];
+
+/**
+ * One mark per night of a year.
+ *
+ * Weekends carry the full clay and weeknights a diluted one — not a claim about
+ * anybody's pattern, just enough variation that the block reads as 365 separate
+ * nights rather than as a texture. Drawn once, statically; the design file fades
+ * them in one at a time behind an observer, which is script this site doesn't run.
+ */
+const YEAR_NIGHTS = Array.from({ length: 365 }, (_, i) => i % 7 === 5 || i % 7 === 6);
 
 /**
  * The App Store link, carrying the campaign token for this locale so App Store
@@ -74,314 +129,346 @@ const wave = Array.from({ length: WAVE_BARS }, (_, i) => {
  * sale, which renders the "coming soon" badge instead.
  */
 const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn);
-
-/** Ties each band label to its palette tone, in the app's own order. */
-const BAND_TONES = ['low', 'elevated', 'high'] as const;
 ---
 
 <Base locale={locale} route="home" title={meta.title} description={meta.description}>
-  {/* Hero. The headline says what the app does; the hook, one line down, says
-       why. Leading with the hook read as a verdict on the reader. */}
-  <section class="hero">
-    {/*
-      The app's own bar field, and the full width of the hero rather than a halo
-      around the phone.
-
-      It earns its place the way the rings claimed to: the app is called Sonar
-      and it reads what is ahead rather than totting up what is behind. Bars are
-      how it draws that, on the cover and again as the week strip, so this is
-      the one piece of decoration here that also explains the product.
-
-      Full width because that is what it is in the app: an uninterrupted band
-      with nothing on top of it. Centred on the phone instead, the swell landed
-      behind the mock and only fragments showed at either edge, which reads as
-      noise rather than as a wave. Purely presentational, so it is hidden from
-      assistive tech.
-    */}
-    <div class="wave" aria-hidden="true">
-      {wave.map((bar) => (
-        <span style={`--h:${(bar.height * 100).toFixed(2)}%;--d:${bar.delay.toFixed(3)}s`} />
-      ))}
-    </div>
-    <div class="page hero__grid">
+  {/* Hero. The headline says what gambling is; the lead, one tier down, says
+       what the app does about it. */}
+  <section class="hero page">
+    <div class="hero__grid">
       <div class="hero__copy">
         <p class="eyebrow hero__tagline">{c.tagline}</p>
 
         {/*
-          Both halves of the claim are inside the H1: "Nobody's up" on its own is a
-          bare assertion, and "not over a year, not over ten" is the part that makes
-          it a statement about the house edge rather than about the reader. The
-          heading a screen reader announces should be the whole argument.
+          Both halves of the claim are inside the H1, and at the same size now.
+          "Nobody's up" on its own is a bare assertion, and "not over a year, not
+          over ten" is the part that makes it a statement about the house edge
+          rather than about the reader. The heading a screen reader announces
+          should be the whole argument, and the tier that carries the qualifier
+          should not look like a caption on it.
         */}
-        <h1 class="hero__headline">
-          <span class="display hero__headline-main">{c.hook}</span>
-          <span class="hero__headline-sub">{c.line1}</span>
+        <h1 class="display hero__headline">
+          {c.hook}
+          {headlineLines.map((line) => (
+            <>
+              <br />
+              {line}
+            </>
+          ))}
         </h1>
 
-        <p class="hero__lead">{c.lead(APP_NAME)}</p>
+        <p class="lead hero__lead">{c.lead(APP_NAME)}</p>
 
         <ul class="chips" aria-label={c.tagline}>
           {c.refusalList.map((refusal) => <li class="chip">{refusal}</li>)}
         </ul>
 
+        {/*
+          The trace. Purely presentational, so it is hidden from assistive tech —
+          but it is not filler: it is the app's own bar field, at the app's own
+          arithmetic, and it is the only place on this page the name is explained.
+        */}
+        <div class="trace" aria-hidden="true">
+          {trace.map((bar) => (
+            <span style={`--h:${(bar.height * 100).toFixed(2)}%;--d:${bar.delay.toFixed(2)}s`} />
+          ))}
+        </div>
+
         <div class="hero__cta">
           {
             storeHref ? (
-              <a class="button" href={storeHref}>
+              <a class="button button--lg" href={storeHref}>
                 {c.download}
               </a>
             ) : (
               <p class="badge">{c.comingSoon}</p>
             )
           }
-          <p class="small faint">{PAID ? c.comingSoonNote : c.comingSoonNoteFree}</p>
+          <p class="small faint hero__note">{PAID ? c.comingSoonNote : c.comingSoonNoteFree}</p>
         </div>
+
+        {/* The page's argument in a line each, for the reader who will not
+             scroll. The last one is a price claim — see `facts` in types.ts. */}
+        <ul class="facts">
+          {c.facts(PAID).map((fact) => <li>{fact}</li>)}
+        </ul>
       </div>
 
       {/* Invariant 2: the band never appears without the reasons under it. */}
       <figure class="hero__mock">
-        {/*
-          The sonar sweep, and the reason it earns its place: the app is called
-          Sonar, and what it does is read what's ahead rather than tot up what's
-          behind. Rings leaving the phone is that idea, and it is the one piece of
-          decoration here that is also an explanation. Purely presentational, so
-          it is hidden from assistive tech.
-        */}
-        <div class="phone">
-          <div class="phone__chrome">
-            <span class="phone__name">{APP_NAME}</span>
-            <span class="phone__day">{c.mock.day}</span>
-          </div>
-          <div class="forecast">
-            <p class="eyebrow forecast__eyebrow">{c.mock.eyebrow}</p>
-            <p class="forecast__band">{c.mock.band}</p>
-            <ul class="forecast__reasons">
-              {c.mock.reasons.map((reason) => <li>{reason}</li>)}
-            </ul>
-          </div>
+        <div class="forecast">
+          <p class="eyebrow forecast__eyebrow">{c.mock.eyebrow} · {c.mock.today}</p>
+          <p class="forecast__band">{c.mock.band}</p>
+
+          <ul class="week" aria-hidden="true">
+            {
+              WEEK.map((tone, i) => (
+                <li class={`week__day week__day--${tone}`} data-today={i === 0 ? '' : undefined}>
+                  <span class="week__plot">
+                    <span class="week__bar" style={`--h:${BAND_HEIGHT[tone]}%`} />
+                  </span>
+                  <span class="week__label">{c.mock.weekdays[i]}</span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <ul class="reasons">
+            {
+              c.mock.reasons.map((reason, i) => (
+                <li class="reasons__item">
+                  <span class={`marks marks--${EVIDENCE[i].tone}`} aria-hidden="true">
+                    {EVIDENCE[i].heights.map((h, j) => (
+                      <span
+                        class="marks__bar"
+                        data-lit={EVIDENCE[i].lit.includes(j) ? '' : undefined}
+                        style={`--h:${h}%`}
+                      />
+                    ))}
+                  </span>
+                  <span>{reason}</span>
+                </li>
+              ))
+            }
+          </ul>
         </div>
-        <figcaption class="small faint phone__caption">{c.mock.caption}</figcaption>
+        <figcaption class="small faint mock__caption">{c.mock.caption}</figcaption>
       </figure>
     </div>
   </section>
 
   {/*
-    The forecast, explained. Laid out as a scale rather than a column of prose:
-    the three bands are the whole idea, so they get the width and a track to sit
-    on. Still the band labels with their caption, never a score — invariant 2.
+    The forecast, explained. The prose on the left, the scale it produces on the
+    right — still the band labels with their caption, never a score.
   */}
-  <section class="band band--tint reveal">
-    <div class="page feature feature--stacked">
-      <div class="feature__copy">
-        <p class="eyebrow accent">{c.forecast.eyebrow}</p>
-        <h2 class="display-sm feature__title">{c.forecast.title}</h2>
-        <p>{c.forecast.body}</p>
+  <section class="page section reveal" id="forecast">
+    <div class="section__head">
+      <p class="eyebrow">{c.forecast.eyebrow}</p>
+      <h2 class="display-sm section__title">{c.forecast.title}</h2>
+    </div>
+
+    <div class="split">
+      <div>
+        <p class="body-lg muted">{c.forecast.body}</p>
+        <p class="body-lg muted split__second">{c.forecast.marks}</p>
       </div>
 
       <div class="scale">
         <p class="eyebrow">{c.forecast.bandsEyebrow}</p>
-        <div class="scale__track">
-          <ul class="bands reveal-group">
-            {
-              c.forecast.bands.map((label, i) => (
-                <li class={`bands__item bands__item--${BAND_TONES[i]}`}>{label}</li>
-              ))
-            }
-          </ul>
-        </div>
-        <p class="small muted scale__caption">{c.forecast.caption}</p>
+        <ul class="bands reveal-group">
+          {
+            c.forecast.bands.map((label, i) => (
+              <li class={`bands__item bands__item--${BAND_TONES[i]}`}>
+                <span class="bands__plot">
+                  <span class="bands__bar" style={`--h:${BAND_HEIGHT[BAND_TONES[i]]}%`} />
+                </span>
+                <span class="bands__label">{label}</span>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
+
+    {/*
+      Invariant 2, stated as a feature rather than a footnote — and it runs the
+      full width under both columns because it is about the chart *and* the
+      reasons in the hero, not about either one on its own.
+    */}
+    <p class="body-lg muted forecast__caption">{c.forecast.caption}</p>
   </section>
 
   {/*
     The slip flow. `precise` is the load-bearing sentence on this page — the one
-    that must not be tightened into the stronger, false claim — so it stops being
-    a pull-quote in a sidebar and becomes the section itself.
+    that must not be tightened into the stronger, false claim — so it is set as
+    the section rather than as a footnote inside it.
   */}
-  <section class="band reveal">
-    <div class="page statement">
-      <p class="eyebrow accent">{c.slip.eyebrow}</p>
-      <h2 class="display-sm statement__title">{c.slip.title}</h2>
-      <blockquote class="statement__quote">
-        <p>{c.slip.precise}</p>
+  <section class="page section reveal">
+    <div class="section__head">
+      <p class="eyebrow">{c.slip.eyebrow}</p>
+      <h2 class="display-sm section__title">{c.slip.title}</h2>
+    </div>
+
+    <div class="split split--wide">
+      {/*
+        No quote marks and no attribution: it is not a testimonial, it is the
+        claim the product is careful about. The rule down its left edge is what
+        marks it as the sentence to read if you only read one.
+      */}
+      <blockquote class="statement">
+        <p class="quote">{c.slip.precise}</p>
       </blockquote>
-      <p class="small muted statement__body">{c.slip.body}</p>
+      <p class="body-lg muted">{c.slip.body}</p>
     </div>
   </section>
 
-  {/* Money. Mirrored, so the figure leads and the explanation follows it. The
-       example stays labelled as an example, out loud. */}
-  <section class="band band--tint reveal">
-    <div class="page feature feature--mirror">
-      <div class="feature__aside">
-        <div class="card money">
+  {/* Money. The figure leads and the explanation follows it, and the example
+       stays labelled as an example, out loud. */}
+  <section class="page section reveal" id="money">
+    <div class="section__head">
+      <p class="eyebrow">{c.money.eyebrow}</p>
+      <h2 class="display-sm section__title">{c.money.title}</h2>
+    </div>
+
+    <div class="panel money">
+      <div class="money__top">
+        <div>
           <p class="eyebrow">{c.money.exampleEyebrow}</p>
-          <p class="example">{c.money.example}</p>
+          <p class="small muted money__basis">{c.money.basis}</p>
+          {/* Motionless. See the note at the top of this file. */}
+          <p class="money__figure">{c.money.figure}</p>
         </div>
-        <p class="small muted feature__caption">{c.money.caveat}</p>
+        <p class="body-lg muted money__note">{c.money.gridNote}</p>
       </div>
 
-      <div class="feature__copy">
-        <p class="eyebrow accent">{c.money.eyebrow}</p>
-        <h2 class="title feature__title">{c.money.title}</h2>
-        <p>{c.money.body}</p>
+      {/* One mark per night. Presentational — the sentence above it is what
+           carries the meaning, so there is nothing here to announce. */}
+      <div class="year" aria-hidden="true">
+        {YEAR_NIGHTS.map((weekend) => <span data-weekend={weekend ? '' : undefined} />)}
       </div>
-    </div>
-  </section>
+      <div class="year__ends">
+        <span class="small faint">{c.money.gridStart}</span>
+        <span class="small faint">{c.money.gridEnd}</span>
+      </div>
 
-  <section class="band reveal">
-    <div class="page">
-      <p class="eyebrow accent">{c.trio.eyebrow}</p>
-      <ul class="trio reveal-group">
+      <dl class="figures">
         {
-          c.trio.items.map((item, i) => (
-            <li class="trio__item">
-              <p class="trio__num">{String(i + 1).padStart(2, '0')}</p>
-              <h3 class="heading">{item.title}</h3>
-              <p class="small muted">{item.body}</p>
-            </li>
+          c.money.figures.map((figure) => (
+            <div class="figures__item">
+              <dt class="figures__value">{figure.value}</dt>
+              <dd class="eyebrow figures__label">{figure.label}</dd>
+            </div>
           ))
         }
-      </ul>
-      <p class="trio__free">{c.trio.free}</p>
-
-      {/*
-        Pricing, immediately under the free-forever promise and inside the same
-        band. The adjacency is the whole design: read on its own, a price list in
-        a recovery app is a thing to be suspicious of; read directly under "the
-        urge screen and the helplines stay free whatever else happens", it reads
-        as what it is. Splitting the two across sections is the one change that
-        would make this worse than not having it.
-
-        It is also here rather than in the hero because the hero's job is the
-        argument, not the transaction — the CTA note carries the short version
-        ("free for 14 days, then a subscription") and this carries the detail.
-
-        Nothing here may acquire urgency: no countdown, no "only today", no
-        launch discount. A time-limited offer aimed at people with
-        impulse-control difficulty is indefensible, and the app's own paywall
-        copy refuses the same register on purpose.
-      */}
-      {
-        PAID && (
-          <div class="pricing">
-            <p class="eyebrow">{c.pricing.eyebrow}</p>
-            <p class="pricing__trial">{c.pricing.trial(PRICING.trialDays)}</p>
-            <ul class="pricing__plans">
-              {c.pricing.plans(pricing).map((plan) => <li>{plan}</li>)}
-            </ul>
-            <p class="small faint">{c.pricing.note}</p>
-          </div>
-        )
-      }
+      </dl>
     </div>
+
+    <div class="split split--cards">
+      <div class="card">
+        <p class="quote">{c.money.caveat}</p>
+      </div>
+      <div class="card">
+        <p class="eyebrow">{c.money.bodyEyebrow}</p>
+        <p class="body-lg muted card__body">{c.money.body}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="page section reveal">
+    <p class="eyebrow">{c.trio.eyebrow}</p>
+
+    <ol class="trio reveal-group">
+      {
+        c.trio.items.map((item, i) => (
+          <li class="trio__item">
+            <p class="trio__num">{String(i + 1).padStart(2, '0')}</p>
+            <h3 class="trio__title">{item.title}</h3>
+            <p class="body-lg muted">{item.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    {/* The free promise, in the accent tone, because it is the one commitment on
+         the page rather than a description of a feature. */}
+    <div class="promise">
+      <p class="quote">{c.trio.free}</p>
+    </div>
+
+    {/*
+      Pricing, immediately under the free-forever promise and inside the same
+      band. The adjacency is the whole design: read on its own, a price list in
+      a recovery app is a thing to be suspicious of; read directly under "the
+      urge screen and the helplines stay free whatever else happens", it reads
+      as what it is. Splitting the two across sections is the one change that
+      would make this worse than not having it.
+
+      Nothing here may acquire urgency: no countdown, no "only today", no
+      launch discount. A time-limited offer aimed at people with
+      impulse-control difficulty is indefensible, and the app's own paywall
+      copy refuses the same register on purpose.
+    */}
+    {
+      PAID && (
+        <div class="pricing">
+          <p class="eyebrow">{c.pricing.eyebrow}</p>
+          <p class="pricing__trial">{c.pricing.trial(PRICING.trialDays)}</p>
+          <ul class="pricing__plans">
+            {c.pricing.plans(pricing).map((plan) => <li>{plan}</li>)}
+          </ul>
+          <p class="small faint">{c.pricing.note}</p>
+        </div>
+      )
+    }
   </section>
 
   {/* Privacy, and the gap that comes with it. The gap is on the landing page
        on purpose: better read here than discovered after a phone upgrade. */}
-  <section class="band band--accent reveal">
-    <div class="page feature">
-      <div class="feature__copy">
-        <p class="eyebrow">{c.privacy.eyebrow}</p>
-        <h2 class="display-sm feature__title">{c.privacy.title}</h2>
-        <p>{c.privacy.body}</p>
-        <p class="small privacy__analytics">{c.privacy.analytics}</p>
+  <section class="page section reveal" id="privacy">
+    <div class="section__head">
+      <p class="eyebrow">{c.privacy.eyebrow}</p>
+      <h2 class="display-sm section__title">{c.privacy.title}</h2>
+    </div>
+
+    <div class="split">
+      <div>
+        <p class="lead privacy__body">{c.privacy.body}</p>
+        <p class="body-lg muted split__second">{c.privacy.analytics}</p>
         <p class="privacy__link">
-          <a href={path(locale, 'privacy')} class="small">{c.privacy.readPolicy} →</a>
+          <a href={path(locale, 'privacy')}>{c.privacy.readPolicy} →</a>
         </p>
       </div>
 
-      <div class="feature__aside">
-        <div class="card gap">
-          <p class="eyebrow">{c.privacy.gapTitle}</p>
-          <p class="small">{c.privacy.gap}</p>
-        </div>
+      <div class="card gap">
+        <p class="eyebrow">{c.privacy.gapTitle}</p>
+        <p class="quote gap__lead">{c.privacy.gap}</p>
       </div>
     </div>
   </section>
 
   {/* What it isn't. Load-bearing: the not-treatment and doesn't-block
        disclaimers both live here, as plain statements rather than small print. */}
-  <section class="band reveal">
-    <div class="page close">
-      <p class="eyebrow accent">{c.close.eyebrow}</p>
-      <h2 class="title feature__title">{c.close.title}</h2>
-      <ul class="close__list reveal-group">
-        {c.close.items.map((item) => <li>{item}</li>)}
-      </ul>
-      <p class="close__help">
-        {c.close.helpLead}{' '}
-        <a href={path(locale, 'help')}>{c.close.helpLink} →</a>
-      </p>
+  <section class="page section reveal">
+    <div class="section__head">
+      <p class="eyebrow">{c.close.eyebrow}</p>
+      <h2 class="display-sm section__title">{c.close.title}</h2>
+    </div>
+
+    <ul class="close reveal-group">
+      {c.close.items.map((item) => <li class="body-lg muted">{item}</li>)}
+    </ul>
+  </section>
+
+  {/* Crisis resources, at the foot of the argument. Whatever else this page
+       persuaded anyone of, this is the link that has to be findable. */}
+  <section class="page section reveal">
+    <div class="panel crisis">
+      <div>
+        <p class="quote crisis__lead">{c.close.helpLead}</p>
+      </div>
+      <a class="button button--lg" href={path(locale, 'help')}>{c.close.helpLink}</a>
     </div>
   </section>
 </Base>
 
 <style>
-  .accent {
-    color: var(--c-accent);
-  }
-
   /* ---------- Hero ---------- */
 
   .hero {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    background: linear-gradient(var(--c-surface-alt), var(--c-bg));
-    border-bottom: 1px solid var(--c-border);
-    padding-block: var(--space-4xl) var(--space-5xl);
-  }
-
-  /*
-   * The warm off-centre wash, now on its own layer so it can drift.
-   *
-   * This reverses the note that used to sit here — "Static: it is depth, not
-   * motion" — so it should say why. One cycle is 72 seconds and the whole travel
-   * is 3% of the viewport: slower than a reader will consciously track, and much
-   * closer to light moving across a room than to anything on a screen. It is not
-   * triggered, it does not respond to the reader, and it never arrives anywhere,
-   * which is what keeps it clear of invariant 3 — there is no moment in the cycle
-   * that reads as a result.
-   *
-   * The layer is oversized and `overflow` is clipped, so the gradient's soft edge
-   * never travels into view.
-   */
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: -8% -8% auto -8%;
-    height: 130%;
-    z-index: -1;
-    background: radial-gradient(ellipse 80% 60% at 15% 0%, var(--c-accent-soft), transparent 70%);
-    animation: hero-wash 72s ease-in-out infinite alternate;
-  }
-
-  @keyframes hero-wash {
-    from {
-      transform: translate3d(0, 0, 0);
-    }
-    to {
-      transform: translate3d(3%, 1.5%, 0);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .hero::before {
-      animation: none;
-    }
+    padding-top: clamp(48px, 6vw, 104px);
   }
 
   .hero__grid {
     display: grid;
     gap: var(--space-4xl);
-    align-items: center;
+    align-items: start;
   }
 
   @media (min-width: 62rem) {
     .hero__grid {
-      grid-template-columns: 1.1fr 0.9fr;
+      /* The panel is a fixed object rather than a fraction of the page: past
+         about 460px the week strip's day labels start floating apart. */
+      grid-template-columns: minmax(0, 1fr) 27rem;
       gap: var(--space-5xl);
     }
   }
@@ -391,61 +478,13 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   }
 
   .hero__headline {
-    margin-top: var(--space-md);
-    /* The two tiers set their own sizes; the H1 is only a container. */
-    font-size: inherit;
-    font-weight: 400;
-  }
-
-  /*
-   * The gradient sits on this span rather than on the H1, because `background-clip:
-   * text` fills every descendant — with it on the heading, the qualifier
-   * underneath came out in the same ramp and the two tiers stopped reading as two
-   * tiers.
-   *
-   * Diagonal, which has survived three different headlines now: a horizontal ramp
-   * accents whichever word happens to sit top-right, and a vertical one fades each
-   * glyph top-to-bottom whenever the line doesn't wrap. Ending bottom-right lands
-   * on the closing word at any width — on "up." here, and on "gagnant." in French.
-   */
-  .hero__headline-main {
-    display: block;
+    margin-top: var(--space-xl);
     text-wrap: balance;
-    background: linear-gradient(
-      125deg,
-      var(--c-text) 0%,
-      var(--c-text) 30%,
-      var(--c-accent) 92%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-    /* Descenders on Georgia clip against a tight box. */
-    padding-bottom: 0.08em;
-  }
-
-  /*
-   * The qualifier. Deliberately large — around a third of the line above it — because
-   * it is doing load-bearing work rather than decorating: it is the difference
-   * between a claim about gambling and a remark about the reader. Small print would
-   * be the wrong place for it.
-   */
-  .hero__headline-sub {
-    display: block;
-    margin-top: var(--space-md);
-    font-family: var(--font-serif);
-    font-size: clamp(1.25rem, 2.6vw, 1.75rem);
-    line-height: 1.35;
-    letter-spacing: -0.01em;
-    color: var(--c-text-muted);
-    text-wrap: balance;
-    max-width: 26rem;
   }
 
   .hero__lead {
-    margin-top: var(--space-2xl);
-    max-width: var(--measure);
-    color: var(--c-text-muted);
+    margin-top: var(--space-xl);
+    max-width: 38rem;
   }
 
   /* The three refusals as chips — mirrors the app's own Chip component, and
@@ -471,504 +510,492 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-md) var(--space-lg);
+    gap: var(--space-md) var(--space-xl);
+  }
+
+  .hero__note {
+    max-width: 16rem;
+    text-wrap: pretty;
   }
 
   .badge {
-    display: inline-block;
-    padding: var(--space-md) var(--space-xl);
+    display: inline-flex;
+    align-items: center;
+    min-height: 60px;
+    padding: var(--space-lg) var(--space-2xl);
     border: 1px solid var(--c-accent);
-    border-radius: var(--radius-pill);
+    border-radius: 14px;
     color: var(--c-accent);
-    font-size: var(--type-small);
     font-weight: 600;
   }
 
-  /* ---------- The home-screen mock-up ---------- */
-
-  .hero__mock {
-    margin: 0;
-    position: relative;
-    isolation: isolate;
+  .facts {
+    margin-top: var(--space-4xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--c-border);
+    display: grid;
+    gap: var(--space-xl);
+    color: var(--c-text-muted);
+    text-wrap: pretty;
   }
 
-  /* ---------- The bar field ---------- */
+  @media (min-width: 45rem) {
+    .facts {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2xl);
+    }
+  }
 
-  .wave {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
+  /* ---------- The sonar trace ---------- */
 
+  .trace {
+    margin-top: var(--space-2xl);
+    height: 56px;
+    max-width: 38rem;
     display: flex;
     align-items: center;
-    gap: 0.4%;
-
-    /*
-     * Two masks, intersected. Vertically it fades in from the top and out at
-     * the very bottom, so the field is a ground the hero stands on rather than
-     * a pattern behind the headline. Horizontally it is weakest on the left,
-     * where the copy is, and strongest on the right behind the phone: one
-     * field, read at the exposure each half of the layout can carry.
-     *
-     * The fade also does the job the radar's radial mask did. `.hero` has
-     * `overflow: hidden`, and anything still at full strength where the clip
-     * lands leaves a hard edge that reads as a rendering bug.
-     */
-    mask:
-      linear-gradient(to bottom, transparent 10%, black 66%, black 88%, transparent 100%),
-      linear-gradient(to right, transparent 6%, rgb(0 0 0 / 0.14) 34%, black 78%, transparent 99%);
-    mask-composite: intersect;
+    gap: 3px;
   }
 
-  .wave > span {
+  .trace > span {
     flex: 1;
     height: var(--h);
-    border-radius: 999px;
+    border-radius: 3px;
     background: var(--c-accent);
     /*
-     * Dim, bright, dim, and never fully on, so the field stays a texture rather
-     * than a light show.
-     *
-     * The app runs 0.13 to 0.92 on a bare cover screen, where the field is the
-     * only thing there and is allowed to be the subject. Here it is behind a
-     * headline, a lead paragraph and a phone, and at anything like the app's
-     * exposure it competes with all three: the eye keeps going to the movement
-     * instead of the sentence. Ceiling roughly a third of the app's. The shape
-     * is what had to carry over, not the brightness.
+     * Dim, bright, dim, and never fully on. The design file peaks at 0.85, which
+     * is right for a band with nothing over it — this one sits beside a headline
+     * and a lead paragraph, and at that exposure the eye keeps going to the
+     * movement instead of the sentence.
      */
-    opacity: 0.05;
-    animation: wave-breathe 9s linear infinite;
+    opacity: 0.1;
+    animation: trace-breathe 9s linear infinite;
     animation-delay: var(--d);
   }
 
-  @keyframes wave-breathe {
+  @keyframes trace-breathe {
     0% {
-      opacity: 0.05;
+      opacity: 0.1;
     }
     46% {
-      opacity: 0.32;
+      opacity: 0.62;
     }
     100% {
-      opacity: 0.05;
+      opacity: 0.1;
     }
   }
 
   /*
-   * Reduced motion keeps the field and stops it moving, which was the right
-   * trade for the rings and is the right one here: asking for less movement is
-   * not asking to be shown a plainer product, and this is the only place on the
-   * page the name is explained. Held flat at a legible value, where the standing
-   * wave is still the shape it was. That shape is the content, and it survives
-   * without the travel.
+   * Reduced motion keeps the field and stops it moving. Asking for less movement
+   * is not asking to be shown a plainer product, and this is the only place on
+   * the page the name is explained. Held flat at a legible value, where the
+   * standing wave is still the shape it was — that shape is the content, and it
+   * survives without the travel.
    */
   @media (prefers-reduced-motion: reduce) {
-    .wave > span {
+    .trace > span {
       animation: none;
-      opacity: 0.16;
+      opacity: 0.3;
     }
   }
 
-  .phone {
-    position: relative;
-    background: var(--c-surface);
-    border: 1px solid var(--c-border);
-    border-radius: var(--radius-xl);
-    padding: var(--space-lg);
-    max-width: 24rem;
-    box-shadow: var(--shadow-lg);
-  }
+  /* ---------- The forecast panel ---------- */
 
-  .phone__chrome {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    padding-bottom: var(--space-md);
-    margin-bottom: var(--space-lg);
-    border-bottom: 1px solid var(--c-border);
-  }
-
-  .phone__name {
-    font-family: var(--font-serif);
-    font-size: 1.0625rem;
-  }
-
-  .phone__day {
-    font-size: var(--type-small);
-    color: var(--c-text-subtle);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .phone__caption {
-    margin-top: var(--space-md);
-    max-width: 24rem;
-    text-align: center;
+  .hero__mock {
+    margin: 0;
   }
 
   .forecast {
-    position: relative;
-    background: var(--c-risk-elevated-bg);
-    border: 1px solid var(--c-risk-elevated-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-  }
-
-  /* A halo in the band's own tone, so the card the whole page is about looks lit
-     from behind rather than pasted on. Tone follows the band, so it would go clay
-     on a high-risk mock-up without any extra rules. */
-  .forecast::before {
-    content: '';
-    position: absolute;
-    inset: -18%;
-    z-index: -1;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--c-risk-elevated-fg) 22%, transparent),
-      transparent 68%
-    );
-    /* Breathes once every 11 seconds, barely. Ambient, not a pulse that resolves. */
-    animation: forecast-glow 11s ease-in-out infinite alternate;
-  }
-
-  @keyframes forecast-glow {
-    from {
-      opacity: 0.55;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .forecast::before {
-      animation: none;
-    }
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-2xl);
+    padding: var(--space-2xl) var(--space-xl) var(--space-lg);
+    box-shadow: var(--shadow-lg);
   }
 
   .forecast__eyebrow {
-    color: var(--c-risk-elevated-fg);
-    opacity: 0.8;
+    color: var(--c-text-subtle);
   }
 
   .forecast__band {
-    margin-top: var(--space-xs);
+    margin-top: var(--space-md);
     font-family: var(--font-serif);
-    font-size: 1.875rem;
-    line-height: 1.1;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
     color: var(--c-risk-elevated-fg);
   }
 
-  .forecast__reasons {
-    margin-top: var(--space-lg);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--c-risk-elevated-border);
-    display: grid;
+  /* ---------- The week strip ---------- */
+
+  .week {
+    margin-top: var(--space-2xl);
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .week__day {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-md);
+    align-items: center;
+    min-width: 0;
+  }
+
+  /* Same construction as the three-band chart below: a well, and a fill sitting
+     on the floor of it under a bright edge. Seven of them is the app's own week
+     strip, which is where this idea comes from. */
+  .week__plot {
+    width: 100%;
+    height: 84px;
+    border-radius: var(--radius-md);
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .week__bar {
+    width: 100%;
+    height: var(--h);
+    background: var(--tone-plot);
+    border-top: 3px solid var(--tone-fg);
+  }
+
+  .week__day--low {
+    --tone-plot: var(--c-risk-low-plot);
+    --tone-fg: var(--c-risk-low-fg);
+  }
+
+  .week__day--elevated {
+    --tone-plot: var(--c-risk-elevated-plot);
+    --tone-fg: var(--c-risk-elevated-fg);
+  }
+
+  .week__day--high {
+    --tone-plot: var(--c-risk-high-plot);
+    --tone-fg: var(--c-risk-high-fg);
+  }
+
+  .week__day[data-today] .week__plot {
+    border-color: var(--c-border-strong);
+  }
+
+  .week__label {
     font-size: var(--type-small);
+    color: var(--c-text-subtle);
   }
 
-  .forecast__reasons li {
-    padding-left: var(--space-lg);
-    position: relative;
+  .week__day[data-today] .week__label {
+    color: var(--c-text);
+    font-weight: 600;
   }
 
-  .forecast__reasons li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.62em;
-    width: 7px;
-    height: 1px;
+  /* ---------- Reasons, and the marks beside them ---------- */
+
+  .reasons {
+    margin-top: var(--space-xl);
+    display: grid;
+  }
+
+  .reasons__item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: var(--space-lg);
+    align-items: center;
+    padding-block: var(--space-lg);
+    border-top: 1px solid var(--c-border);
+    text-wrap: pretty;
+  }
+
+  .marks {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+  }
+
+  .marks__bar {
+    flex: 1;
+    height: var(--h);
+    border-radius: 2px;
+    /* Unlit bars are the hairline tone: present, but plainly not what was read. */
+    background: var(--c-border-strong);
+  }
+
+  .marks--elevated .marks__bar[data-lit] {
     background: var(--c-risk-elevated-fg);
   }
 
-  /* ---------- Section bands ---------- */
-
-  .band {
-    padding-block: var(--space-4xl);
+  .marks--high .marks__bar[data-lit] {
+    background: var(--c-risk-high-fg);
   }
 
-  .band--tint {
-    background: var(--c-surface-alt);
+  .mock__caption {
+    margin-top: var(--space-md);
+    text-align: center;
   }
 
-  /* Used once, for the privacy section — the claim the whole architecture is
-     built around gets the one coloured band on the page. */
-  .band--accent {
-    background: var(--c-accent-soft);
-    border-block: 1px solid var(--c-risk-low-border);
-  }
+  /* ---------- Section bodies ---------- */
 
-  .feature {
+  .split {
+    margin-top: var(--space-3xl);
     display: grid;
     gap: var(--space-2xl);
     align-items: start;
   }
 
   @media (min-width: 56rem) {
-    .feature {
+    .split {
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-4xl);
+      gap: var(--space-5xl);
     }
 
-    /*
-     * Four sections in a row used to be this same two-column block with only the
-     * band tint changing, which is what made the middle of the page read as one
-     * long thing. Each now has its own shape: stacked, statement, mirrored, then
-     * the numbered trio. The variants are here rather than in `base.css` because
-     * nothing else on the site has this problem.
-     */
-    .feature--mirror {
-      /* The card is the point in this one, so it gets the wider column and comes
-         first. `order` rather than DOM order would leave the reading order wrong
-         for a screen reader, so the markup is already in this order. */
-      grid-template-columns: 1.05fr 0.95fr;
+    /* The quote is the point in this one, so it gets the wider column. */
+    .split--wide {
+      grid-template-columns: 1.15fr 1fr;
+    }
+
+    .split--cards {
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-xl);
     }
   }
 
-  /*
-   * Centred, and every child held to a measure inside it.
-   *
-   * It was ranged left with `max-width: 44rem` on a page that is 82rem wide, so
-   * the whole section lived in the left half and the right half was empty. That
-   * is fine for a two-column feature, where the other column is the picture, and
-   * wrong for a stacked one, where there is no other column: the eye reads the
-   * empty half as something failing to load.
-   *
-   * The measures are unchanged. Only where they sit is different.
-   */
-  .feature--stacked {
-    grid-template-columns: 1fr;
-    gap: var(--space-3xl);
-    justify-items: center;
-    text-align: center;
+  .split--cards {
+    margin-top: var(--space-xl);
+    gap: var(--space-xl);
   }
 
-  .feature--stacked .feature__copy {
-    max-width: 44rem;
+  .split__second {
+    margin-top: var(--space-xl);
   }
 
-  .feature--stacked .feature__copy p {
-    max-width: 40rem;
-    /* The paragraph is narrower than its parent, so it needs centring in its own
-       right; `text-align` moves the words, not the box. */
-    margin-inline: auto;
+  .card__body {
+    margin-top: var(--space-md);
   }
 
-  /* ---------- The risk scale ---------- */
+  .card .quote {
+    max-width: 24rem;
+  }
 
-  /* Held to the same width as the statement section below it. Across the full page
-     width the three pills sit so far apart that the track between them reads as
-     empty space rather than as a spectrum. Scaled with `--page-max` when that went
-     from 68rem to 82rem, so the proportion is what it was. */
-  .scale {
-    max-width: 62rem;
-    /* Wider than the copy above it, so it centres against the section rather
-       than inheriting the copy's edge. */
+  /* ---------- The three-band scale ---------- */
+
+  .bands {
+    margin-top: var(--space-xl);
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .bands__item {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .bands__plot {
+    height: 132px;
+    border-radius: 14px;
+    background: var(--c-surface-alt);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .bands__bar {
     width: 100%;
+    height: var(--h);
+    background: var(--tone-plot);
+    border-top: 4px solid var(--tone-fg);
   }
 
-  .scale__track {
-    position: relative;
-    margin-top: var(--space-lg);
+  .bands__item--low {
+    --tone-plot: var(--c-risk-low-plot);
+    --tone-fg: var(--c-risk-low-fg);
   }
 
-  /*
-   * The pills sit above the hairline, which they did not.
-   *
-   * `::before` is positioned and the list is not, so the rule painted over the
-   * pills and struck through "Low risk" and "Elevated risk". It reads as a
-   * rendering fault rather than as a scale, and it is invisible in the CSS
-   * because nothing about the two declarations mentions the other.
-   */
-  .scale__track .bands {
-    position: relative;
-    z-index: 1;
+  .bands__item--elevated {
+    --tone-plot: var(--c-risk-elevated-plot);
+    --tone-fg: var(--c-risk-elevated-fg);
   }
 
-  /*
-   * A hairline running low → elevated → high, in the bands' own border tones, so
-   * the three pills read as points on a scale rather than three loose tags.
-   *
-   * Both the track and the spacing that justifies the pills across it are in the
-   * same query on purpose. Narrower than this the pills sit left and wrap, and a
-   * full-width rule behind them left a line dangling past "High risk" to the edge
-   * of the screen — so below 40rem there is no track at all, just three tags.
-   */
-  @media (min-width: 40rem) {
-    .scale__track::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(
-        90deg,
-        var(--c-risk-low-border),
-        var(--c-risk-elevated-border) 50%,
-        var(--c-risk-high-border)
-      );
-    }
-
-    .scale__track .bands {
-      margin-top: 0;
-      justify-content: space-between;
-      gap: var(--space-lg);
-    }
+  .bands__item--high {
+    --tone-plot: var(--c-risk-high-plot);
+    --tone-fg: var(--c-risk-high-fg);
   }
 
-  .scale__caption {
-    margin-top: var(--space-lg);
-    max-width: 40rem;
-    margin-inline: auto;
+  .bands__label {
+    display: block;
+    margin-top: var(--space-md);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .forecast__caption {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--c-border);
+    max-width: 58rem;
   }
 
   /* ---------- The slip statement ---------- */
 
-  /*
-   * Narrower than the other sections, and centred rather than ranged left —
-   * `.page` already supplies the `margin-inline: auto` that does it, so tightening
-   * `max-width` here is enough.
-   *
-   * It is the one section whose left edge doesn't line up with the rest, which is
-   * the intent: it's a pull-out, and the inset is what signals that. If it ever
-   * needs to align with its neighbours instead, `margin-inline: 0` is the change.
-   */
   .statement {
-    max-width: 62rem;
+    margin: 0;
+    border-left: 2px solid var(--c-accent);
+    padding-left: clamp(var(--space-xl), 3vw, 40px);
   }
 
-  .statement__title {
+  /* ---------- Money ---------- */
+
+  .money__top {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: end;
+  }
+
+  @media (min-width: 56rem) {
+    .money__top {
+      grid-template-columns: 1fr auto;
+      gap: var(--space-5xl);
+    }
+
+    .money__note {
+      max-width: 25rem;
+      padding-bottom: var(--space-md);
+    }
+  }
+
+  .money__basis {
     margin-top: var(--space-sm);
-    text-wrap: balance;
   }
 
   /*
-   * The precise sentence, at display weight. No left rule and no quote marks: it
-   * is not a testimonial, it is the claim the product is careful about, and it
-   * should look like the section rather than an aside inside it.
+   * Large, and deliberately motionless. See the note at the top of this file:
+   * the design file counts this up from £0 over 1.6 seconds, and that is the one
+   * thing on this page that must not happen.
    */
-  .statement__quote {
-    margin: var(--space-2xl) 0 0;
-    font-family: var(--font-serif);
-    font-size: clamp(1.375rem, 2.6vw, 1.875rem);
-    line-height: 1.4;
-    text-wrap: pretty;
-  }
-
-  .statement__body {
-    margin-top: var(--space-2xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--c-border);
-    max-width: 42rem;
-  }
-
-  .money .example {
-    max-width: 28rem;
-  }
-
-  .feature__title {
-    margin-top: var(--space-sm);
-    margin-bottom: var(--space-lg);
-    text-wrap: balance;
-  }
-
-  .feature__copy p {
-    max-width: var(--measure);
-  }
-
-  .feature__caption {
-    margin-top: var(--space-lg);
-  }
-
-  /* ---------- Risk bands ---------- */
-
-  .bands {
-    margin-top: var(--space-md);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-
-  .bands__item {
-    padding: var(--space-sm) var(--space-lg);
-    border-radius: var(--radius-pill);
-    font-size: var(--type-small);
-    font-weight: 600;
-    border: 1px solid;
-  }
-
-  .bands__item--low {
-    color: var(--c-risk-low-fg);
-    background: var(--c-risk-low-bg);
-    border-color: var(--c-risk-low-border);
-  }
-
-  .bands__item--elevated {
-    color: var(--c-risk-elevated-fg);
-    background: var(--c-risk-elevated-bg);
-    border-color: var(--c-risk-elevated-border);
-  }
-
-  .bands__item--high {
-    color: var(--c-risk-high-fg);
-    background: var(--c-risk-high-bg);
-    border-color: var(--c-risk-high-border);
-  }
-
-  /* Bigger, and deliberately motionless. See the note at the top of this file. */
-  .example {
+  .money__figure {
     margin-top: var(--space-sm);
     font-family: var(--font-serif);
-    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
-    line-height: 1.4;
+    font-size: var(--type-figure);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
     font-variant-numeric: tabular-nums;
+  }
+
+  .year {
+    margin-top: var(--space-3xl);
+    display: grid;
+    grid-template-columns: repeat(73, 1fr);
+    gap: 6px;
+  }
+
+  @media (max-width: 45rem) {
+    .year {
+      grid-template-columns: repeat(26, 1fr);
+      gap: 3px;
+    }
+  }
+
+  @media (max-width: 26rem) {
+    .year {
+      grid-template-columns: repeat(19, 1fr);
+    }
+  }
+
+  .year > span {
+    aspect-ratio: 1;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--c-danger) 55%, var(--c-surface-alt));
+  }
+
+  .year > span[data-weekend] {
+    background: var(--c-danger);
+  }
+
+  .year__ends {
+    margin-top: var(--space-lg);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .figures {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--c-border);
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 45rem) {
+    .figures {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .figures__value {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 3.2vw, 2.875rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .figures__label {
+    margin-top: var(--space-sm);
   }
 
   /* ---------- Trio ---------- */
 
   .trio {
-    margin-top: var(--space-xl);
-    display: grid;
-    gap: var(--space-2xl);
+    margin-top: var(--space-3xl);
   }
 
-  @media (min-width: 48rem) {
-    .trio {
-      grid-template-columns: repeat(3, 1fr);
+  .trio__item {
+    display: grid;
+    gap: var(--space-md) var(--space-4xl);
+    padding-block: var(--space-3xl);
+    border-top: 1px solid var(--c-border);
+    align-items: start;
+  }
+
+  @media (min-width: 56rem) {
+    .trio__item {
+      grid-template-columns: 6rem 1fr 1.4fr;
+      gap: var(--space-4xl);
     }
   }
 
-  /* Much larger, and fading out as it descends — the numbers are wayfinding, so
-     they should be the thing the eye lands on in this band. */
   .trio__num {
     font-family: var(--font-serif);
-    font-size: clamp(2.75rem, 5vw, 4rem);
-    line-height: 0.9;
-    margin-bottom: var(--space-md);
-    padding-bottom: var(--space-md);
-    border-bottom: 1px solid var(--c-border);
-    background: linear-gradient(
-      165deg,
-      var(--c-accent) 20%,
-      color-mix(in srgb, var(--c-accent) 35%, transparent) 100%
-    );
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
+    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+    line-height: 1.2;
+    color: var(--c-text-subtle);
+    font-variant-numeric: tabular-nums;
   }
 
-  .trio__item h3 {
-    margin-bottom: var(--space-sm);
+  .trio__title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    text-wrap: balance;
   }
 
-  .trio__free {
-    margin-top: var(--space-2xl);
-    max-width: var(--measure);
-    font-size: var(--type-small);
-    color: var(--c-text-muted);
+  .promise {
+    padding: var(--space-2xl);
+    border: 1px solid var(--c-accent);
+    border-radius: var(--radius-xl);
+    background: var(--c-accent-soft);
+  }
+
+  .promise .quote {
+    color: var(--c-accent);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    max-width: 46rem;
   }
 
   /* ---------- Pricing ---------- */
@@ -982,10 +1009,10 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
    */
   .pricing {
     margin-top: var(--space-xl);
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    background: var(--c-surface);
-    max-width: var(--measure);
+    padding: var(--space-xl);
+    border-radius: var(--radius-2xl);
+    background: var(--c-surface-alt);
+    max-width: 34rem;
   }
 
   .pricing__trial {
@@ -995,9 +1022,7 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
   }
 
   .pricing__plans {
-    margin: var(--space-md) 0 var(--space-md);
-    padding: 0;
-    list-style: none;
+    margin: var(--space-md) 0;
     display: grid;
     gap: var(--space-xs);
     font-size: var(--type-small);
@@ -1014,64 +1039,80 @@ const BAND_TONES = ['low', 'elevated', 'high'] as const;
 
   /* ---------- Privacy ---------- */
 
-  .privacy__analytics {
-    margin-top: var(--space-lg);
-    color: var(--c-text-muted);
+  .privacy__body {
+    color: var(--c-text);
   }
 
   .privacy__link {
+    margin-top: var(--space-2xl);
+    font-weight: 600;
+  }
+
+  .privacy__link a {
+    color: var(--c-accent);
+    text-decoration: none;
+  }
+
+  .privacy__link a:hover {
+    text-decoration: underline;
+  }
+
+  .gap__lead {
     margin-top: var(--space-lg);
-  }
-
-  .gap {
-    background: var(--c-surface);
-  }
-
-  .gap .small {
-    margin-top: var(--space-sm);
+    font-size: clamp(1.25rem, 2vw, 1.625rem);
+    color: var(--c-text);
+    max-width: none;
   }
 
   /* ---------- Close ---------- */
 
   .close {
-    max-width: 68rem;
-  }
-
-  .close__list {
+    margin-top: var(--space-3xl);
     display: grid;
-    gap: var(--space-lg);
-    color: var(--c-text-muted);
+    gap: var(--space-xl);
   }
 
   /* Two columns, so the page doesn't end on a third narrow single-column stack.
-     These are the load-bearing disclaimers, so they stay at body size — the
+     These are the load-bearing disclaimers, so they stay at reading size — the
      column change is the only thing that moves. */
   @media (min-width: 52rem) {
-    .close__list {
+    .close {
       grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-xl) var(--space-4xl);
+      gap: var(--space-2xl) var(--space-5xl);
     }
   }
 
-  .close__list li {
+  .close li {
     padding-left: var(--space-xl);
     position: relative;
   }
 
-  .close__list li::before {
+  .close li::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0.7em;
+    top: 0.75em;
     width: 11px;
     height: 1px;
     background: var(--c-accent);
   }
 
-  .close__help {
-    margin-top: var(--space-2xl);
-    padding-top: var(--space-lg);
-    border-top: 1px solid var(--c-border);
-    font-size: var(--type-small);
+  /* ---------- Crisis ---------- */
+
+  .crisis {
+    display: grid;
+    gap: var(--space-2xl);
+    align-items: center;
+  }
+
+  @media (min-width: 52rem) {
+    .crisis {
+      grid-template-columns: 1fr auto;
+      gap: var(--space-5xl);
+    }
+  }
+
+  .crisis__lead {
+    max-width: 32rem;
   }
 </style>

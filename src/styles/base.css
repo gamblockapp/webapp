@@ -112,13 +112,44 @@ body::after {
 
 .eyebrow {
   font-size: var(--type-eyebrow);
-  line-height: 1.3;
+  line-height: 1.35;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  /* Not `--c-text-faint`: at 11px with 0.1em tracking that tone is 3.3:1. See
-     `--c-text-subtle` in tokens.css. */
+  /*
+   * Not `--c-text-faint`, which is what the design file uses here. At this size
+   * that tone measures around 3.3:1 and fails WCAG 1.4.3 — see `--c-text-subtle`
+   * in tokens.css. Every eyebrow on this site is a section label, so it is text
+   * rather than decoration and has to clear the bar.
+   */
   color: var(--c-text-subtle);
+}
+
+/* The standfirst under a page or section heading. */
+.lead {
+  font-size: var(--type-lead);
+  line-height: 1.55;
+  color: var(--c-text-muted);
+  text-wrap: pretty;
+}
+
+/* Section prose. One step up from the base size, which is now only what the
+   furniture and the small print are set in. */
+.body-lg {
+  font-size: var(--type-body-lg);
+  line-height: 1.67;
+  text-wrap: pretty;
+}
+
+/* A sentence given the width of a section: the precise slip claim, the money
+   caveat, the crisis band. Serif, because it is being quoted rather than read. */
+.quote {
+  font-family: var(--font-serif);
+  font-size: var(--type-quote);
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+  text-wrap: pretty;
 }
 
 .small {
@@ -165,19 +196,85 @@ button:focus-visible {
   width: 100%;
   max-width: var(--page-max);
   margin-inline: auto;
-  padding-inline: var(--space-xl);
+  padding-inline: var(--page-pad);
 }
 
-@media (max-width: 30rem) {
-  .page {
-    padding-inline: var(--space-lg);
+/* The design file's two gutter steps. Set on `:root` rather than on `.page` so
+   anything else that has to line up with the gutter — the mobile action bar, a
+   full-bleed band's inner rule — reads the same number. */
+@media (max-width: 67.5rem) {
+  :root {
+    --page-pad: 28px;
   }
+}
+
+@media (max-width: 45rem) {
+  :root {
+    --page-pad: 20px;
+  }
+}
+
+/*
+ * A section of the landing page: a heading block, then whatever it introduces.
+ * The generous top padding is the whole rhythm of the new design — bands are
+ * separated by space and a hairline rather than by alternating tints.
+ */
+.section {
+  padding-top: clamp(72px, 9vw, 140px);
+}
+
+.section__head {
+  max-width: 56rem;
+}
+
+.section__title {
+  margin-top: var(--space-lg);
+  text-wrap: pretty;
+}
+
+/*
+ * The masthead of a page that is not the landing page: label, title, standfirst.
+ *
+ * Shared by /help, /support and both legal documents, because they are four
+ * versions of the same object and they were four different ones — one led with a
+ * `display-sm` and no label, one with a date, one with an intro at body size.
+ */
+.doc-head {
+  max-width: 52rem;
+  padding-top: clamp(48px, 5vw, 96px);
+}
+
+.doc-head__title {
+  margin-top: var(--space-lg);
+  text-wrap: balance;
+}
+
+/* /help and /support have no eyebrow — theirs would repeat the title word for
+   word — so the title leads and there is nothing above it to clear. */
+.doc-head > :first-child {
+  margin-top: 0;
+}
+
+.doc-head__lead {
+  margin-top: var(--space-xl);
+}
+
+.doc-head__note {
+  margin-top: var(--space-lg);
+}
+
+/* A recessed block — the money figure, the closing note on /help. Sits *below*
+   the page rather than above it, which is why it carries no shadow. */
+.panel {
+  background: var(--c-surface-alt);
+  border-radius: var(--radius-3xl);
+  padding: clamp(var(--space-xl), 4vw, 56px);
 }
 
 .card {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-2xl);
   padding: var(--space-xl);
   box-shadow: var(--shadow-sm);
   transition:
@@ -200,6 +297,12 @@ button:focus-visible {
 
 /* ---------- Buttons ---------- */
 
+/*
+ * A rounded rectangle rather than the pill this used to be. That is the design
+ * file's shape and it is the app's: `mobile`'s primary action is a 14px-radius
+ * block, and a pill on the website was the most visible place the two products
+ * stopped looking like one.
+ */
 .button {
   display: inline-flex;
   align-items: center;
@@ -209,7 +312,7 @@ button:focus-visible {
   min-height: 48px;
   padding: var(--space-md) var(--space-xl);
   border: 1px solid transparent;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   background: var(--c-accent);
   color: var(--c-accent-fg);
   font: inherit;
@@ -222,6 +325,39 @@ button:focus-visible {
   transition:
     transform var(--motion-fast) cubic-bezier(0.2, 0.7, 0.3, 1),
     box-shadow var(--motion-base) ease-out;
+}
+
+/* The hero's own call to action, and the crisis band's. Taller than a control
+   because it is the thing the page is for. */
+.button--lg {
+  min-height: 60px;
+  padding: var(--space-lg) var(--space-2xl);
+  border-radius: 14px;
+  text-wrap: pretty;
+}
+
+/*
+ * Outlined. Used for "Talk to someone" in the header and in the mobile bar: it
+ * has to be permanently present and permanently easy to hit, and it must not
+ * compete with the install button for the eye — the one time this site asks for
+ * something and the one time it offers something should not look identical.
+ */
+.button--ghost {
+  background: transparent;
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
+  box-shadow: none;
+}
+
+.button--ghost:hover {
+  border-color: var(--c-text-muted);
+  box-shadow: none;
+}
+
+/* The sheen is derived from the button's foreground; on the ghost variant that
+   is the body text colour, which read as a grey wipe rather than as light. */
+.button--ghost::after {
+  display: none;
 }
 
 .button:hover {
@@ -274,6 +410,58 @@ button:focus-visible {
 
 .skip-link:focus {
   transform: translateY(0);
+}
+
+/* ---------- The phone-width action bar ---------- */
+
+/*
+ * Two actions pinned in thumb reach below 45rem, exactly as the design file has
+ * them, and the reason the crisis one is first is the same reason the header
+ * link exists: "crisis resources stay reachable from every page" is a duty-of-care
+ * rule, and on a phone the header scrolls away long before the page does.
+ *
+ * Hidden above 45rem, where the header is on screen the whole time anyway.
+ */
+.action-bar {
+  display: none;
+}
+
+@media (max-width: 45rem) {
+  .action-bar {
+    display: flex;
+    gap: var(--space-sm);
+    position: fixed;
+    inset: auto 12px calc(12px + env(safe-area-inset-bottom)) 12px;
+    z-index: 40;
+    padding: 7px;
+    border-radius: 26px;
+    background: color-mix(in srgb, var(--c-surface-alt) 72%, transparent);
+    backdrop-filter: blur(26px) saturate(1.8);
+    -webkit-backdrop-filter: blur(26px) saturate(1.8);
+    border: 1px solid var(--c-border-strong);
+    box-shadow: var(--shadow-lg);
+  }
+
+  @supports not (backdrop-filter: blur(1px)) {
+    .action-bar {
+      background: var(--c-surface-alt);
+    }
+  }
+
+  .action-bar .button {
+    flex: 1;
+    min-height: 52px;
+    border-radius: 19px;
+    /* Tighter than a standalone button: two of these share 390px minus the
+       bar's own padding, and at the default gutter the labels wrap. */
+    padding-inline: var(--space-md);
+    text-align: center;
+  }
+
+  /* Clears the bar, so the last line of the footer is not sitting under it. */
+  body {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -418,7 +606,9 @@ button:focus-visible {
   .skip-link,
   .footer-nav,
   .progress,
+  .action-bar,
   .sonar,
+  .trace,
   /* On paper there is nothing to jump to. */
   .legal__toc {
     display: none;
