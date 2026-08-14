@@ -121,6 +121,165 @@ export const en = {
       note: 'Prices are in euros; the App Store shows the price in your own currency before you buy. Apple takes the payment, and you can cancel from your own Settings at any time.',
     },
 
+    /**
+     * The demonstration in the hero. Copy is the app's own wherever the app has
+     * a version of it — mobile/i18n/en/* — because a demo that invents its own
+     * sentences is a demo that drifts from what it is demonstrating.
+     *
+     * Every figure here is illustrative and the page says so twice, in `cueBody`
+     * and again in `caption`. Rule 1: none of it is a claim about what using the
+     * app produces for anyone.
+     */
+    demo: {
+      caption:
+        'A working illustration, not anyone’s real record. Every figure in it is made up.',
+      cueTitle: 'Try it yourself',
+      cueBody:
+        'This is the real thing, not a picture of it. Tap a night, check in, or open the urge screen.',
+      screenGroupLabel: 'Demonstration screen',
+      nightGroupLabel: 'Night',
+      screens: {
+        home: 'Home',
+        checkin: 'Check in',
+        urge: 'Urge',
+        slip: 'Log a slip',
+      },
+
+      home: {
+        daysCleanValue: '62',
+        daysCleanLabel: 'Days clean',
+        moneyKeptValue: '£1,240',
+        moneyKeptLabel: 'Money kept',
+        weekLabel: 'The next seven nights',
+        // Word for word what the engine renders, from mobile/i18n/en/reasons.ts.
+        nights: [
+          {
+            day: 'Fri',
+            band: 'Elevated',
+            when: 'tonight, Friday',
+            reasons: [
+              'Money landed today.',
+              'Both of your slips so far were on payday.',
+              'Three matches on tonight.',
+            ],
+          },
+          {
+            day: 'Sat',
+            band: 'High',
+            when: 'tomorrow, Saturday',
+            reasons: [
+              'Six matches on, including the late kick-off.',
+              'Saturday is your hardest night: four of your six slips.',
+              'Payday was two days before.',
+            ],
+          },
+          {
+            day: 'Sun',
+            band: 'Low',
+            when: 'Sunday',
+            reasons: [
+              'No matches on that you follow.',
+              'Sundays have never been a problem for you.',
+            ],
+          },
+          {
+            day: 'Mon',
+            band: 'Low',
+            when: 'Monday',
+            reasons: ['Nothing in the calendar.', 'Four days since money landed.'],
+          },
+          {
+            day: 'Tue',
+            band: 'Low',
+            when: 'Tuesday',
+            reasons: [
+              'Nothing in the calendar.',
+              'Your quietest weekday on the record so far.',
+            ],
+          },
+          {
+            day: 'Wed',
+            band: 'Elevated',
+            when: 'Wednesday',
+            reasons: [
+              'Two matches on in the evening.',
+              'Midweek fixtures have come up twice in your check-ins.',
+            ],
+          },
+          {
+            day: 'Thu',
+            band: 'Low',
+            when: 'Thursday',
+            reasons: ['Nothing in the calendar.', 'A week out from the next payday.'],
+          },
+        ],
+        ledgerLabel: 'How that’s worked out',
+        ledger: [
+          { label: '62 nights at your old rate', value: '£1,320' },
+          { label: 'What slips actually cost', value: '−£80' },
+          { label: 'Kept', value: '£1,240' },
+        ],
+        slipNote: 'a record, not a verdict',
+      },
+
+      checkin: {
+        eyebrow: 'Friday night',
+        question: 'Did you stay clean?',
+        clean: ['Yes', 'No'],
+        urgeQuestion: 'How strong were the urges?',
+        urgeWords: [
+          'None at all',
+          'Mild',
+          'There, but manageable',
+          'Strong. Hard to think about anything else.',
+          'As bad as it gets',
+        ],
+        whenQuestion: 'When were they strongest?',
+        when: ['Morning', 'Afternoon', 'Evening', 'Late night'],
+        whyQuestion: 'What was going on?',
+        whyOptional: 'optional',
+        why: ['A match was on', 'Payday', 'Drinking', 'Alone'],
+        close: 'Close',
+        save: 'Save',
+      },
+
+      urge: {
+        eyebrow: 'Sitting with it',
+        clock: '04:12',
+        clockNote: 'Counting up. There is nothing to reach.',
+        hereLabel: 'You are here',
+        dropsLabel: 'It drops from here',
+        quotesLabel: 'You wrote this down',
+        quotes: [
+          'I want to stop lying to Rachel about the bank app.',
+          '£8,400 last year. That was meant to be the deposit.',
+        ],
+        actions: [
+          'Cold water on your wrists. Sixty seconds.',
+          'Walk to the end of the street and back.',
+          'Eat something. Anything will do.',
+        ],
+        helplines: 'Helplines',
+        through: 'I’m through it',
+      },
+
+      slip: {
+        title: 'What happened?',
+        amountLabel: 'How much?',
+        amount: '£40',
+        amountNote: 'Leave it blank if you’d rather not count it.',
+        whenLabel: 'When?',
+        when: ['Tonight', 'Yesterday', 'Earlier'],
+        whyLabel: 'What was going on?',
+        why: ['A match was on', 'Chasing', 'Payday', 'Drinking'],
+        // mobile/i18n/en/core.ts → slip.stillYours, shortened. The precise claim,
+        // not the stronger one. Do not rewrite as "your numbers never go down".
+        note: 'A record, not a verdict. Writing it down doesn’t reset your total days clean, and never has.',
+        cancel: 'Cancel',
+        save: 'Save the record',
+      },
+    },
+
     mock: {
       day: 'Day 62',
       eyebrow: 'Tonight',
@@ -470,7 +629,14 @@ export const en = {
           heading: 'This website',
           blocks: [
             {
-              p: `This site is a few static pages. It sets no cookies, runs no analytics, embeds no third-party scripts, fonts or trackers, and has no forms, so there is nothing for it to collect about you.`,
+              // Reworded on 2026-08-14, when the home page gained the working
+              // demonstration of the app. It said "and has no forms" — the demo
+              // is built out of radio buttons and checkboxes, so that sentence
+              // stopped being precise even though nothing about what the site
+              // collects had changed. A privacy claim that is nearly true is
+              // worse than one that is precise, so this now describes the
+              // controls rather than denying they exist.
+              p: `This site is a few static pages. It sets no cookies, runs no analytics, and embeds no third-party scripts, fonts or trackers. The working demonstration of the app on the home page is made of ordinary page controls and nothing else: choosing a night or a screen only changes what is drawn, nothing is submitted anywhere, and nothing is remembered between visits. There is nothing here for this site to collect about you.`,
             },
             {
               p: `It is hosted by ${ctx.hostingProvider}, which processes ordinary web-server request logs, including IP addresses, to serve pages and absorb attacks. I do not use those logs to identify anyone.`,

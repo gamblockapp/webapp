@@ -1,5 +1,6 @@
 ---
 import { APP_NAME, CAMPAIGN, PRICING, appStoreLink, PAID } from '../../config';
+import Demo from '../Demo.astro';
 import { path, t, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 import { pricingStrings } from '../../pricing';
@@ -194,8 +195,55 @@ const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn
         </ul>
       </div>
 
-      {/* Invariant 2: the band never appears without the reasons under it. */}
-      <figure class="hero__mock">
+      {/*
+        The app itself, working, in the page. Not a screenshot and not a phone
+        with a picture in it — see `Demo.astro` for how four screens and seven
+        nights are switched with no JavaScript, and for the two things from the
+        design file that are deliberately not ported.
+      */}
+      <Demo locale={locale} />
+    </div>
+  </section>
+
+  {/*
+    The forecast, explained. The prose on the left, the scale it produces on the
+    right — still the band labels with their caption, never a score.
+  */}
+  <section class="page section reveal" id="forecast">
+    <div class="section__head">
+      <p class="eyebrow">{c.forecast.eyebrow}</p>
+      <h2 class="display-sm section__title">{c.forecast.title}</h2>
+    </div>
+
+    <div class="split">
+      <div>
+        <p class="body-lg muted">{c.forecast.body}</p>
+        <p class="body-lg muted split__second">{c.forecast.marks}</p>
+
+        <div class="scale">
+          <p class="eyebrow">{c.forecast.bandsEyebrow}</p>
+          <ul class="bands reveal-group">
+            {
+              c.forecast.bands.map((label, i) => (
+                <li class={`bands__item bands__item--${BAND_TONES[i]}`}>
+                  <span class="bands__plot">
+                    <span class="bands__bar" style={`--h:${BAND_HEIGHT[BAND_TONES[i]]}%`} />
+                  </span>
+                  <span class="bands__label">{label}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      {/*
+        The forecast card, moved down here from the hero now that the hero has
+        the working app in it. Invariant 2: the band never appears without the
+        reasons under it, and the marks beside each reason are what the paragraph
+        on the left has just explained.
+      */}
+      <figure class="mock">
         <div class="forecast">
           <p class="eyebrow forecast__eyebrow">{c.mock.eyebrow} · {c.mock.today}</p>
           <p class="forecast__band">{c.mock.band}</p>
@@ -234,40 +282,6 @@ const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn
         </div>
         <figcaption class="small faint mock__caption">{c.mock.caption}</figcaption>
       </figure>
-    </div>
-  </section>
-
-  {/*
-    The forecast, explained. The prose on the left, the scale it produces on the
-    right — still the band labels with their caption, never a score.
-  */}
-  <section class="page section reveal" id="forecast">
-    <div class="section__head">
-      <p class="eyebrow">{c.forecast.eyebrow}</p>
-      <h2 class="display-sm section__title">{c.forecast.title}</h2>
-    </div>
-
-    <div class="split">
-      <div>
-        <p class="body-lg muted">{c.forecast.body}</p>
-        <p class="body-lg muted split__second">{c.forecast.marks}</p>
-      </div>
-
-      <div class="scale">
-        <p class="eyebrow">{c.forecast.bandsEyebrow}</p>
-        <ul class="bands reveal-group">
-          {
-            c.forecast.bands.map((label, i) => (
-              <li class={`bands__item bands__item--${BAND_TONES[i]}`}>
-                <span class="bands__plot">
-                  <span class="bands__bar" style={`--h:${BAND_HEIGHT[BAND_TONES[i]]}%`} />
-                </span>
-                <span class="bands__label">{label}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
     </div>
 
     {/*
@@ -458,18 +472,35 @@ const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn
     padding-top: clamp(48px, 6vw, 104px);
   }
 
+  /*
+   * `minmax(0, 1fr)` rather than the default `auto`, and it is load-bearing.
+   *
+   * The demo is a device at a fixed 402px that must not shrink. In an `auto`
+   * column that width becomes the column's min-content, so on a 390px phone the
+   * whole hero column grew to 402px and every line of copy in it — headline,
+   * lead, facts — ran off the right of the screen. The column is now the
+   * container's width and the device is clipped by its own wrapper instead,
+   * which is what `overflow: hidden` on `.phone-wrap` is there for.
+   */
   .hero__grid {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-4xl);
     align-items: start;
   }
 
-  @media (min-width: 62rem) {
+  /*
+   * The demo is a device at a fixed 402px — see the note in `Demo.astro` about
+   * why it is scaled rather than reflowed — so this column is that width and not
+   * a fraction of anything. Two columns only once the copy column is still wide
+   * enough for the headline beside it; below that the copy runs full width and
+   * the phone sits under it, centred, which is what the design file does too.
+   */
+  @media (min-width: 68rem) {
     .hero__grid {
-      /* The panel is a fixed object rather than a fraction of the page: past
-         about 460px the week strip's day labels start floating apart. */
-      grid-template-columns: minmax(0, 1fr) 27rem;
-      gap: var(--space-5xl);
+      grid-template-columns: minmax(0, 1fr) 402px;
+      gap: var(--space-4xl);
+      align-items: start;
     }
   }
 
@@ -601,7 +632,7 @@ const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn
 
   /* ---------- The forecast panel ---------- */
 
-  .hero__mock {
+  .mock {
     margin: 0;
   }
 
@@ -782,6 +813,13 @@ const storeHref = appStoreLink(locale === 'fr' ? CAMPAIGN.webFr : CAMPAIGN.webEn
   }
 
   /* ---------- The three-band scale ---------- */
+
+  /* Under the prose it explains, on a hairline, rather than in its own column. */
+  .scale {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-2xl);
+    border-top: 1px solid var(--c-border);
+  }
 
   .bands {
     margin-top: var(--space-xl);

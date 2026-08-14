@@ -221,7 +221,14 @@ export const PURCHASES = {
  */
 export const PAID = false;
 
-export const LEGAL_UPDATED = '2026-08-11';
+/*
+ * Moved to 2026-08-14 for the "This website" section: the home page gained a
+ * working demonstration of the app, so the clause that said the site "has no
+ * forms" had to start describing the controls instead of denying them. What the
+ * site collects did not change — the wording did, and that is still a substance
+ * change to a claim about code rather than a typo fix.
+ */
+export const LEGAL_UPDATED = '2026-08-14';
 
 /**
  * Where opt-in analytics go, named because the privacy policy has to name it.
